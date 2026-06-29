@@ -5,6 +5,7 @@ import { CSSAnalysisResult } from '../cssAnalyzer/types.js';
 import { JSAnalysisResult } from '../jsAnalyzer/types.js';
 import { SEOAnalysisResult } from '../seoAnalyzer/types.js';
 import { AccessibilityAnalysisResult } from '../accessibilityAnalyzer/types.js';
+import { RecommendationEngineResult } from '../recommendation/types.js';
 
 export interface AnalysisMetadata {
   url: string;
@@ -23,6 +24,7 @@ export interface AnalysisEngineResult {
   js: JSAnalysisResult | null;
   seo: SEOAnalysisResult | null;
   accessibility: AccessibilityAnalysisResult | null;
+  recommendation: RecommendationEngineResult | null;
   timestamp: Date;
   duration: number; // Duration of execution in milliseconds
   status: AnalysisStatus;

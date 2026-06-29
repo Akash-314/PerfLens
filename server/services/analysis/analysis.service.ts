@@ -5,6 +5,7 @@ import { analyzeCSS } from '../cssAnalyzer/index.js';
 import { analyzeJavaScript } from '../jsAnalyzer/index.js';
 import { analyzeSEO } from '../seoAnalyzer/index.js';
 import { analyzeAccessibility } from '../accessibilityAnalyzer/index.js';
+import { generateRecommendations } from '../recommendation/index.js';
 import { AnalysisEngineResult, AnalysisStatus } from './analysis.types.js';
 import { normalizeUrl, extractMetadata } from './analysis.helpers.js';
 import { PageSpeedScanResult } from '../pagespeed/types.js';
@@ -67,6 +68,16 @@ export const analyzeWebsite = async (url: string): Promise<AnalysisEngineResult>
   const seoAnalysis = analyzeSEO(puppeteerResult);
   const accessibilityAnalysis = analyzeAccessibility(puppeteerResult);
 
+  // Generate consolidation roadmap of all findings
+  const recommendationResult = generateRecommendations({
+    pagespeed: pagespeedResult,
+    image: imageAnalysis,
+    css: cssAnalysis,
+    js: jsAnalysis,
+    seo: seoAnalysis,
+    accessibility: accessibilityAnalysis
+  });
+
   const duration = Date.now() - startTime;
   const metadata = extractMetadata(cleanUrl, puppeteerResult);
 
@@ -79,6 +90,7 @@ export const analyzeWebsite = async (url: string): Promise<AnalysisEngineResult>
     js: jsAnalysis,
     seo: seoAnalysis,
     accessibility: accessibilityAnalysis,
+    recommendation: recommendationResult,
     timestamp: new Date(),
     duration,
     status
