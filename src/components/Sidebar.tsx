@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import { getUserInitials, getUserNameFromEmail } from '../services/auth/auth.helpers';
 import {
   LayoutDashboard,
   Globe,
@@ -25,7 +26,8 @@ export const Sidebar: React.FC = () => {
     projects,
     activeProject,
     setActiveProject,
-    addToast
+    addToast,
+    user
   } = useApp();
 
   const menuItems = [
@@ -169,19 +171,25 @@ export const Sidebar: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '11px',
+              fontSize: '10px',
               fontWeight: 600,
-              color: 'var(--color-text-primary)'
+              color: 'var(--color-accent)'
             }}
+            title={user?.email || 'Guest'}
           >
-            D
+            {getUserInitials(user?.name || user?.email || 'Guest')}
           </div>
           {!sidebarCollapsed && (
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-text-primary)' }}>
-                Developer Workspace
+            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+              <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--color-text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user?.name || getUserNameFromEmail(user?.email || '')}
               </span>
-              <span style={{ fontSize: '10px', color: 'var(--color-muted)' }}>Pro Plan</span>
+              <span style={{ fontSize: '10px', color: 'var(--color-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user?.email || 'Not Signed In'}
+              </span>
+              <span style={{ fontSize: '9.5px', color: 'var(--color-accent)', fontWeight: 500, marginTop: '2px' }}>
+                Free Subscription
+              </span>
             </div>
           )}
         </div>

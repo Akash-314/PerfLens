@@ -12,7 +12,7 @@ const connectDatabase = async (): Promise<void> => {
     console.log(`Connecting to MongoDB at: ${mongoUri.replace(/:([^@]+)@/, ':****@')}`);
 
     const conn = await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 5001,
     });
 
     console.log(`MongoDB Connected: ${conn.connection.host}/${conn.connection.name}`);

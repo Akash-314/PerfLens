@@ -16,6 +16,11 @@ import errorHandler from './middlewares/errorHandler.js';
 import { apiLimiter } from './middlewares/rateLimiter.js';
 
 const app = express();
+console.log("APP FILE LOADED");
+app.use((req, res, next) => {
+  console.log("REQUEST:", req.method, req.originalUrl);
+  next();
+});
 
 // Security HTTP Headers
 app.use(helmet({
@@ -61,7 +66,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:5000',
+        url: 'http://localhost:5001',
         description: 'Local Development Server'
       }
     ],
@@ -82,6 +87,7 @@ const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api/docs', swaggerUi.serve as any, swaggerUi.setup(swaggerDocs) as any);
 
 // Connect Versioned API Routers
+console.log("Registering routes...");
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/analysis', analysisRoutes);
@@ -91,6 +97,13 @@ app.use('/api/v1/projects', projectRoutes);
 // Global Error Catch Middleware
 app.use(errorHandler);
 
+app.get("/", (req, res) => {
+    res.send("ROOT WORKING");
+});
+
+app.get("/hello", (req, res) => {
+    res.send("HELLO");
+});
 // Handle undefined routes
 app.use('*', (req: Request, res: Response) => {
   res.status(404).json({

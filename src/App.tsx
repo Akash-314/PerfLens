@@ -3,10 +3,13 @@ import { AppProvider, useApp } from './context/AppContext';
 import { Sidebar } from './components/Sidebar';
 import { TopNav } from './components/TopNav';
 import { CommandMenu } from './components/CommandMenu';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { X, CheckCircle, AlertTriangle, Info, AlertCircle } from 'lucide-react';
 
 // Lazy load page views to optimize client bundle size via code splitting
 const LandingPage = React.lazy(() => import('./pages/LandingPage').then(m => ({ default: m.LandingPage })));
+const Login = React.lazy(() => import('./pages/Login').then(m => ({ default: m.Login })));
+const Register = React.lazy(() => import('./pages/Register').then(m => ({ default: m.Register })));
 const Dashboard = React.lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
 const WebsiteAnalysis = React.lazy(() => import('./pages/WebsiteAnalysis').then(m => ({ default: m.WebsiteAnalysis })));
 const ResultsPage = React.lazy(() => import('./pages/ResultsPage').then(m => ({ default: m.ResultsPage })));
@@ -19,6 +22,8 @@ const Support = React.lazy(() => import('./pages/Support').then(m => ({ default:
 
 const AppContent: React.FC = () => {
   const { currentTab, toasts, removeToast } = useApp();
+
+  const isAuthPage = ['landing', 'login', 'register'].includes(currentTab);
 
   const renderActiveTab = () => {
     return (
@@ -33,27 +38,40 @@ const AppContent: React.FC = () => {
           switch (currentTab) {
             case 'landing':
               return <LandingPage />;
-            case 'dashboard':
-              return <Dashboard />;
-            case 'analyze':
-              return <WebsiteAnalysis />;
-            case 'results':
-              return <ResultsPage />;
-            case 'recommendations':
-              return <Recommendations />;
-            case 'comparisons':
-              return <ComparisonPage />;
-            case 'reports':
-            case 'history':
-              return <ReportsList />;
-            case 'projects':
-              return <Projects />;
-            case 'settings':
-              return <Settings />;
-            case 'support':
-              return <Support />;
+            case 'login':
+              return <Login />;
+            case 'register':
+              return <Register />;
             default:
-              return <LandingPage />;
+              return (
+                <ProtectedRoute>
+                  {(() => {
+                    switch (currentTab) {
+                      case 'dashboard':
+                        return <Dashboard />;
+                      case 'analyze':
+                        return <WebsiteAnalysis />;
+                      case 'results':
+                        return <ResultsPage />;
+                      case 'recommendations':
+                        return <Recommendations />;
+                      case 'comparisons':
+                        return <ComparisonPage />;
+                      case 'reports':
+                      case 'history':
+                        return <ReportsList />;
+                      case 'projects':
+                        return <Projects />;
+                      case 'settings':
+                        return <Settings />;
+                      case 'support':
+                        return <Support />;
+                      default:
+                        return <Dashboard />;
+                    }
+                  })()}
+                </ProtectedRoute>
+              );
           }
         })()}
       </Suspense>
@@ -75,11 +93,11 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="app-container">
-      {/* Conditionally show sidebar in app dashboard vs clean landing page */}
-      {currentTab !== 'landing' && <Sidebar />}
+      {/* Conditionally show sidebar in app dashboard vs clean landing or auth pages */}
+      {!isAuthPage && <Sidebar />}
 
       <div className="main-content">
-        {currentTab !== 'landing' && <TopNav />}
+        {!isAuthPage && <TopNav />}
         {renderActiveTab()}
       </div>
 

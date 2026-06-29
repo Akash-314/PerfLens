@@ -8,12 +8,13 @@ dotenv.config();
 // Validate Environment Variables
 validateEnv();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Connect to MongoDB
 connectDatabase();
 
 const server = app.listen(PORT, () => {
+  console.log("Server object created");
   console.log(`[PerfLens Server]: Web application backend active in ${process.env.NODE_ENV || 'development'} mode.`);
   console.log(`[PerfLens Server]: API Gateway: http://localhost:${PORT}/api/v1`);
   console.log(`[PerfLens Server]: OpenAPI Swagger Docs: http://localhost:${PORT}/api/docs`);

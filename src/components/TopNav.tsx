@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { Search, Bell, User, AlertCircle, Play } from 'lucide-react';
+import { getUserNameFromEmail } from '../services/auth/auth.helpers';
 
 export const TopNav: React.FC = () => {
-  const { setGlobalSearchOpen, startAnalysis, currentTab } = useApp();
+  const { setGlobalSearchOpen, startAnalysis, currentTab, user, logout, setCurrentTab } = useApp();
   const [quickUrl, setQuickUrl] = useState('');
   const [showNotif, setShowNotif] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
@@ -175,10 +176,12 @@ export const TopNav: React.FC = () => {
                   marginBottom: '4px'
                 }}
               >
-                <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                  Developer Team
+                <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {user?.name || getUserNameFromEmail(user?.email || '')}
                 </p>
-                <span style={{ fontSize: '10px', color: 'var(--color-muted)' }}>developer@perflens.com</span>
+                <span style={{ fontSize: '10px', color: 'var(--color-muted)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '2px' }}>
+                  {user?.email}
+                </span>
               </div>
               <div
                 style={{
@@ -189,22 +192,31 @@ export const TopNav: React.FC = () => {
               >
                 <div
                   className="command-item"
-                  style={{ padding: '6px 8px', fontSize: '12px' }}
-                  onClick={() => setShowProfile(false)}
+                  style={{ padding: '6px 8px', fontSize: '12px', cursor: 'pointer' }}
+                  onClick={() => {
+                    setCurrentTab('settings');
+                    setShowProfile(false);
+                  }}
                 >
                   Account Settings
                 </div>
                 <div
                   className="command-item"
-                  style={{ padding: '6px 8px', fontSize: '12px' }}
-                  onClick={() => setShowProfile(false)}
+                  style={{ padding: '6px 8px', fontSize: '12px', cursor: 'pointer' }}
+                  onClick={() => {
+                    setCurrentTab('settings');
+                    setShowProfile(false);
+                  }}
                 >
                   Usage Billing
                 </div>
                 <div
                   className="command-item"
-                  style={{ padding: '6px 8px', fontSize: '12px', color: 'var(--color-danger)' }}
-                  onClick={() => setShowProfile(false)}
+                  style={{ padding: '6px 8px', fontSize: '12px', color: 'var(--color-danger)', cursor: 'pointer' }}
+                  onClick={() => {
+                    logout();
+                    setShowProfile(false);
+                  }}
                 >
                   Sign Out
                 </div>
