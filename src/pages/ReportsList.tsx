@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useApp, type Report } from '../context/AppContext';
-import { Search, ArrowUpRight, Share2 } from 'lucide-react';
+import { Search, ArrowUpRight, Share2, Trash2 } from 'lucide-react';
 
 export const ReportsList: React.FC = () => {
-  const { reports, setCurrentReport, setCurrentTab, addToast } = useApp();
+  const { reports, setCurrentReport, setCurrentTab, addToast, deleteReport } = useApp();
   const [search, setSearch] = useState('');
   const [sortField, setSortField] = useState<'timestamp' | 'url' | 'overall'>('timestamp');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -141,6 +141,18 @@ export const ReportsList: React.FC = () => {
                         title="Copy shareable link"
                       >
                         <Share2 size={13} />
+                      </button>
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        style={{ color: 'var(--color-danger)' }}
+                        onClick={() => {
+                          if (confirm(`Are you sure you want to delete the performance report for ${report.url}?`)) {
+                            deleteReport(report.id);
+                          }
+                        }}
+                        title="Delete report"
+                      >
+                        <Trash2 size={13} />
                       </button>
                     </div>
                   </td>

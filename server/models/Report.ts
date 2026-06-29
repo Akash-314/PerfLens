@@ -20,6 +20,8 @@ export interface IRecommendation {
 export interface IReport extends Document {
   url: string;
   owner?: mongoose.Types.ObjectId;
+  
+  // Legacy properties (retained for backward compatibility, declared as non-optional to satisfy PDF generator compilation)
   scores: {
     overall: number;
     performance: number;
@@ -66,34 +68,25 @@ export interface IReport extends Document {
     compression: string;
     cacheControl: string;
   }>;
+
+  // Modern unified analysis properties (optional to support legacy document instances at runtime)
+  metadata?: any;
+  pagespeed?: any;
+  puppeteer?: any;
+  image?: any;
+  css?: any;
+  js?: any;
+  seo?: any;
+  accessibility?: any;
+  recommendation?: any;
+  overallHealthScore?: number;
+  overallPerformanceGrade?: string;
+  status: string;
+  duration: number;
+  
   createdAt: Date;
+  updatedAt: Date;
 }
-
-const metricDetailSchema = new Schema<IMetricDetail>({
-  score: Number,
-  value: String,
-  rating: {
-    type: String,
-    enum: ['good', 'needs-improvement', 'poor']
-  }
-}, { _id: false });
-
-const recommendationSchema = new Schema<IRecommendation>({
-  category: String,
-  issue: String,
-  whyItMatters: String,
-  suggestedFix: String,
-  estimatedImprovement: String,
-  difficulty: {
-    type: String,
-    enum: ['easy', 'medium', 'hard']
-  },
-  priority: {
-    type: String,
-    enum: ['high', 'medium', 'low']
-  },
-  refUrl: String
-}, { _id: false });
 
 const reportSchema = new Schema<IReport>({
   url: {
@@ -107,60 +100,43 @@ const reportSchema = new Schema<IReport>({
     ref: 'User',
     index: true
   },
-  scores: {
-    overall: Number,
-    performance: Number,
-    accessibility: Number,
-    seo: Number,
-    bestPractices: Number
-  },
-  vitals: {
-    fcp: metricDetailSchema,
-    lcp: metricDetailSchema,
-    fid: metricDetailSchema,
-    cls: metricDetailSchema,
-    ttfb: metricDetailSchema,
-    tbt: metricDetailSchema
-  },
-  breakdown: {
-    images: { sizeKb: Number, count: Number },
-    js: { sizeKb: Number, count: Number, unusedKb: Number },
-    css: { sizeKb: Number, count: Number, unusedKb: Number },
-    fonts: { sizeKb: Number, count: Number },
-    thirdParty: { sizeKb: Number, count: Number }
-  },
-  bundleAnalysis: [{
-    packageName: String,
-    sizeKb: Number,
-    isUnused: Boolean,
-    isDuplicate: Boolean
-  }],
-  images: [{
-    src: String,
-    sizeKb: Number,
-    format: String,
-    suggestedFormat: String,
-    savingsKb: Number,
-    hasAlt: Boolean,
-    lazyLoaded: Boolean
-  }],
-  recommendations: [recommendationSchema],
-  resources: [{
-    name: String,
-    type: {
-      type: String,
-      enum: ['html', 'js', 'css', 'image', 'font', 'other']
-    },
-    sizeKb: Number,
-    timeMs: Number,
-    compression: String,
-    cacheControl: String
-  }],
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  
+  // Legacy properties schema mapping
+  scores: { type: Schema.Types.Mixed, default: null },
+  vitals: { type: Schema.Types.Mixed, default: null },
+  breakdown: { type: Schema.Types.Mixed, default: null },
+  bundleAnalysis: { type: Schema.Types.Mixed, default: null },
+  images: { type: Schema.Types.Mixed, default: null },
+  recommendations: { type: Schema.Types.Mixed, default: null },
+  resources: { type: Schema.Types.Mixed, default: null },
+
+  // Modern unified properties schema mapping
+  metadata: { type: Schema.Types.Mixed, default: null },
+  pagespeed: { type: Schema.Types.Mixed, default: null },
+  puppeteer: { type: Schema.Types.Mixed, default: null },
+  image: { type: Schema.Types.Mixed, default: null },
+  css: { type: Schema.Types.Mixed, default: null },
+  js: { type: Schema.Types.Mixed, default: null },
+  seo: { type: Schema.Types.Mixed, default: null },
+  accessibility: { type: Schema.Types.Mixed, default: null },
+  recommendation: { type: Schema.Types.Mixed, default: null },
+  overallHealthScore: {
+    type: Number,
     index: true
+  },
+  overallPerformanceGrade: {
+    type: String
+  },
+  status: {
+    type: String,
+    required: true
+  },
+  duration: {
+    type: Number,
+    required: true
   }
+}, {
+  timestamps: true
 });
 
 const Report: Model<IReport> = mongoose.model<IReport>('Report', reportSchema);

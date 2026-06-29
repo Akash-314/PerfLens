@@ -362,28 +362,48 @@ export const ResultsPage: React.FC = () => {
                   <p style={{ fontSize: '12px', color: 'var(--color-muted)' }}>Visualization of parsed production package sizes.</p>
                 </div>
 
-                {/* Custom SVG/JSX Treemap design */}
-                <div className="treemap-container">
-                  <div className="treemap-node" style={{ gridColumn: 'span 4', gridRow: 'span 2', backgroundColor: 'rgba(59, 130, 246, 0.08)' }}>
-                    <span className="treemap-node-name">moment.js</span>
-                    <span className="treemap-node-size">280.1 KB (Duplicate)</span>
-                  </div>
-                  <div className="treemap-node" style={{ gridColumn: 'span 3', gridRow: 'span 2', backgroundColor: 'rgba(255, 255, 255, 0.03)' }}>
-                    <span className="treemap-node-name">core-js</span>
-                    <span className="treemap-node-size">154.2 KB</span>
-                  </div>
-                  <div className="treemap-node" style={{ gridColumn: 'span 3', gridRow: 'span 1', backgroundColor: 'rgba(255, 255, 255, 0.03)' }}>
-                    <span className="treemap-node-name">framer-motion</span>
-                    <span className="treemap-node-size">142.3 KB</span>
-                  </div>
-                  <div className="treemap-node" style={{ gridColumn: 'span 2', gridRow: 'span 1', backgroundColor: 'rgba(239, 68, 68, 0.08)' }}>
-                    <span className="treemap-node-name">lodash</span>
-                    <span className="treemap-node-size">71.2 KB (Unused)</span>
-                  </div>
-                  <div className="treemap-node" style={{ gridColumn: 'span 5', gridRow: 'span 1', backgroundColor: 'rgba(255, 255, 255, 0.03)' }}>
-                    <span className="treemap-node-name">react-dom.production.min.js</span>
-                    <span className="treemap-node-size">124.5 KB</span>
-                  </div>
+                {/* Custom Treemap design based on real packages size */}
+                <div className="treemap-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', minHeight: '180px' }}>
+                  {currentReport.bundleAnalysis.length === 0 ? (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, color: 'var(--color-muted)', fontSize: '12px' }}>
+                      No script libraries cataloged in bundle payload.
+                    </div>
+                  ) : (
+                    currentReport.bundleAnalysis.slice(0, 5).map((bundle, idx) => {
+                      const totalSize = currentReport.bundleAnalysis.slice(0, 5).reduce((acc, b) => acc + b.sizeKb, 0);
+                      const widthPercent = totalSize > 0 ? (bundle.sizeKb / totalSize) * 100 : 20;
+                      const bgColor = bundle.isDuplicate
+                        ? 'rgba(245, 158, 11, 0.08)'
+                        : bundle.isUnused
+                        ? 'rgba(239, 68, 68, 0.08)'
+                        : 'rgba(59, 130, 246, 0.08)';
+
+                      return (
+                        <div
+                          key={idx}
+                          className="treemap-node"
+                          style={{
+                            flex: `1 1 calc(${widthPercent}% - 8px)`,
+                            minWidth: '100px',
+                            backgroundColor: bgColor,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            padding: '12px',
+                            borderRadius: '4px',
+                            border: '1px solid var(--color-border)'
+                          }}
+                        >
+                          <span className="treemap-node-name" style={{ fontWeight: 600, fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {bundle.packageName}
+                          </span>
+                          <span className="treemap-node-size" style={{ fontSize: '11px', color: 'var(--color-muted)', marginTop: '4px' }}>
+                            {bundle.sizeKb.toFixed(1)} KB {bundle.isDuplicate ? '(Duplicate)' : bundle.isUnused ? '(Unused)' : ''}
+                          </span>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
               </div>
 
@@ -650,12 +670,7 @@ export const ResultsPage: React.FC = () => {
               <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Accessibility Checks</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {[
-                    { title: 'Color Contrast check', passed: false, text: 'Some text elements on the footer container do not meet the minimum contrast standard of 4.5:1.' },
-                    { title: 'Image Alt Attributes check', passed: false, text: 'Two primary image resources (/images/hero-banner.png, /images/avatar-group.png) do not contain aria-label or alt tags.' },
-                    { title: 'Heading Structure hierarchy check', passed: true, text: 'Proper structural header hierarchy from H1 to H3 verified.' },
-                    { title: 'Screen reader accessibility checks', passed: true, text: 'Interactive buttons contain matching accessible descriptors.' }
-                  ].map((chk, idx) => (
+                  {currentReport.accessibilityChecks.map((chk, idx) => (
                     <div
                       key={idx}
                       style={{
@@ -695,19 +710,27 @@ export const ResultsPage: React.FC = () => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', paddingBottom: '6px', borderBottom: '1px solid var(--color-border)' }}>
                       <span style={{ color: 'var(--color-text-secondary)' }}>Title Tag</span>
-                      <span style={{ color: 'var(--color-success)', fontWeight: 500 }}>Verified (54 chars)</span>
+                      <span style={{ color: currentReport.seoChecks.titlePassed ? 'var(--color-success)' : 'var(--color-danger)', fontWeight: 500 }}>
+                        {currentReport.seoChecks.titleTag}
+                      </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', paddingBottom: '6px', borderBottom: '1px solid var(--color-border)' }}>
                       <span style={{ color: 'var(--color-text-secondary)' }}>Meta Description</span>
-                      <span style={{ color: 'var(--color-success)', fontWeight: 500 }}>Verified (150 chars)</span>
+                      <span style={{ color: currentReport.seoChecks.descPassed ? 'var(--color-success)' : 'var(--color-danger)', fontWeight: 500 }}>
+                        {currentReport.seoChecks.metaDescription}
+                      </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', paddingBottom: '6px', borderBottom: '1px solid var(--color-border)' }}>
                       <span style={{ color: 'var(--color-text-secondary)' }}>Canonical Tag</span>
-                      <span style={{ color: 'var(--color-success)', fontWeight: 500 }}>Verified</span>
+                      <span style={{ color: currentReport.seoChecks.canonicalPassed ? 'var(--color-success)' : 'var(--color-danger)', fontWeight: 500 }}>
+                        {currentReport.seoChecks.canonicalTag}
+                      </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', paddingBottom: '6px', borderBottom: '1px solid var(--color-border)' }}>
                       <span style={{ color: 'var(--color-text-secondary)' }}>Sitemap.xml</span>
-                      <span style={{ color: 'var(--color-warning)', fontWeight: 500 }}>No reference in robots.txt</span>
+                      <span style={{ color: currentReport.seoChecks.sitemapPassed ? 'var(--color-success)' : 'var(--color-warning)', fontWeight: 500 }}>
+                        {currentReport.seoChecks.sitemap}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -725,18 +748,21 @@ export const ResultsPage: React.FC = () => {
                         justifyContent: 'center',
                         color: 'var(--color-muted)',
                         fontSize: '12px',
-                        borderBottom: '1px solid var(--color-border)'
+                        borderBottom: '1px solid var(--color-border)',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundImage: currentReport.seoChecks.ogImage ? `url(${currentReport.seoChecks.ogImage})` : 'none'
                       }}
                     >
-                      [OpenGraph Banner Image Preview]
+                      {!currentReport.seoChecks.ogImage && '[No OpenGraph Banner Image]'}
                     </div>
                     <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <span style={{ fontSize: '10px', color: 'var(--color-muted)', textTransform: 'uppercase' }}>{currentReport.url}</span>
                       <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', margin: 0 }}>
-                        {currentReport.url.split('.')[0].toUpperCase()} - The developer performance inspector dashboard
+                        {currentReport.seoChecks.ogTitle || currentReport.url}
                       </p>
                       <p style={{ fontSize: '11px', color: 'var(--color-text-secondary)', margin: 0, lineClamp: 2 }}>
-                        Inspect page speeds, tree-shake bundles and dynamic import dependencies seamlessly in real-time diagnostics.
+                        {currentReport.seoChecks.ogDescription || 'No description available'}
                       </p>
                     </div>
                   </div>

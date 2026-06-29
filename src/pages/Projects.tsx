@@ -4,7 +4,7 @@ import { FolderGit, PlusCircle, UserPlus, History } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 export const Projects: React.FC = () => {
-  const { projects, activeProject, setActiveProject, addProject, addToast } = useApp();
+  const { projects, activeProject, setActiveProject, addProject, addToast, reports } = useApp();
   const [newProjName, setNewProjName] = useState('');
   const [newProjUrls, setNewProjUrls] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -26,14 +26,24 @@ export const Projects: React.FC = () => {
     setShowAddForm(false);
   };
 
-  const projectHistoryData = [
-    { name: 'Run 1', score: 88 },
-    { name: 'Run 2', score: 89 },
-    { name: 'Run 3', score: 92 },
-    { name: 'Run 4', score: 91 },
-    { name: 'Run 5', score: 94 },
-    { name: 'Run 6', score: 95 }
-  ];
+  // Dynamically calculate history data from reports matching activeProject's websites
+  const matchingReports = activeProject
+    ? reports
+        .filter((r) =>
+          activeProject.websites.some((w) =>
+            r.url.toLowerCase().includes(w.replace(/^(https?:\/\/)?(www\.)?/, '').toLowerCase())
+          )
+        )
+        .slice()
+        .reverse()
+    : [];
+
+  const projectHistoryData = matchingReports.length > 0
+    ? matchingReports.map((r, idx) => ({
+        name: `Run ${idx + 1}`,
+        score: r.scores?.overall ?? 0
+      }))
+    : [{ name: 'No Runs', score: 0 }];
 
   return (
     <div className="workspace-container fade-in">

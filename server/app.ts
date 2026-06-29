@@ -8,7 +8,7 @@ import swaggerJsdoc from 'swagger-jsdoc';
 
 import authRoutes from './routes/authRoutes.js';
 import analysisRoutes from './routes/analysisRoutes.js';
-import reportRoutes from './routes/reportRoutes.js';
+import reportRoutes from './routes/report.routes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 

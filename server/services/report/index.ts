@@ -205,3 +205,6 @@ class PdfService {
 }
 
 export default new PdfService();
+export * from './report.service.js';
+export * from './helpers.js';
+export * from './types.js';
