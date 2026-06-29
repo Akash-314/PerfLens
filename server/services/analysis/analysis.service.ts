@@ -1,5 +1,9 @@
 import { runPageSpeedAudit } from '../pagespeed/index.js';
 import { analyzeWebsiteWithPuppeteer } from '../puppeteer/index.js';
+import { analyzeImages } from '../imageAnalyzer/index.js';
+import { analyzeCSS } from '../cssAnalyzer/index.js';
+import { analyzeJavaScript } from '../jsAnalyzer/index.js';
+import { analyzeSEO } from '../seoAnalyzer/index.js';
 import { AnalysisEngineResult, AnalysisStatus } from './analysis.types.js';
 import { normalizeUrl, extractMetadata } from './analysis.helpers.js';
 import { PageSpeedScanResult } from '../pagespeed/types.js';
@@ -55,6 +59,12 @@ export const analyzeWebsite = async (url: string): Promise<AnalysisEngineResult>
     status = 'failed';
   }
 
+  // Execute secondary analyzers synchronously using the resulting Puppeteer dataset
+  const imageAnalysis = analyzeImages(puppeteerResult);
+  const cssAnalysis = analyzeCSS(puppeteerResult);
+  const jsAnalysis = analyzeJavaScript(puppeteerResult);
+  const seoAnalysis = analyzeSEO(puppeteerResult);
+
   const duration = Date.now() - startTime;
   const metadata = extractMetadata(cleanUrl, puppeteerResult);
 
@@ -62,6 +72,10 @@ export const analyzeWebsite = async (url: string): Promise<AnalysisEngineResult>
     metadata,
     pagespeed: pagespeedResult,
     puppeteer: puppeteerResult,
+    image: imageAnalysis,
+    css: cssAnalysis,
+    js: jsAnalysis,
+    seo: seoAnalysis,
     timestamp: new Date(),
     duration,
     status
