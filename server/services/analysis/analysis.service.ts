@@ -4,6 +4,7 @@ import { analyzeImages } from '../imageAnalyzer/index.js';
 import { analyzeCSS } from '../cssAnalyzer/index.js';
 import { analyzeJavaScript } from '../jsAnalyzer/index.js';
 import { analyzeSEO } from '../seoAnalyzer/index.js';
+import { analyzeAccessibility } from '../accessibilityAnalyzer/index.js';
 import { AnalysisEngineResult, AnalysisStatus } from './analysis.types.js';
 import { normalizeUrl, extractMetadata } from './analysis.helpers.js';
 import { PageSpeedScanResult } from '../pagespeed/types.js';
@@ -64,6 +65,7 @@ export const analyzeWebsite = async (url: string): Promise<AnalysisEngineResult>
   const cssAnalysis = analyzeCSS(puppeteerResult);
   const jsAnalysis = analyzeJavaScript(puppeteerResult);
   const seoAnalysis = analyzeSEO(puppeteerResult);
+  const accessibilityAnalysis = analyzeAccessibility(puppeteerResult);
 
   const duration = Date.now() - startTime;
   const metadata = extractMetadata(cleanUrl, puppeteerResult);
@@ -76,6 +78,7 @@ export const analyzeWebsite = async (url: string): Promise<AnalysisEngineResult>
     css: cssAnalysis,
     js: jsAnalysis,
     seo: seoAnalysis,
+    accessibility: accessibilityAnalysis,
     timestamp: new Date(),
     duration,
     status
