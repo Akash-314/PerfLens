@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "project": "PerfLens",
+  "runner": "ralph-loop",
+  "version": "1.0.0",
+  "paths": {
+    "prd": ".ralph/prd.json",
+    "progress": ".ralph/progress.txt",
+    "prompt": ".ralph/prompt.md",
+    "codebase_docs": ".planning/codebase/"
+  },
+  "quality_gates": {
+    "test_command": "npm test",
+    "lint_command": "npm run lint",
+    "build_command": "npm run build"
+  },
+  "rules": [
+    "Do NOT redesign the application.",
+    "Do NOT rewrite the project.",
+    "Do NOT delete or replace existing functionality.",
+    "Treat the current codebase as the source of truth.",
+    "Inspect existing implementation before editing any file.",
+    "Make minimal, surgical edits confined to the target_files list.",
+    "Run validation commands after every change.",
+    "Require all tests and quality gates to pass before marking passes: true.",
+    "Make a clean git commit after completing each task with the specified commit_message.",
+    "Append completion record to .ralph/progress.txt."
+  ],
+  "commit_convention": {
+    "format": "<type>(<scope>): <subject> [Ralph <task_id>]",
+    "tag_prefix": "ralph-"
+  }
+}

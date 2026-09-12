@@ -1,0 +1,6 @@
+{
+  "config": ".ralph/ralph.config.json",
+  "prd": ".ralph/prd.json",
+  "prompt": ".ralph/prompt.md",
+  "progress": ".ralph/progress.txt"
+}

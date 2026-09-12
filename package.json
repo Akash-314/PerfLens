@@ -9,7 +9,9 @@
     "dev:all": "concurrently \"npm run dev\" \"npm --prefix server run dev\"",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "npm --prefix server test",
+    "test:server": "npm --prefix server test"
   },
   "dependencies": {
     "lucide-react": "^1.21.0",

@@ -1,0 +1,183 @@
+{
+  "project": "PerfLens",
+  "version": "1.0.0",
+  "description": "Frontend Performance Inspector and Core Web Vitals Auditor",
+  "branch": "main",
+  "ground_truth": {
+    "database": "Supabase PostgreSQL via server/config/supabase.ts and server/supabase_schema.sql",
+    "analyzers": "server/services/ (analysis, puppeteer, imageAnalyzer, cssAnalyzer, jsAnalyzer, seoAnalyzer, accessibilityAnalyzer, recommendation)",
+    "standards": "Web.dev authoritative Core Web Vitals thresholds via server/config/performanceThresholds.ts",
+    "test_suite": "Vitest in server/ (75 tests currently passing)",
+    "design_system": "Custom CSS in src/index.css and React 19 SPA in src/"
+  },
+  "loop_settings": {
+    "max_iterations": 20,
+    "require_clean_git": true,
+    "stop_on_failure": true,
+    "auto_commit": true
+  },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Configure standard test scripts in root and server package manifests",
+      "priority": "P0",
+      "dependencies": [],
+      "target_files": [
+        "package.json",
+        "server/package.json"
+      ],
+      "context": "Vitest 5.0.0 is installed in server/devDependencies with 75 passing unit/regression tests, but neither package.json nor server/package.json defines a 'test' npm script. Currently tests must be invoked via npx --prefix server vitest run.",
+      "description": "Inspect package.json and server/package.json. Add 'test': 'vitest run' and 'test:watch': 'vitest' to server/package.json scripts. Add 'test': 'npm --prefix server test' and 'test:server': 'npm --prefix server test' to root package.json scripts. Do NOT alter any other scripts or dependencies.",
+      "acceptance_criteria": [
+        "Running 'npm test' from the workspace root runs all server vitest suites and exits with code 0.",
+        "Running 'npm test' inside server/ runs all server vitest suites and exits with code 0.",
+        "All existing scripts ('dev', 'dev:server', 'dev:all', 'build', 'lint', 'preview') remain unchanged.",
+        "No dependencies are added or removed in this task."
+      ],
+      "validation": {
+        "commands": [
+          "npm test",
+          "npm run lint"
+        ]
+      },
+      "passes": true,
+      "commit_message": "chore(testing): add test scripts to root and server package manifests [Ralph TASK-001]"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Resolve unused variable warnings in server/test_supabase.ts for zero-warning linting",
+      "priority": "P0",
+      "dependencies": ["TASK-001"],
+      "target_files": [
+        "server/test_supabase.ts"
+      ],
+      "context": "Running 'npm run lint' (oxlint) outputs 4 warnings in server/test_supabase.ts for unused variables ('users', 'projects', 'reports', 'comparisons'). The linter rules enforce clean declarations.",
+      "description": "Inspect server/test_supabase.ts. In the database table probe functions, omit or prefix the unused destructured data variables with '_' (e.g. '{ error: userError }' or '{ data: _users, error: userError }'). Preserve all console.log output messages and table connectivity checks intact.",
+      "acceptance_criteria": [
+        "Running 'npm run lint' completes with 0 errors and 0 warnings across all files.",
+        "Running 'npx tsx server/test_supabase.ts' runs successfully and continues to report status for all 4 tables (users, projects, reports, saved_comparisons).",
+        "No application runtime code or database logic is modified."
+      ],
+      "validation": {
+        "commands": [
+          "npm run lint",
+          "npx tsx server/test_supabase.ts",
+          "npm test"
+        ]
+      },
+      "passes": false,
+      "commit_message": "fix(lint): resolve unused variable warnings in test_supabase.ts [Ralph TASK-002]"
+    },
+    {
+      "id": "TASK-003",
+      "title": "Centralize frontend API base URL configuration and eliminate hardcoded localhost addresses",
+      "priority": "P1",
+      "dependencies": ["TASK-001", "TASK-002"],
+      "target_files": [
+        "src/config/api.ts",
+        "src/services/auth/auth.service.ts",
+        "src/context/AppContext.tsx",
+        "src/pages/ResultsPage.tsx"
+      ],
+      "context": "The frontend currently hardcodes 'http://localhost:5001/api/v1' in auth.service.ts, AppContext.tsx, and ResultsPage.tsx. Vite's config already defines a development proxy forwarding '/api' to 'http://localhost:5001'. Hardcoded localhost breaks staging and production builds.",
+      "description": "Inspect all existing fetch calls in src/services/auth/auth.service.ts, src/context/AppContext.tsx, and src/pages/ResultsPage.tsx. Create a new configuration file 'src/config/api.ts' exporting 'export const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api/v1';'. Replace all hardcoded 'http://localhost:5001/api/v1' occurrences in those 3 files with the imported 'API_BASE'. Do NOT change any request headers, bodies, or response handling.",
+      "acceptance_criteria": [
+        "A grep search for 'http://localhost:5001' across the 'src/' directory returns 0 occurrences.",
+        "The new 'src/config/api.ts' exports 'API_BASE' with fallback to '/api/v1'.",
+        "All authentication, scan initiation, project fetching, report history, and PDF export requests use 'API_BASE'.",
+        "Running 'npm run build' compiles without any TypeScript or bundling errors.",
+        "Running 'npm run lint' passes with 0 errors and 0 warnings."
+      ],
+      "validation": {
+        "commands": [
+          "npm run build",
+          "npm run lint",
+          "npm test"
+        ]
+      },
+      "passes": false,
+      "commit_message": "refactor(client): centralize API base URL and eliminate hardcoded localhost [Ralph TASK-003]"
+    },
+    {
+      "id": "TASK-004",
+      "title": "Remove deprecated MongoDB package from root manifest",
+      "priority": "P1",
+      "dependencies": ["TASK-001", "TASK-002", "TASK-003"],
+      "target_files": [
+        "package.json",
+        "package-lock.json"
+      ],
+      "context": "PerfLens migrated from MongoDB to Supabase PostgreSQL (managed in server/config/supabase.ts). The root package.json still contains 'mongodb: ^7.4.0' as a dependency, which is never imported in src/ or server/.",
+      "description": "Verify using grep that neither src/ nor server/ contains any import from 'mongodb'. Safely uninstall 'mongodb' from the root package.json using 'npm uninstall mongodb'. Verify that package-lock.json is cleanly updated without altering any other dependencies.",
+      "acceptance_criteria": [
+        "The 'mongodb' dependency is completely removed from root package.json and package-lock.json.",
+        "No remaining source files in src/ or server/ reference 'mongodb'.",
+        "Running 'npm test' passes all 75 server tests.",
+        "Running 'npm run build' succeeds.",
+        "Running 'npm run lint' succeeds with 0 warnings."
+      ],
+      "validation": {
+        "commands": [
+          "npm test",
+          "npm run build",
+          "npm run lint"
+        ]
+      },
+      "passes": false,
+      "commit_message": "chore(deps): remove obsolete mongodb package after supabase migration [Ralph TASK-004]"
+    },
+    {
+      "id": "TASK-005",
+      "title": "Implement automated retention cleanup for temporary Puppeteer screenshots",
+      "priority": "P2",
+      "dependencies": ["TASK-001", "TASK-002"],
+      "target_files": [
+        "server/services/puppeteer/screenshots.ts"
+      ],
+      "context": "Puppeteer captures full-page and viewport screenshots to server/temp/ during scans. Currently there is no retention policy, causing screenshot files to accumulate indefinitely on disk.",
+      "description": "Inspect server/services/puppeteer/screenshots.ts. Add an asynchronous, non-blocking helper 'cleanOldScreenshots(maxAgeMs = 3600000)' that reads server/temp/, checks modification times, and removes 'screenshot_*.png' files older than 1 hour. Trigger this helper asynchronously inside 'captureScreenshots' without awaiting it or blocking the screenshot return, catching and silently suppressing any file access errors.",
+      "acceptance_criteria": [
+        "Screenshots are still captured and returned in the exact existing format ('{ fullPagePath, viewportPath }').",
+        "Screenshot files older than 1 hour in server/temp/ are safely unlinked.",
+        "If cleanup fails due to locked files or missing directory, no exception is thrown to callers.",
+        "Running 'npm test' passes all 75 server tests.",
+        "Running 'npm run lint' passes with 0 warnings."
+      ],
+      "validation": {
+        "commands": [
+          "npm test",
+          "npm run lint"
+        ]
+      },
+      "passes": false,
+      "commit_message": "feat(crawler): add non-blocking retention cleanup for temp screenshots [Ralph TASK-005]"
+    },
+    {
+      "id": "TASK-006",
+      "title": "Add dedicated rate limiting protection for heavy website scan endpoint",
+      "priority": "P2",
+      "dependencies": ["TASK-001", "TASK-002"],
+      "target_files": [
+        "server/middlewares/rateLimiter.ts",
+        "server/routes/analysisRoutes.ts"
+      ],
+      "context": "The scan endpoint POST /api/v1/analysis/scan spawns resource-heavy Puppeteer Chrome instances, but currently shares the global API rate limit (100 requests per 15 minutes) with lightweight read endpoints.",
+      "description": "Inspect server/middlewares/rateLimiter.ts and server/routes/analysisRoutes.ts. In rateLimiter.ts, define and export 'scanLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, standardHeaders: true, legacyHeaders: false, message: { success: false, message: 'Too many analysis scans requested from this IP. Please try again after 15 minutes.' } })'. In analysisRoutes.ts, apply 'scanLimiter' specifically to the 'router.post('/scan', ...)' route. Leave general routes under the existing apiLimiter.",
+      "acceptance_criteria": [
+        "POST /api/v1/analysis/scan uses 'scanLimiter' (20 scans per 15 min window per IP).",
+        "Other endpoints in server continue to use standard limits without disruption.",
+        "When the limit is reached, a 429 status code with the specified JSON error response is returned.",
+        "Running 'npm test' passes all 75 server tests.",
+        "Running 'npm run lint' passes with 0 warnings."
+      ],
+      "validation": {
+        "commands": [
+          "npm test",
+          "npm run lint"
+        ]
+      },
+      "passes": false,
+      "commit_message": "feat(security): add dedicated rate limiting for analysis scan endpoint [Ralph TASK-006]"
+    }
+  ]
+}
