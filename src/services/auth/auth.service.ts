@@ -1,6 +1,6 @@
 import type { AuthResponse } from './auth.types';
 
-const API_BASE = 'http://localhost:5001/api/v1';
+import { API_BASE } from '../../config/api';
 
 export const authService = {
   /**
@@ -19,7 +19,7 @@ export const authService = {
         localStorage.setItem(`perflens_name_${data.data.email}`, name);
       }
       return data;
-    } catch (e) {
+    } catch {
       return { success: false, message: 'Server is currently unreachable. Please try again later.' };
     }
   },
@@ -35,7 +35,7 @@ export const authService = {
         body: JSON.stringify({ email, password: pass })
       });
       return await res.json();
-    } catch (e) {
+    } catch {
       return { success: false, message: 'Server is currently unreachable. Please try again later.' };
     }
   },
@@ -52,7 +52,7 @@ export const authService = {
         }
       });
       return await res.json();
-    } catch (e) {
+    } catch {
       return { success: false, message: 'API connection failure.' };
     }
   }

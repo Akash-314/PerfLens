@@ -95,7 +95,7 @@
           "npm test"
         ]
       },
-      "passes": false,
+      "passes": true,
       "commit_message": "refactor(client): centralize API base URL and eliminate hardcoded localhost [Ralph TASK-003]"
     },
     {

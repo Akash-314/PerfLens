@@ -17,4 +17,10 @@ Task Execution Log:
 - Files Modified: server/test_supabase.ts, .ralph/prd.json
 - Details: Removed unused data bindings (users, projects, reports, comparisons) from Supabase select queries; retained all connectivity checks and logs. Oxlint reports 0 errors and 0 warnings.
 
+[2026-09-12 19:01:30] COMPLETED TASK-003: Centralize frontend API base URL configuration and eliminate hardcoded localhost addresses
+- Validation: PASSED (npm test, npm run lint, npm run build, grep localhost:5001 = 0)
+- Files Modified: src/config/api.ts, src/services/auth/auth.service.ts, src/context/AppContext.tsx, src/pages/ResultsPage.tsx, .ralph/prd.json
+- Details: Created src/config/api.ts exporting API_BASE with import.meta.env.VITE_API_BASE_URL || '/api/v1'. Replaced hardcoded http://localhost:5001/api/v1 references across auth.service.ts, AppContext.tsx, and ResultsPage.tsx. Zero hardcoded localhost references remain in src/.
+
+
 

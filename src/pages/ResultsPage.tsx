@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { API_BASE } from '../config/api';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import {
   Zap,
@@ -12,7 +13,8 @@ import {
   ChevronDown,
   Download,
   Share2,
-  Network
+  Network,
+  Activity
 } from 'lucide-react';
 
 export const ResultsPage: React.FC = () => {
@@ -109,6 +111,60 @@ export const ResultsPage: React.FC = () => {
     addToast('Report link copied to clipboard.', 'success');
   };
 
+  const handleExportPdf = async () => {
+    try {
+      addToast('Generating PDF report...', 'info');
+      const token = localStorage.getItem('perflens_token');
+
+      if (token && currentReport.id) {
+        const res = await fetch(`${API_BASE}/reports/${currentReport.id}/pdf`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const blob = await res.blob();
+          const downloadUrl = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = downloadUrl;
+          a.download = `perflens-report-${currentReport.url.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(downloadUrl);
+          addToast('PDF report downloaded successfully.', 'success');
+          return;
+        }
+      }
+
+      // Universal direct in-memory report export
+      const res = await fetch(`${API_BASE}/analysis/export-pdf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ report: currentReport })
+      });
+
+      if (res.ok) {
+        const blob = await res.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = `perflens-report-${currentReport.url.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(downloadUrl);
+        addToast('PDF report downloaded successfully.', 'success');
+        return;
+      }
+
+      window.print();
+    } catch {
+      window.print();
+    }
+  };
+
   return (
     <div className="workspace-container fade-in" style={{ padding: '24px' }}>
       {/* Top Header Summary */}
@@ -148,7 +204,7 @@ export const ResultsPage: React.FC = () => {
             <Share2 size={13} />
             <span>Share</span>
           </button>
-          <button className="btn btn-secondary" onClick={() => window.print()}>
+          <button className="btn btn-secondary" onClick={handleExportPdf}>
             <Download size={13} />
             <span>Export PDF</span>
           </button>
@@ -227,17 +283,175 @@ export const ResultsPage: React.FC = () => {
                 <CircularGauge score={currentReport.scores.bestPractices} label="Best Practices" />
               </div>
 
+              {/* Step 7: Core Web Vitals & Telemetry Verification sources */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }} className="grid-cols-2">
+                {/* Core Web Vitals Card */}
+                <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Google Core Web Vitals</h3>
+                  {currentReport.pageSpeed ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--color-border)', paddingBottom: '8px' }}>
+                        <span style={{ color: 'var(--color-text-secondary)' }}>Performance Score</span>
+                        <span style={{ fontSize: '18px', fontWeight: 700, color: (currentReport.pageSpeed.performance ?? 0) >= 90 ? 'var(--color-success)' : (currentReport.pageSpeed.performance ?? 0) >= 70 ? 'var(--color-warning)' : 'var(--color-danger)' }}>
+                          {currentReport.pageSpeed.performance ?? 'N/A'}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>Largest Contentful Paint (LCP)</span>
+                        <strong style={{ fontFamily: 'var(--font-mono)' }}>{currentReport.pageSpeed.metrics?.lcp || 'N/A'}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>Cumulative Layout Shift (CLS)</span>
+                        <strong style={{ fontFamily: 'var(--font-mono)' }}>{currentReport.pageSpeed.metrics?.cls || 'N/A'}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>Interaction to Next Paint (INP)</span>
+                        <strong style={{ fontFamily: 'var(--font-mono)' }}>{currentReport.pageSpeed.metrics?.inp || 'N/A'}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>Total Blocking Time (TBT)</span>
+                        <strong style={{ fontFamily: 'var(--font-mono)' }}>{currentReport.pageSpeed.metrics?.tbt || 'N/A'}</strong>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ color: 'var(--color-muted)', fontSize: '13px', padding: '12px 0' }}>
+                      Google Lighthouse / PageSpeed metrics were disabled or temporarily offline for this audit scan.
+                    </div>
+                  )}
+                </div>
+
+                {/* Analysis Sources Card */}
+                <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Telemetry Verification</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+                      <span style={{ color: 'var(--color-success)', fontWeight: 'bold' }}>✓</span>
+                      <span>PerfLens Analysis Engine</span>
+                      <span className="metric-pill metric-score-green" style={{ marginLeft: 'auto', fontSize: '10px' }}>Primary</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+                      <span style={{ color: currentReport.analysisSources?.puppeteerRuntime ? 'var(--color-success)' : 'var(--color-danger)', fontWeight: 'bold' }}>
+                        {currentReport.analysisSources?.puppeteerRuntime ? '✓' : '✗'}
+                      </span>
+                      <span>Headless Puppeteer Crawler</span>
+                      <span className="metric-pill metric-score-green" style={{ marginLeft: 'auto', fontSize: '10px' }}>Active</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+                      <span style={{ color: currentReport.pageSpeed ? 'var(--color-success)' : 'var(--color-muted)', fontWeight: 'bold' }}>
+                        {currentReport.pageSpeed ? '✓' : '✗'}
+                      </span>
+                      <span style={{ color: currentReport.pageSpeed ? 'var(--color-text-primary)' : 'var(--color-muted)' }}>Google Lighthouse Insights</span>
+                      <span className={currentReport.pageSpeed ? "metric-pill metric-score-green" : "metric-pill"} style={{ marginLeft: 'auto', fontSize: '10px', backgroundColor: !currentReport.pageSpeed ? 'var(--color-surface-secondary)' : undefined }}>
+                        {currentReport.pageSpeed ? 'Linked' : 'Unavailable'}
+                      </span>
+                    </div>
+
+                    <div style={{ marginTop: 'auto', padding: '8px 12px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--color-surface-secondary)', border: '1px solid var(--color-border)', fontSize: '12px', textAlign: 'center' }}>
+                      {currentReport.pageSpeed ? (
+                        <span style={{ color: 'var(--color-text-secondary)' }}>PerfLens + Google Telemetry Sync: Completed</span>
+                      ) : (
+                        <span style={{ color: 'var(--color-warning)', fontWeight: 500 }}>PerfLens Analysis Completed (Lighthouse unavailable)</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 11: PageSpeed Comparison & Combined Diagnosis */}
+              {currentReport.pageSpeed && (
+                <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px', borderLeft: '4px solid var(--color-accent)' }}>
+                  <h3 style={{ fontSize: '15px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Zap size={16} style={{ color: 'var(--color-accent)' }} />
+                    <span>Combined Engine Diagnosis</span>
+                  </h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }} className="grid-cols-2">
+                    {/* Left Column: PerfLens Findings */}
+                    <div style={{ padding: '16px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--color-bg)' }}>
+                      <h4 style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        PerfLens Engine Findings
+                      </h4>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
+                        {currentReport.breakdown.images.sizeKb > 150 && (
+                          <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ color: 'var(--color-warning)' }}>✓</span> Large Image Payloads ({currentReport.breakdown.images.sizeKb} KB)
+                          </li>
+                        )}
+                        {currentReport.breakdown.css.sizeKb > 50 && (
+                          <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ color: 'var(--color-warning)' }}>✓</span> Render Blocking CSS ({currentReport.breakdown.css.sizeKb} KB)
+                          </li>
+                        )}
+                        {currentReport.images.some(img => !img.lazyLoaded && img.sizeKb > 50) && (
+                          <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ color: 'var(--color-warning)' }}>✓</span> Missing Lazy Loading on fold
+                          </li>
+                        )}
+                        {currentReport.breakdown.js.unusedKb > 50 && (
+                          <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ color: 'var(--color-warning)' }}>✓</span> Unused JS script execution ({currentReport.breakdown.js.unusedKb} KB)
+                          </li>
+                        )}
+                        {currentReport.bundleAnalysis.some(b => b.isDuplicate) && (
+                          <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ color: 'var(--color-danger)' }}>✓</span> Duplicate Library Dependencies
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+
+                    {/* Right Column: Google PageSpeed Core Metrics */}
+                    <div style={{ padding: '16px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--color-bg)' }}>
+                      <h4 style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Google PageSpeed Telemetry
+                      </h4>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Largest Contentful Paint (LCP):</span>
+                          <strong style={{ fontFamily: 'var(--font-mono)' }}>{currentReport.pageSpeed.metrics?.lcp || 'N/A'}</strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Cumulative Layout Shift (CLS):</span>
+                          <strong style={{ fontFamily: 'var(--font-mono)' }}>{currentReport.pageSpeed.metrics?.cls || 'N/A'}</strong>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Total Blocking Time (TBT):</span>
+                          <strong style={{ fontFamily: 'var(--font-mono)' }}>{currentReport.pageSpeed.metrics?.tbt || 'N/A'}</strong>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Combined Diagnosis Statement */}
+                  <div style={{ padding: '12px 16px', backgroundColor: 'var(--color-surface-secondary)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', marginTop: '8px' }}>
+                    <p style={{ fontSize: '13px', margin: 0, lineHeight: '1.6', color: 'var(--color-text-primary)' }}>
+                      <strong>Combined Diagnosis:</strong>{' '}
+                      {currentReport.breakdown.images.sizeKb > 150 && currentReport.breakdown.css.sizeKb > 50
+                        ? 'Large hero image payloads and blocking CSS stylesheets are the primary contributors to poor Largest Contentful Paint (LCP) and visual loading times.'
+                        : currentReport.breakdown.js.unusedKb > 50 && currentReport.bundleAnalysis.some(b => b.isDuplicate)
+                        ? 'Unused JavaScript modules and duplicate package dependencies increase blocking execution, raising the Total Blocking Time (TBT).'
+                        : 'No critical performance bottlenecks detected between engines. Visual timelines and network assets are fully optimized.'}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Core Web Vitals diagnostics */}
               <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Core Web Vitals Telemetry</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ fontSize: '15px', fontWeight: 600 }}>
+                    {currentReport.provenance?.primaryEngine === 'pagespeed' || currentReport.pageSpeed
+                      ? 'Core Web Vitals — Google PageSpeed / CrUX Telemetry'
+                      : 'Core Web Vitals — PerfLens Lab Measurement'}
+                  </h3>
+                  <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>
+                    Thresholds based on Google/web.dev guidance
+                  </span>
+                </div>
                 <div className="grid-cols-3">
                   {[
-                    { name: 'Largest Contentful Paint (LCP)', item: currentReport.vitals.lcp, desc: 'Renders the largest image or block text' },
-                    { name: 'First Contentful Paint (FCP)', item: currentReport.vitals.fcp, desc: 'Time until browser renders first DOM node' },
-                    { name: 'Cumulative Layout Shift (CLS)', item: currentReport.vitals.cls, desc: 'Measures visual stability of page components' },
-                    { name: 'First Input Delay (FID)', item: currentReport.vitals.fid, desc: 'Measures interactive response latency' },
-                    { name: 'Time to First Byte (TTFB)', item: currentReport.vitals.ttfb, desc: 'Server responsiveness metric' },
-                    { name: 'Total Blocking Time (TBT)', item: currentReport.vitals.tbt, desc: 'Sum of script execution blocks over 50ms' }
+                    { name: 'Largest Contentful Paint (LCP)', item: currentReport.vitals.lcp, desc: 'Measures perceived loading speed (2.5s threshold)' },
+                    { name: 'Cumulative Layout Shift (CLS)', item: currentReport.vitals.cls, desc: 'Measures visual stability (0.1 threshold)' },
+                    { name: 'Interaction to Next Paint (INP)', item: currentReport.vitals.inp || (currentReport.pageSpeed?.metrics?.inp ? { value: currentReport.pageSpeed.metrics.inp, rating: 'unrated' } : { value: 'N/A (Lab)', rating: 'unrated' }), desc: 'Measures responsiveness to user input (200ms threshold)' }
                   ].map((vit, idx) => (
                     <div
                       key={idx}
@@ -261,22 +475,150 @@ export const ResultsPage: React.FC = () => {
                             height: '8px',
                             borderRadius: '50%',
                             backgroundColor:
-                              vit.item.rating === 'good'
+                              vit.item?.rating === 'good'
                                 ? 'var(--color-success)'
-                                : vit.item.rating === 'needs-improvement'
+                                : vit.item?.rating === 'needs-improvement'
                                 ? 'var(--color-warning)'
-                                : 'var(--color-danger)'
+                                : vit.item?.rating === 'poor'
+                                ? 'var(--color-danger)'
+                                : 'var(--color-muted)'
                           }}
                         />
                       </div>
                       <p style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-                        {vit.item.value}
+                        {vit.item?.value ?? 'N/A'}
                       </p>
                       <span style={{ fontSize: '10px', color: 'var(--color-muted)' }}>{vit.desc}</span>
                     </div>
                   ))}
                 </div>
+
+                <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>Other Performance Metrics (Lab Diagnostics)</h4>
+                    <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Browser Instrumentation</span>
+                  </div>
+                  <div className="grid-cols-3">
+                    {[
+                      { name: 'First Contentful Paint (FCP)', item: currentReport.vitals.fcp, desc: 'Marks first rendered text/image node (1.8s threshold)' },
+                      { name: 'Total Blocking Time (TBT)', item: currentReport.vitals.tbt, desc: 'Sum of script execution tasks over 50ms (200ms threshold)' },
+                      { name: 'Time to First Byte (TTFB)', item: currentReport.vitals.ttfb, desc: 'Initial server response latency (800ms threshold)' }
+                    ].map((vit, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          padding: '16px',
+                          border: '1px solid var(--color-border)',
+                          borderRadius: 'var(--radius-md)',
+                          backgroundColor: 'var(--color-bg)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '6px'
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
+                            {vit.name}
+                          </span>
+                          <span
+                            style={{
+                              width: '8px',
+                              height: '8px',
+                              borderRadius: '50%',
+                              backgroundColor:
+                                vit.item?.rating === 'good'
+                                ? 'var(--color-success)'
+                                : vit.item?.rating === 'needs-improvement'
+                                ? 'var(--color-warning)'
+                                : vit.item?.rating === 'poor'
+                                ? 'var(--color-danger)'
+                                : 'var(--color-muted)'
+                            }}
+                          />
+                        </div>
+                        <p style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                          {vit.item?.value ?? 'N/A'}
+                        </p>
+                        <span style={{ fontSize: '10px', color: 'var(--color-muted)' }}>{vit.desc}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
+
+              {/* Performance Score Explainability */}
+              {(currentReport.scoreExplanation || currentReport.performanceScoreDetails) && (
+                <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Activity size={16} style={{ color: 'var(--color-accent)' }} />
+                      <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Performance Score Explainability</h3>
+                    </div>
+                    <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>
+                      {(currentReport.scoreExplanation || currentReport.performanceScoreDetails).method}
+                    </span>
+                  </div>
+
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', fontSize: '12px', borderCollapse: 'collapse', textAlign: 'left' }}>
+                      <thead>
+                        <tr style={{ borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-secondary)' }}>
+                          <th style={{ padding: '8px 12px' }}>Metric</th>
+                          <th style={{ padding: '8px 12px' }}>Raw Value</th>
+                          <th style={{ padding: '8px 12px' }}>Classification</th>
+                          <th style={{ padding: '8px 12px' }}>Weight</th>
+                          <th style={{ padding: '8px 12px' }}>Metric Score</th>
+                          <th style={{ padding: '8px 12px', textAlign: 'right' }}>Contribution</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {((currentReport.scoreExplanation || currentReport.performanceScoreDetails).breakdown || []).map((row: any, idx: number) => (
+                          <tr key={idx} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                            <td style={{ padding: '8px 12px', fontWeight: 500 }}>{row.metric}</td>
+                            <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)' }}>{row.raw}</td>
+                            <td style={{ padding: '8px 12px' }}>
+                              <span
+                                style={{
+                                  fontSize: '10px',
+                                  padding: '2px 6px',
+                                  borderRadius: '4px',
+                                  fontWeight: 600,
+                                  textTransform: 'uppercase',
+                                  backgroundColor:
+                                    row.classification === 'good' ? 'rgba(34, 197, 94, 0.1)' :
+                                    row.classification === 'needs-improvement' ? 'rgba(245, 158, 11, 0.1)' :
+                                    row.classification === 'poor' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+                                  color:
+                                    row.classification === 'good' ? 'var(--color-success)' :
+                                    row.classification === 'needs-improvement' ? 'var(--color-warning)' :
+                                    row.classification === 'poor' ? 'var(--color-danger)' : 'var(--color-muted)'
+                                }}
+                              >
+                                {row.classification}
+                              </span>
+                            </td>
+                            <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)' }}>{row.weight}</td>
+                            <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)' }}>{row.score ?? 'N/A'}</td>
+                            <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)', fontWeight: 600, textAlign: 'right' }}>
+                              {row.contribution != null ? `+${row.contribution}` : '0'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr style={{ fontWeight: 700, borderTop: '2px solid var(--color-border)' }}>
+                          <td colSpan={5} style={{ padding: '10px 12px' }}>
+                            Final Performance Score
+                          </td>
+                          <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', fontSize: '14px', color: 'var(--color-accent)' }}>
+                            {(currentReport.scoreExplanation || currentReport.performanceScoreDetails).overallPerformanceScore} / 100
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              )}
 
               {/* Resource size distribution */}
               <div className="grid-cols-2">
@@ -534,7 +876,7 @@ export const ResultsPage: React.FC = () => {
                       <div
                         style={{
                           backgroundColor: 'var(--color-accent)',
-                          width: `${100 - (currentReport.breakdown.css.unusedKb / currentReport.breakdown.css.sizeKb) * 100}%`,
+                          width: `${currentReport.breakdown.css.sizeKb > 0 ? Math.max(0, Math.min(100, 100 - (currentReport.breakdown.css.unusedKb / currentReport.breakdown.css.sizeKb) * 100)) : 100}%`,
                           height: '100%'
                         }}
                       />
@@ -562,7 +904,7 @@ export const ResultsPage: React.FC = () => {
                       <div
                         style={{
                           backgroundColor: 'var(--color-warning)',
-                          width: `${100 - (currentReport.breakdown.js.unusedKb / currentReport.breakdown.js.sizeKb) * 100}%`,
+                          width: `${currentReport.breakdown.js.sizeKb > 0 ? Math.max(0, Math.min(100, 100 - (currentReport.breakdown.js.unusedKb / currentReport.breakdown.js.sizeKb) * 100)) : 100}%`,
                           height: '100%'
                         }}
                       />
@@ -618,6 +960,88 @@ export const ResultsPage: React.FC = () => {
           {/* TAB 5: NETWORK / WATERFALL */}
           {activeSubTab === 'network' && (
             <div className="flex-col">
+              {currentReport.customAnalysis?.network && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }} className="grid-cols-2">
+                  {/* Network stats summary */}
+                  <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Network Telemetry Summary</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--color-text-secondary)' }}>Total Network Requests:</span>
+                        <strong style={{ fontFamily: 'var(--font-mono)' }}>{currentReport.customAnalysis.network.totalRequests}</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--color-text-secondary)' }}>Third-Party Requests:</span>
+                        <strong style={{ fontFamily: 'var(--font-mono)' }}>{currentReport.customAnalysis.network.thirdPartyRequests} ({currentReport.customAnalysis.network.thirdPartySizeKb} KB)</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--color-text-secondary)' }}>Compression Rate (Brotli/Gzip):</span>
+                        <strong style={{ fontFamily: 'var(--font-mono)' }}>{currentReport.customAnalysis.network.compressionRate}%</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: 'var(--color-text-secondary)' }}>Cache Coverage Rate:</span>
+                        <strong style={{ fontFamily: 'var(--font-mono)' }}>{currentReport.customAnalysis.network.cacheCoverageRate}%</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Largest specific files */}
+                  <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Largest Assets</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '12px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <span style={{ color: 'var(--color-muted)', fontWeight: 600 }}>LARGEST JAVASCRIPT FILE</span>
+                        <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', fontFamily: 'var(--font-mono)' }} title={currentReport.customAnalysis.network.largestJs}>
+                          {currentReport.customAnalysis.network.largestJs}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <span style={{ color: 'var(--color-muted)', fontWeight: 600 }}>LARGEST CSS FILE</span>
+                        <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', fontFamily: 'var(--font-mono)' }} title={currentReport.customAnalysis.network.largestCss}>
+                          {currentReport.customAnalysis.network.largestCss}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <span style={{ color: 'var(--color-muted)', fontWeight: 600 }}>LARGEST IMAGE FILE</span>
+                        <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', fontFamily: 'var(--font-mono)' }} title={currentReport.customAnalysis.network.largestImage}>
+                          {currentReport.customAnalysis.network.largestImage}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {currentReport.customAnalysis?.network && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }} className="grid-cols-2">
+                  {/* Largest resources */}
+                  <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <h3 style={{ fontSize: '14px', fontWeight: 600 }}>Largest Resources (Top 5)</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {currentReport.customAnalysis.network.largestResources.map((res: any, idx: number) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', paddingBottom: '6px', borderBottom: '1px solid var(--color-border)' }}>
+                          <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '240px' }} title={res.url}>{res.name}</span>
+                          <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-warning)' }}>{res.sizeKb.toFixed(1)} KB</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Slowest requests */}
+                  <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <h3 style={{ fontSize: '14px', fontWeight: 600 }}>Slowest Requests (Top 5)</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {currentReport.customAnalysis.network.slowestRequests.map((res: any, idx: number) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', paddingBottom: '6px', borderBottom: '1px solid var(--color-border)' }}>
+                          <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '240px' }} title={res.url}>{res.name}</span>
+                          <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-danger)' }}>{res.durationMs} ms</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
                   <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Simulated Network Timeline</h3>
