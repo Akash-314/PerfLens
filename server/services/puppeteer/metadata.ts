@@ -44,6 +44,10 @@ export const extractMetadata = async (page: Page, initialUrl: string) => {
   const htmlContent = await page.content();
   const htmlSizeKb = parseFloat((Buffer.byteLength(htmlContent, 'utf8') / 1024).toFixed(1));
 
+  const inlineCSSCount = await page.evaluate(() => {
+    return document.querySelectorAll('style').length;
+  });
+
   // Passive check robots.txt and sitemap.xml targets
   let hasRobotsTxt = false;
   let hasSitemapXml = false;
@@ -55,7 +59,7 @@ export const extractMetadata = async (page: Page, initialUrl: string) => {
     // Set low timeout to keep scans quick
     const robotsCheck = await axios.get(`${origin}/robots.txt`, { timeout: 3000, validateStatus: () => true });
     hasRobotsTxt = robotsCheck.status === 200;
-  } catch (_) {
+  } catch {
     // Suppress errors, default false
   }
 
@@ -64,7 +68,7 @@ export const extractMetadata = async (page: Page, initialUrl: string) => {
     const origin = parsed.origin;
     const sitemapCheck = await axios.get(`${origin}/sitemap.xml`, { timeout: 3000, validateStatus: () => true });
     hasSitemapXml = sitemapCheck.status === 200;
-  } catch (_) {
+  } catch {
     // Suppress errors, default false
   }
 
@@ -80,6 +84,7 @@ export const extractMetadata = async (page: Page, initialUrl: string) => {
     faviconUrl,
     manifestUrl,
     hasRobotsTxt,
-    hasSitemapXml
+    hasSitemapXml,
+    inlineCSSCount
   };
 };

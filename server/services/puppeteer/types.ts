@@ -1,3 +1,13 @@
+export interface ResourceTimingBreakdown {
+  dnsMs: number | null;
+  tcpMs: number | null;
+  tlsMs: number | null;
+  ttfbMs: number | null;
+  downloadMs: number | null;
+  startTimeMs: number | null;
+  durationMs: number | null;
+}
+
 export interface ResourceItem {
   url: string;
   type: 'html' | 'js' | 'css' | 'image' | 'font' | 'xhr' | 'fetch' | 'document' | 'media' | 'other';
@@ -6,9 +16,13 @@ export interface ResourceItem {
   contentType: string;
   transferSizeKb: number;
   cacheControl: string;
-  durationMs: number;
+  durationMs: number | null;
   compression: 'gzip' | 'brotli' | 'none';
   httpVersion: string;
+  fromCache?: boolean;
+  initiator?: string | null;
+  startTimeMs?: number | null;
+  timingBreakdown?: ResourceTimingBreakdown | null;
 }
 
 export interface PuppeteerScanResult {
@@ -36,6 +50,18 @@ export interface PuppeteerScanResult {
       tbt: number | null;
       ttfb: number | null;
     };
+    navigationDiagnostics?: {
+      hasNavEntry: boolean;
+      navigationType: string;
+      requestStart: number;
+      responseStart: number;
+      responseEnd: number;
+      transferSize: number;
+      encodedBodySize: number;
+      fromCache: boolean;
+      calculatedTtfbMs: number | null;
+      unmeasurableReason?: string | null;
+    };
   };
   resources: ResourceItem[];
   network: {
@@ -62,5 +88,15 @@ export interface PuppeteerScanResult {
     fullPagePath: string;
     viewportPath: string;
   };
+  cssCoverage?: any[];
+  jsCoverage?: any[];
+  domStylesheets?: any[];
+  imageAnalysis?: any;
+  cssAnalysis?: any;
+  jsAnalysis?: any;
+  seoAnalysis?: any;
+  accessibilityAnalysis?: any;
+  browserVersion?: string;
+  debugLogs?: any;
   errors: string[];
 }

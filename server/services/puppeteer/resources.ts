@@ -13,7 +13,7 @@ export class NetworkTracker {
    * @param {Page} page - Active Puppeteer tab page
    */
   startTracking(page: Page) {
-    page.on('response', (response) => {
+    page.on('response', async (response) => {
       try {
         const req = response.request();
         const url = response.url();
@@ -39,7 +39,7 @@ export class NetworkTracker {
         else if (resType === 'media') type = 'media';
 
         const contentLength = headers['content-length'] ? parseInt(headers['content-length'], 10) : 0;
-        const sizeKb = contentLength > 0 ? parseFloat((contentLength / 1024).toFixed(1)) : 15.0; // fallback default estimation
+        let sizeKb = contentLength > 0 ? parseFloat((contentLength / 1024).toFixed(1)) : 0;
 
         // Determine content-encodings
         let compression: 'gzip' | 'brotli' | 'none' = 'none';
@@ -50,23 +50,73 @@ export class NetworkTracker {
           compression = 'gzip';
         }
 
-        // Deduce timing
+        // Deduce timing without fabricating numbers
         const timing = response.timing();
-        const durationMs = timing ? Math.round(timing.receiveHeadersEnd) : 100;
+        let durationMs: number | null = null;
+        let startTimeMs: number | null = null;
+        let timingBreakdown: any = null;
 
-        this.resources.push({
+        if (timing) {
+          durationMs = timing.receiveHeadersEnd > 0 ? Math.round(timing.receiveHeadersEnd) : null;
+          startTimeMs = timing.requestTime ? Math.round(timing.requestTime * 1000) : null;
+
+          const dnsMs = (timing.dnsEnd >= 0 && timing.dnsStart >= 0) ? Math.max(0, Math.round(timing.dnsEnd - timing.dnsStart)) : null;
+          const tcpMs = (timing.connectEnd >= 0 && timing.connectStart >= 0) ? Math.max(0, Math.round(timing.connectEnd - timing.connectStart)) : null;
+          const tlsMs = (timing.sslEnd >= 0 && timing.sslStart >= 0) ? Math.max(0, Math.round(timing.sslEnd - timing.sslStart)) : null;
+          const ttfbMs = (timing.receiveHeadersEnd >= 0 && timing.sendEnd >= 0) ? Math.max(0, Math.round(timing.receiveHeadersEnd - timing.sendEnd)) : null;
+          const downloadMs = (timing.receiveHeadersEnd >= 0 && timing.receiveHeadersStart >= 0) ? Math.max(0, Math.round(timing.receiveHeadersEnd - timing.receiveHeadersStart)) : null;
+
+          timingBreakdown = {
+            dnsMs,
+            tcpMs,
+            tlsMs,
+            ttfbMs,
+            downloadMs,
+            startTimeMs,
+            durationMs
+          };
+        }
+
+        const fromCache = typeof (response as any).fromCache === 'function' ? (response as any).fromCache() : response.status() === 304;
+        const initiatorObj = typeof (req as any).initiator === 'function' ? (req as any).initiator() : null;
+        const initiator = initiatorObj?.type || null;
+
+        const httpVersion = typeof (response as any).protocol === 'function' ? (response as any).protocol().toUpperCase() : 'HTTP/1.1';
+
+        const resourceItem: ResourceItem = {
           url,
           type,
-          sizeKb,
+          sizeKb: sizeKb > 0 ? sizeKb : 0.5, // placeholder until buffer resolves if chunked
           statusCode: response.status(),
           contentType,
-          transferSizeKb: sizeKb,
+          transferSizeKb: fromCache ? 0 : (sizeKb > 0 ? sizeKb : 0.5),
           cacheControl,
-          durationMs: durationMs > 0 ? durationMs : 100,
+          durationMs,
           compression,
-          httpVersion: 'HTTP/2'
-        });
-      } catch (_) {
+          httpVersion,
+          fromCache,
+          initiator,
+          startTimeMs,
+          timingBreakdown
+        };
+
+        this.resources.push(resourceItem);
+
+        // If content-length was missing, try buffering response asynchronously to get real size
+        if (sizeKb === 0) {
+          const status = response.status();
+          // Only attempt to buffer successful 2xx responses that are not redirects
+          if (status >= 200 && status < 300) {
+            response.buffer().then((buffer) => {
+              const realSize = parseFloat((buffer.byteLength / 1024).toFixed(1));
+              resourceItem.sizeKb = realSize;
+              resourceItem.transferSizeKb = realSize;
+            }).catch(() => {
+              // Fail silently, leave at placeholder size
+            });
+          }
+        }
+      } catch {
         // Suppress errors during parallel stream shutdowns
       }
     });
@@ -92,3 +142,4 @@ export class NetworkTracker {
     return this.failedCount;
   }
 }
+
