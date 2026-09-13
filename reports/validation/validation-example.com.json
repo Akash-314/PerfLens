@@ -1,0 +1,2125 @@
+{
+  "url": "example.com",
+  "version": "2.0",
+  "status": "success",
+  "duration": 0,
+  "createdAt": "2026-09-13T19:54:50.889Z",
+  "scores": {
+    "overall": 93,
+    "performance": 100,
+    "accessibility": 96,
+    "seo": 80,
+    "bestPractices": 96,
+    "explanation": {
+      "finalScore": 100,
+      "overallPerformanceScore": 100,
+      "source": "lighthouse",
+      "method": "Google Lighthouse Performance Audit",
+      "formula": "Performance Score = (LCP * 0.25) + (TBT * 0.30) + (CLS * 0.25) + (FCP * 0.10) + (SI * 0.10)",
+      "breakdown": [
+        {
+          "name": "Largest Contentful Paint",
+          "metric": "Largest Contentful Paint",
+          "raw": "0.8 s",
+          "classification": "good",
+          "score": 100,
+          "weight": 0.25,
+          "weightFormatted": "25%",
+          "normalizedWeight": 0.25,
+          "contribution": 25,
+          "available": true,
+          "isCoreVital": true,
+          "category": "core-web-vital"
+        },
+        {
+          "name": "Interaction to Next Paint",
+          "metric": "Interaction to Next Paint",
+          "raw": "N/A",
+          "classification": "unrated",
+          "score": null,
+          "weight": 0,
+          "weightFormatted": "0%",
+          "normalizedWeight": 0,
+          "contribution": null,
+          "available": false,
+          "isCoreVital": true,
+          "category": "core-web-vital",
+          "note": "CrUX Field Core Web Vital; not included in lab performance formula"
+        },
+        {
+          "name": "Cumulative Layout Shift",
+          "metric": "Cumulative Layout Shift",
+          "raw": "0",
+          "classification": "good",
+          "score": 100,
+          "weight": 0.25,
+          "weightFormatted": "25%",
+          "normalizedWeight": 0.25,
+          "contribution": 25,
+          "available": true,
+          "isCoreVital": true,
+          "category": "core-web-vital"
+        },
+        {
+          "name": "Total Blocking Time",
+          "metric": "Total Blocking Time",
+          "raw": "0 ms",
+          "classification": "good",
+          "score": 100,
+          "weight": 0.3,
+          "weightFormatted": "30%",
+          "normalizedWeight": 0.3,
+          "contribution": 30,
+          "available": true,
+          "isCoreVital": false,
+          "category": "other-performance-metric"
+        },
+        {
+          "name": "First Contentful Paint",
+          "metric": "First Contentful Paint",
+          "raw": "0.8 s",
+          "classification": "good",
+          "score": 100,
+          "weight": 0.1,
+          "weightFormatted": "10%",
+          "normalizedWeight": 0.1,
+          "contribution": 10,
+          "available": true,
+          "isCoreVital": false,
+          "category": "other-performance-metric"
+        },
+        {
+          "name": "Speed Index",
+          "metric": "Speed Index",
+          "raw": "0.8 s",
+          "classification": "good",
+          "score": 100,
+          "weight": 0.1,
+          "weightFormatted": "10%",
+          "normalizedWeight": 0.1,
+          "contribution": 10,
+          "available": true,
+          "isCoreVital": false,
+          "category": "other-performance-metric"
+        },
+        {
+          "name": "Time to First Byte",
+          "metric": "Time to First Byte",
+          "raw": "1ms",
+          "classification": "good",
+          "score": 100,
+          "weight": 0,
+          "weightFormatted": "0%",
+          "normalizedWeight": 0,
+          "contribution": null,
+          "available": true,
+          "isCoreVital": false,
+          "category": "other-performance-metric",
+          "note": "Diagnostic metric; not included in lab performance formula"
+        }
+      ],
+      "metrics": {
+        "lcp": {
+          "name": "Largest Contentful Paint",
+          "metric": "Largest Contentful Paint",
+          "raw": "0.8 s",
+          "classification": "good",
+          "score": 100,
+          "weight": 0.25,
+          "weightFormatted": "25%",
+          "normalizedWeight": 0.25,
+          "contribution": 25,
+          "available": true,
+          "isCoreVital": true,
+          "category": "core-web-vital"
+        },
+        "tbt": {
+          "name": "Total Blocking Time",
+          "metric": "Total Blocking Time",
+          "raw": "0 ms",
+          "classification": "good",
+          "score": 100,
+          "weight": 0.3,
+          "weightFormatted": "30%",
+          "normalizedWeight": 0.3,
+          "contribution": 30,
+          "available": true,
+          "isCoreVital": false,
+          "category": "other-performance-metric"
+        },
+        "cls": {
+          "name": "Cumulative Layout Shift",
+          "metric": "Cumulative Layout Shift",
+          "raw": "0",
+          "classification": "good",
+          "score": 100,
+          "weight": 0.25,
+          "weightFormatted": "25%",
+          "normalizedWeight": 0.25,
+          "contribution": 25,
+          "available": true,
+          "isCoreVital": true,
+          "category": "core-web-vital"
+        },
+        "fcp": {
+          "name": "First Contentful Paint",
+          "metric": "First Contentful Paint",
+          "raw": "0.8 s",
+          "classification": "good",
+          "score": 100,
+          "weight": 0.1,
+          "weightFormatted": "10%",
+          "normalizedWeight": 0.1,
+          "contribution": 10,
+          "available": true,
+          "isCoreVital": false,
+          "category": "other-performance-metric"
+        },
+        "speedIndex": {
+          "name": "Speed Index",
+          "metric": "Speed Index",
+          "raw": "0.8 s",
+          "classification": "good",
+          "score": 100,
+          "weight": 0.1,
+          "weightFormatted": "10%",
+          "normalizedWeight": 0.1,
+          "contribution": 10,
+          "available": true,
+          "isCoreVital": false,
+          "category": "other-performance-metric"
+        },
+        "inp": {
+          "name": "Interaction to Next Paint",
+          "metric": "Interaction to Next Paint",
+          "raw": "N/A",
+          "classification": "unrated",
+          "score": null,
+          "weight": 0,
+          "weightFormatted": "0%",
+          "normalizedWeight": 0,
+          "contribution": null,
+          "available": false,
+          "isCoreVital": true,
+          "category": "core-web-vital",
+          "note": "CrUX Field Core Web Vital; not included in lab performance formula"
+        },
+        "ttfb": {
+          "name": "Time to First Byte",
+          "metric": "Time to First Byte",
+          "raw": "1ms",
+          "classification": "good",
+          "score": 100,
+          "weight": 0,
+          "weightFormatted": "0%",
+          "normalizedWeight": 0,
+          "contribution": null,
+          "available": true,
+          "isCoreVital": false,
+          "category": "other-performance-metric",
+          "note": "Diagnostic metric; not included in lab performance formula"
+        }
+      }
+    }
+  },
+  "vitals": {
+    "fcp": {
+      "score": 96,
+      "value": "0.8 s",
+      "rawValue": 0.8,
+      "normalizedValueMs": 800,
+      "unit": "s",
+      "rating": "good",
+      "source": "lighthouse",
+      "mode": "lab",
+      "available": true
+    },
+    "lcp": {
+      "score": 97,
+      "value": "0.8 s",
+      "rawValue": 0.8,
+      "normalizedValueMs": 800,
+      "unit": "s",
+      "rating": "good",
+      "source": "lighthouse",
+      "mode": "lab",
+      "available": true,
+      "elementTag": "P",
+      "selector": "P",
+      "elementUrl": null,
+      "renderTimeMs": 248,
+      "loadTimeMs": null
+    },
+    "cls": {
+      "score": 100,
+      "value": "0",
+      "rawValue": 0,
+      "normalizedValueMs": null,
+      "unit": "",
+      "rating": "good",
+      "source": "lighthouse",
+      "mode": "lab",
+      "available": true,
+      "shiftCount": 0,
+      "largestShift": 0,
+      "shifts": []
+    },
+    "tbt": {
+      "score": 100,
+      "value": "0 ms",
+      "rawValue": 0,
+      "normalizedValueMs": 0,
+      "unit": "ms",
+      "rating": "good",
+      "source": "lighthouse",
+      "mode": "lab",
+      "available": true
+    },
+    "tbtDetails": {
+      "totalBlockingTimeMs": 0,
+      "longTaskCount": 0,
+      "maxTaskDurationMs": 0,
+      "tasks": [],
+      "mainThreadWork": [
+        {
+          "group": "Style & Layout",
+          "durationMs": 51
+        },
+        {
+          "group": "Other",
+          "durationMs": 33
+        },
+        {
+          "group": "Script Evaluation",
+          "durationMs": 5
+        },
+        {
+          "group": "Rendering",
+          "durationMs": 1
+        },
+        {
+          "group": "Parse HTML & CSS",
+          "durationMs": 1
+        }
+      ],
+      "topScriptsByExecution": [
+        {
+          "url": "https://example.com/",
+          "totalCpuMs": 58,
+          "scriptEvalMs": 2
+        }
+      ]
+    },
+    "ttfb": {
+      "score": 100,
+      "value": "1ms",
+      "rawValue": 1,
+      "normalizedValueMs": 1,
+      "unit": "s",
+      "rating": "good",
+      "source": "lighthouse",
+      "mode": "lab",
+      "available": true
+    },
+    "inp": {
+      "score": null,
+      "value": "N/A",
+      "rawValue": null,
+      "normalizedValueMs": null,
+      "unit": "ms",
+      "rating": "unrated",
+      "source": "lighthouse",
+      "mode": "lab",
+      "available": false,
+      "reason": "Metric measurement not available in current execution context.",
+      "unavailableReason": "Metric measurement not available in current execution context."
+    },
+    "fid": {
+      "score": null,
+      "value": "N/A",
+      "unit": "ms",
+      "rating": "unrated",
+      "source": "lighthouse",
+      "mode": "lab",
+      "available": false,
+      "reason": "FID deprecated and replaced by INP (March 2024)",
+      "unavailableReason": "FID deprecated and replaced by INP (March 2024)"
+    }
+  },
+  "breakdown": {
+    "images": {
+      "sizeKb": 0,
+      "count": 0
+    },
+    "js": {
+      "sizeKb": 0,
+      "count": 0,
+      "unusedKb": 0
+    },
+    "css": {
+      "sizeKb": 0,
+      "count": 0,
+      "unusedKb": 0
+    },
+    "fonts": {
+      "sizeKb": 0,
+      "count": 0
+    },
+    "thirdParty": {
+      "sizeKb": 0,
+      "count": 0
+    }
+  },
+  "bundleAnalysis": [],
+  "images": [],
+  "recommendations": [
+    {
+      "id": "REC_SEO_META_DESC",
+      "findingId": "REC_SEO_META_DESC_001",
+      "analyzer": "seo",
+      "title": "Provide a meta description for search engine result snippets",
+      "description": "The meta description summarizes page content in search engine result pages, improving user click-through rates.",
+      "category": "seo",
+      "severity": "medium",
+      "confidence": "high",
+      "estimateType": "not_quantified",
+      "finding": {
+        "description": "No <meta name=\"description\"> tag was found in document <head>",
+        "metric": "SEO"
+      },
+      "evidence": "No <meta name=\"description\"> element detected in document <head>",
+      "evidenceDetails": [
+        {
+          "type": "missing-meta-tag",
+          "selector": "meta[name=\"description\"]",
+          "details": {
+            "found": 0
+          }
+        }
+      ],
+      "potentialImpact": "Search engine result snippet presentation and click-through rate (CTR).",
+      "estimatedSavings": null,
+      "measuredImprovement": null,
+      "suggestedFix": "Declare a <meta name=\"description\" content=\"...\"> tag (120-160 characters) in the page <head> section.",
+      "estimatedDifficulty": "easy",
+      "estimatedImplementationTime": "15 mins",
+      "refUrl": "https://developers.google.com/search/docs/appearance/snippet",
+      "issue": "Provide a meta description for search engine result snippets",
+      "whyItMatters": "Search engine result snippet presentation and click-through rate (CTR).",
+      "estimatedImprovement": "Not quantified",
+      "estimatedPerformanceGain": "None (CTR & search snippet presentation)",
+      "priority": "high",
+      "sourceAnalyzer": "seo",
+      "estimatedBandwidthSaving": 0,
+      "selector": "meta[name=\"description\"]",
+      "actualValue": "Missing (<meta name=\"description\"> tag absent)",
+      "expectedValue": "A descriptive meta description tag between 120 and 160 characters",
+      "reason": "Search engines use the meta description as the primary snippet preview in search result cards.",
+      "suggestedFixSummary": "Declare a <meta name=\"description\" content=\"...\"> tag (120-160 characters) in the page <head> section.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "REC_SEO_CANONICAL",
+      "findingId": "REC_SEO_CANONICAL_001",
+      "analyzer": "seo",
+      "title": "Provide a canonical URL link tag",
+      "description": "Canonical link declarations notify search crawlers of preferred page targets, avoiding duplicate index penalties.",
+      "category": "seo",
+      "severity": "medium",
+      "confidence": "high",
+      "estimateType": "not_quantified",
+      "finding": {
+        "description": "No <link rel=\"canonical\"> element found in document <head>",
+        "metric": "SEO"
+      },
+      "evidence": "No link element with rel=\"canonical\" found in <head>",
+      "evidenceDetails": [
+        {
+          "type": "missing-link-tag",
+          "selector": "link[rel=\"canonical\"]",
+          "details": {
+            "found": 0
+          }
+        }
+      ],
+      "potentialImpact": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
+      "estimatedSavings": null,
+      "measuredImprovement": null,
+      "suggestedFix": "Declare <link rel=\"canonical\" href=\"https://example.com/authoritative-path\"> in the <head> of every page.",
+      "estimatedDifficulty": "easy",
+      "estimatedImplementationTime": "15 mins",
+      "refUrl": "https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls",
+      "issue": "Provide a canonical URL link tag",
+      "whyItMatters": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
+      "estimatedImprovement": "Not quantified",
+      "estimatedPerformanceGain": "None",
+      "priority": "medium",
+      "sourceAnalyzer": "seo",
+      "estimatedBandwidthSaving": 0,
+      "selector": "link[rel=\"canonical\"]",
+      "actualValue": "Missing (<link rel=\"canonical\"> absent)",
+      "expectedValue": "<link rel=\"canonical\" href=\"...\"> pointing to authoritative canonical URL",
+      "reason": "Canonical link declarations prevent duplicate content indexing penalties across query-parameter variations.",
+      "suggestedFixSummary": "Declare <link rel=\"canonical\" href=\"https://example.com/authoritative-path\"> in the <head> of every page.",
+      "difficulty": "easy"
+    }
+  ],
+  "resources": [
+    {
+      "name": "https://example.com/",
+      "url": "https://example.com/",
+      "type": "document",
+      "sizeKb": 0.5,
+      "transferSizeKb": 0.5,
+      "statusCode": 200,
+      "timeMs": 219,
+      "durationMs": 219,
+      "startTimeMs": 62939975,
+      "initiator": "other",
+      "fromCache": false,
+      "timingBreakdown": {
+        "dnsMs": 31,
+        "tcpMs": 91,
+        "tlsMs": 88,
+        "ttfbMs": 50,
+        "downloadMs": 0,
+        "startTimeMs": 62939975,
+        "durationMs": 219
+      },
+      "compression": "brotli",
+      "cacheControl": "no-cache, no-store",
+      "isThirdParty": false,
+      "isCompressed": true
+    }
+  ],
+  "owner": "8f101306-620e-4880-834b-a280b90d0914",
+  "scoreExplanation": {
+    "finalScore": 100,
+    "overallPerformanceScore": 100,
+    "source": "lighthouse",
+    "method": "Google Lighthouse Performance Audit",
+    "formula": "Performance Score = (LCP * 0.25) + (TBT * 0.30) + (CLS * 0.25) + (FCP * 0.10) + (SI * 0.10)",
+    "breakdown": [
+      {
+        "name": "Largest Contentful Paint",
+        "metric": "Largest Contentful Paint",
+        "raw": "0.8 s",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.25,
+        "weightFormatted": "25%",
+        "normalizedWeight": 0.25,
+        "contribution": 25,
+        "available": true,
+        "isCoreVital": true,
+        "category": "core-web-vital"
+      },
+      {
+        "name": "Interaction to Next Paint",
+        "metric": "Interaction to Next Paint",
+        "raw": "N/A",
+        "classification": "unrated",
+        "score": null,
+        "weight": 0,
+        "weightFormatted": "0%",
+        "normalizedWeight": 0,
+        "contribution": null,
+        "available": false,
+        "isCoreVital": true,
+        "category": "core-web-vital",
+        "note": "CrUX Field Core Web Vital; not included in lab performance formula"
+      },
+      {
+        "name": "Cumulative Layout Shift",
+        "metric": "Cumulative Layout Shift",
+        "raw": "0",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.25,
+        "weightFormatted": "25%",
+        "normalizedWeight": 0.25,
+        "contribution": 25,
+        "available": true,
+        "isCoreVital": true,
+        "category": "core-web-vital"
+      },
+      {
+        "name": "Total Blocking Time",
+        "metric": "Total Blocking Time",
+        "raw": "0 ms",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.3,
+        "weightFormatted": "30%",
+        "normalizedWeight": 0.3,
+        "contribution": 30,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
+      },
+      {
+        "name": "First Contentful Paint",
+        "metric": "First Contentful Paint",
+        "raw": "0.8 s",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.1,
+        "weightFormatted": "10%",
+        "normalizedWeight": 0.1,
+        "contribution": 10,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
+      },
+      {
+        "name": "Speed Index",
+        "metric": "Speed Index",
+        "raw": "0.8 s",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.1,
+        "weightFormatted": "10%",
+        "normalizedWeight": 0.1,
+        "contribution": 10,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
+      },
+      {
+        "name": "Time to First Byte",
+        "metric": "Time to First Byte",
+        "raw": "1ms",
+        "classification": "good",
+        "score": 100,
+        "weight": 0,
+        "weightFormatted": "0%",
+        "normalizedWeight": 0,
+        "contribution": null,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric",
+        "note": "Diagnostic metric; not included in lab performance formula"
+      }
+    ],
+    "metrics": {
+      "lcp": {
+        "name": "Largest Contentful Paint",
+        "metric": "Largest Contentful Paint",
+        "raw": "0.8 s",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.25,
+        "weightFormatted": "25%",
+        "normalizedWeight": 0.25,
+        "contribution": 25,
+        "available": true,
+        "isCoreVital": true,
+        "category": "core-web-vital"
+      },
+      "tbt": {
+        "name": "Total Blocking Time",
+        "metric": "Total Blocking Time",
+        "raw": "0 ms",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.3,
+        "weightFormatted": "30%",
+        "normalizedWeight": 0.3,
+        "contribution": 30,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
+      },
+      "cls": {
+        "name": "Cumulative Layout Shift",
+        "metric": "Cumulative Layout Shift",
+        "raw": "0",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.25,
+        "weightFormatted": "25%",
+        "normalizedWeight": 0.25,
+        "contribution": 25,
+        "available": true,
+        "isCoreVital": true,
+        "category": "core-web-vital"
+      },
+      "fcp": {
+        "name": "First Contentful Paint",
+        "metric": "First Contentful Paint",
+        "raw": "0.8 s",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.1,
+        "weightFormatted": "10%",
+        "normalizedWeight": 0.1,
+        "contribution": 10,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
+      },
+      "speedIndex": {
+        "name": "Speed Index",
+        "metric": "Speed Index",
+        "raw": "0.8 s",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.1,
+        "weightFormatted": "10%",
+        "normalizedWeight": 0.1,
+        "contribution": 10,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
+      },
+      "inp": {
+        "name": "Interaction to Next Paint",
+        "metric": "Interaction to Next Paint",
+        "raw": "N/A",
+        "classification": "unrated",
+        "score": null,
+        "weight": 0,
+        "weightFormatted": "0%",
+        "normalizedWeight": 0,
+        "contribution": null,
+        "available": false,
+        "isCoreVital": true,
+        "category": "core-web-vital",
+        "note": "CrUX Field Core Web Vital; not included in lab performance formula"
+      },
+      "ttfb": {
+        "name": "Time to First Byte",
+        "metric": "Time to First Byte",
+        "raw": "1ms",
+        "classification": "good",
+        "score": 100,
+        "weight": 0,
+        "weightFormatted": "0%",
+        "normalizedWeight": 0,
+        "contribution": null,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric",
+        "note": "Diagnostic metric; not included in lab performance formula"
+      }
+    }
+  },
+  "performanceScoreDetails": {
+    "finalScore": 100,
+    "overallPerformanceScore": 100,
+    "source": "lighthouse",
+    "method": "Google Lighthouse Performance Audit",
+    "formula": "Performance Score = (LCP * 0.25) + (TBT * 0.30) + (CLS * 0.25) + (FCP * 0.10) + (SI * 0.10)",
+    "breakdown": [
+      {
+        "name": "Largest Contentful Paint",
+        "metric": "Largest Contentful Paint",
+        "raw": "0.8 s",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.25,
+        "weightFormatted": "25%",
+        "normalizedWeight": 0.25,
+        "contribution": 25,
+        "available": true,
+        "isCoreVital": true,
+        "category": "core-web-vital"
+      },
+      {
+        "name": "Interaction to Next Paint",
+        "metric": "Interaction to Next Paint",
+        "raw": "N/A",
+        "classification": "unrated",
+        "score": null,
+        "weight": 0,
+        "weightFormatted": "0%",
+        "normalizedWeight": 0,
+        "contribution": null,
+        "available": false,
+        "isCoreVital": true,
+        "category": "core-web-vital",
+        "note": "CrUX Field Core Web Vital; not included in lab performance formula"
+      },
+      {
+        "name": "Cumulative Layout Shift",
+        "metric": "Cumulative Layout Shift",
+        "raw": "0",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.25,
+        "weightFormatted": "25%",
+        "normalizedWeight": 0.25,
+        "contribution": 25,
+        "available": true,
+        "isCoreVital": true,
+        "category": "core-web-vital"
+      },
+      {
+        "name": "Total Blocking Time",
+        "metric": "Total Blocking Time",
+        "raw": "0 ms",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.3,
+        "weightFormatted": "30%",
+        "normalizedWeight": 0.3,
+        "contribution": 30,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
+      },
+      {
+        "name": "First Contentful Paint",
+        "metric": "First Contentful Paint",
+        "raw": "0.8 s",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.1,
+        "weightFormatted": "10%",
+        "normalizedWeight": 0.1,
+        "contribution": 10,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
+      },
+      {
+        "name": "Speed Index",
+        "metric": "Speed Index",
+        "raw": "0.8 s",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.1,
+        "weightFormatted": "10%",
+        "normalizedWeight": 0.1,
+        "contribution": 10,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
+      },
+      {
+        "name": "Time to First Byte",
+        "metric": "Time to First Byte",
+        "raw": "1ms",
+        "classification": "good",
+        "score": 100,
+        "weight": 0,
+        "weightFormatted": "0%",
+        "normalizedWeight": 0,
+        "contribution": null,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric",
+        "note": "Diagnostic metric; not included in lab performance formula"
+      }
+    ],
+    "metrics": {
+      "lcp": {
+        "name": "Largest Contentful Paint",
+        "metric": "Largest Contentful Paint",
+        "raw": "0.8 s",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.25,
+        "weightFormatted": "25%",
+        "normalizedWeight": 0.25,
+        "contribution": 25,
+        "available": true,
+        "isCoreVital": true,
+        "category": "core-web-vital"
+      },
+      "tbt": {
+        "name": "Total Blocking Time",
+        "metric": "Total Blocking Time",
+        "raw": "0 ms",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.3,
+        "weightFormatted": "30%",
+        "normalizedWeight": 0.3,
+        "contribution": 30,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
+      },
+      "cls": {
+        "name": "Cumulative Layout Shift",
+        "metric": "Cumulative Layout Shift",
+        "raw": "0",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.25,
+        "weightFormatted": "25%",
+        "normalizedWeight": 0.25,
+        "contribution": 25,
+        "available": true,
+        "isCoreVital": true,
+        "category": "core-web-vital"
+      },
+      "fcp": {
+        "name": "First Contentful Paint",
+        "metric": "First Contentful Paint",
+        "raw": "0.8 s",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.1,
+        "weightFormatted": "10%",
+        "normalizedWeight": 0.1,
+        "contribution": 10,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
+      },
+      "speedIndex": {
+        "name": "Speed Index",
+        "metric": "Speed Index",
+        "raw": "0.8 s",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.1,
+        "weightFormatted": "10%",
+        "normalizedWeight": 0.1,
+        "contribution": 10,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
+      },
+      "inp": {
+        "name": "Interaction to Next Paint",
+        "metric": "Interaction to Next Paint",
+        "raw": "N/A",
+        "classification": "unrated",
+        "score": null,
+        "weight": 0,
+        "weightFormatted": "0%",
+        "normalizedWeight": 0,
+        "contribution": null,
+        "available": false,
+        "isCoreVital": true,
+        "category": "core-web-vital",
+        "note": "CrUX Field Core Web Vital; not included in lab performance formula"
+      },
+      "ttfb": {
+        "name": "Time to First Byte",
+        "metric": "Time to First Byte",
+        "raw": "1ms",
+        "classification": "good",
+        "score": 100,
+        "weight": 0,
+        "weightFormatted": "0%",
+        "normalizedWeight": 0,
+        "contribution": null,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric",
+        "note": "Diagnostic metric; not included in lab performance formula"
+      }
+    }
+  },
+  "pageSpeed": {
+    "performance": 100,
+    "accessibility": 96,
+    "seo": 80,
+    "bestPractices": 96,
+    "metrics": {
+      "lcp": "0.8 s",
+      "fcp": "0.8 s",
+      "inp": "N/A",
+      "tbt": "0 ms",
+      "cls": "0",
+      "ttfb": "1ms",
+      "speedIndex": "0.8 s"
+    },
+    "lighthouseScoreBreakdown": {
+      "first-contentful-paint": {
+        "id": "first-contentful-paint",
+        "weight": 10,
+        "score": 100,
+        "numericValue": 781,
+        "displayValue": "0.8 s"
+      },
+      "largest-contentful-paint": {
+        "id": "largest-contentful-paint",
+        "weight": 25,
+        "score": 100,
+        "numericValue": 781,
+        "displayValue": "0.8 s"
+      },
+      "total-blocking-time": {
+        "id": "total-blocking-time",
+        "weight": 30,
+        "score": 100,
+        "numericValue": 0,
+        "displayValue": "0 ms"
+      },
+      "cumulative-layout-shift": {
+        "id": "cumulative-layout-shift",
+        "weight": 25,
+        "score": 100,
+        "numericValue": 0,
+        "displayValue": "0"
+      },
+      "speed-index": {
+        "id": "speed-index",
+        "weight": 10,
+        "score": 100,
+        "numericValue": 781,
+        "displayValue": "0.8 s"
+      }
+    },
+    "tbtDetails": {
+      "totalBlockingTimeMs": 0,
+      "longTaskCount": 0,
+      "maxTaskDurationMs": 0,
+      "tasks": [],
+      "mainThreadWork": [
+        {
+          "group": "Style & Layout",
+          "durationMs": 51
+        },
+        {
+          "group": "Other",
+          "durationMs": 33
+        },
+        {
+          "group": "Script Evaluation",
+          "durationMs": 5
+        },
+        {
+          "group": "Rendering",
+          "durationMs": 1
+        },
+        {
+          "group": "Parse HTML & CSS",
+          "durationMs": 1
+        }
+      ],
+      "topScriptsByExecution": [
+        {
+          "url": "https://example.com/",
+          "totalCpuMs": 58,
+          "scriptEvalMs": 2
+        }
+      ]
+    }
+  },
+  "customAnalysis": {
+    "network": {
+      "totalRequests": 1,
+      "thirdPartyRequests": 0,
+      "thirdPartySizeKb": 0,
+      "compressionRate": 100,
+      "cacheCoverageRate": 0,
+      "largestResources": [
+        {
+          "name": "https://example.com/",
+          "url": "https://example.com/",
+          "sizeKb": 0.5
+        }
+      ],
+      "slowestRequests": [
+        {
+          "name": "https://example.com/",
+          "url": "https://example.com/",
+          "durationMs": 219
+        }
+      ],
+      "largestJs": "None",
+      "largestCss": "None",
+      "largestImage": "None"
+    },
+    "image": {
+      "sizeKb": 0,
+      "count": 0,
+      "missingAltCount": 0
+    },
+    "css": {
+      "sizeKb": 0,
+      "count": 0,
+      "unusedKb": 0
+    },
+    "js": {
+      "sizeKb": 0,
+      "count": 0,
+      "unusedKb": 0
+    },
+    "seo": {
+      "hasTitle": true,
+      "hasMetaDesc": false
+    },
+    "accessibility": {
+      "missingAltCount": 0
+    }
+  },
+  "analysisSources": {
+    "perfLensEngine": true,
+    "puppeteerRuntime": true,
+    "googleLighthouse": true
+  },
+  "seo": {
+    "summary": {
+      "seoScoreEstimate": 50,
+      "missingMetaDescription": true,
+      "missingTitle": false,
+      "missingCanonical": true,
+      "missingViewport": false,
+      "missingH1": false,
+      "multipleH1": false,
+      "openGraphCoverage": 0,
+      "twitterCardCoverage": 0,
+      "structuredDataPresence": false
+    },
+    "seo": {
+      "pageTitle": "Example Domain",
+      "metaDescription": null,
+      "title": "Example Domain",
+      "description": null,
+      "canonical": null,
+      "sitemap": "Missing",
+      "metaKeywords": null,
+      "charset": "UTF-8",
+      "viewport": "width=device-width, initial-scale=1",
+      "canonicalUrl": null,
+      "metaRobots": null,
+      "openGraphTags": null,
+      "twitterCardTags": null,
+      "languageAttribute": "en",
+      "headingStructure": {
+        "h1": [
+          "Example Domain"
+        ],
+        "h2": [],
+        "h3": [],
+        "h4": [],
+        "h5": [],
+        "h6": []
+      },
+      "internalLinks": [],
+      "externalLinks": [
+        "https://iana.org/domains/example"
+      ],
+      "brokenLinks": [],
+      "hasRobotsTxt": false,
+      "hasSitemapXml": false,
+      "structuredData": null,
+      "favicon": "/data:,",
+      "ogTitle": "",
+      "ogDescription": "",
+      "ogImage": ""
+    },
+    "statistics": {
+      "titleLength": 14,
+      "descriptionLength": 0,
+      "headingsCount": {
+        "h1": 1,
+        "h2": 0,
+        "h3": 0,
+        "h4": 0,
+        "h5": 0,
+        "h6": 0
+      },
+      "linksCount": {
+        "internal": 0,
+        "external": 1,
+        "total": 1
+      }
+    },
+    "optimizationCandidates": [
+      {
+        "url": "example.com",
+        "type": "seo",
+        "estimatedSizeReductionKb": 0,
+        "suggestion": "Meta description tag is missing. Meta descriptions represent the default summary snippet on search engine listings. [Evidence: Selector='none', Value='Missing', Source='']",
+        "isIssue": true
+      },
+      {
+        "url": "example.com",
+        "type": "seo",
+        "estimatedSizeReductionKb": 0,
+        "suggestion": "Canonical URL link tag is missing. Canonical indicators eliminate duplicate indexing penalty risks. [Evidence: Selector='none', Value='Missing', Source='']",
+        "isIssue": true
+      },
+      {
+        "url": "example.com",
+        "type": "seo",
+        "estimatedSizeReductionKb": 0,
+        "suggestion": "Open Graph tags coverage is low (0%). Social media shares require OG metadata to compile rich listings. [Evidence: Selector='none', Value='Missing', Source='']",
+        "isIssue": false
+      },
+      {
+        "url": "example.com",
+        "type": "seo",
+        "estimatedSizeReductionKb": 0,
+        "suggestion": "JSON-LD Structured Data script missing. Providing Schema.org markup assists rich search snippet cards compiler. [Evidence: Selector='none', Value='Missing', Source='']",
+        "isIssue": false
+      }
+    ],
+    "warnings": [
+      {
+        "code": "SEO_NO_DESCRIPTION",
+        "message": "Meta description tag is missing. Meta descriptions represent the default summary snippet on search engine listings.",
+        "severity": "warning"
+      },
+      {
+        "code": "SEO_NO_CANONICAL",
+        "message": "Canonical URL link tag is missing. Canonical indicators eliminate duplicate indexing penalty risks.",
+        "severity": "warning"
+      },
+      {
+        "code": "SEO_NO_OG_TAGS",
+        "message": "Open Graph tags coverage is low (0%). Social media shares require OG metadata to compile rich listings.",
+        "severity": "info"
+      },
+      {
+        "code": "SEO_NO_STRUCTURED_DATA",
+        "message": "JSON-LD Structured Data script missing. Providing Schema.org markup assists rich search snippet cards compiler.",
+        "severity": "info"
+      }
+    ],
+    "errors": [],
+    "validationEvidence": {
+      "title": {
+        "value": "Example Domain",
+        "selector": "head > title",
+        "html": "<title>Example Domain</title>"
+      },
+      "description": {
+        "value": "",
+        "selector": "none",
+        "html": ""
+      },
+      "canonical": {
+        "value": "",
+        "selector": "none",
+        "html": ""
+      },
+      "keywords": {
+        "value": "",
+        "selector": "none",
+        "html": ""
+      },
+      "charset": {
+        "value": "",
+        "selector": "none",
+        "html": ""
+      },
+      "viewport": {
+        "value": "width=device-width, initial-scale=1",
+        "selector": "meta[name=\"viewport\"]",
+        "html": "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+      },
+      "robots": {
+        "value": "",
+        "selector": "none",
+        "html": ""
+      },
+      "og": {},
+      "twitter": {},
+      "headings": {
+        "h1": [
+          "Example Domain"
+        ],
+        "h2": [],
+        "h3": [],
+        "h4": [],
+        "h5": [],
+        "h6": []
+      },
+      "internalLinks": [],
+      "externalLinks": [
+        "https://iana.org/domains/example"
+      ],
+      "languageAttribute": "en",
+      "jsonLd": [],
+      "headingsDetails": [
+        {
+          "tag": "h1",
+          "text": "Example Domain",
+          "html": "<h1>Example Domain</h1>"
+        }
+      ]
+    }
+  },
+  "accessibility": {
+    "summary": {
+      "accessibilityScoreEstimate": 80,
+      "imagesMissingAlt": 0,
+      "formsMissingLabels": 0,
+      "buttonsMissingLabels": 0,
+      "linksMissingText": 0,
+      "headingIssues": null,
+      "ariaIssues": 0,
+      "missingLandmarks": 5,
+      "missingSkipNavigation": true
+    },
+    "accessibility": {
+      "imagesMissingAltText": 0,
+      "emptyAltAttributes": 0,
+      "buttonsWithoutAccessibleLabels": 0,
+      "linksWithoutText": 0,
+      "formInputsWithoutLabels": 0,
+      "missingAriaLabels": 0,
+      "missingAriaRoles": 0,
+      "missingLandmarkElements": 5,
+      "headingHierarchy": null,
+      "colorContrastIndicators": null,
+      "missingHtmlLanguageAttribute": false,
+      "missingPageTitle": false,
+      "missingFocusableElements": null,
+      "keyboardNavigationIndicators": null,
+      "skipNavigationLink": null,
+      "accessibleTableHeaders": null,
+      "htmlLang": true,
+      "title": true,
+      "imagesWithoutAltCount": 0,
+      "imagesWithoutAltUrls": []
+    },
+    "statistics": {
+      "imagesCount": 0,
+      "formsCount": 0,
+      "buttonsCount": 0,
+      "linksCount": 1
+    },
+    "optimizationCandidates": [
+      {
+        "url": "example.com",
+        "type": "accessibility",
+        "estimatedSizeReductionKb": 0,
+        "suggestion": "Skip navigation link was not detected. Skip links allow keyboard users to bypass layout header items.",
+        "isIssue": true
+      }
+    ],
+    "warnings": [
+      {
+        "code": "A11Y_NO_SKIP_LINK",
+        "message": "Skip navigation link was not detected. Skip links allow keyboard users to bypass layout header items.",
+        "severity": "warning"
+      }
+    ],
+    "errors": [],
+    "validationEvidence": {
+      "htmlLang": "en",
+      "hasTitle": true,
+      "images": [],
+      "inputs": [],
+      "buttons": [],
+      "links": [
+        {
+          "hasLabel": true,
+          "selector": "a",
+          "html": "<a href=\"https://iana.org/domains/example\">Learn more</a>"
+        }
+      ],
+      "landmarks": {
+        "hasHeader": false,
+        "hasNav": false,
+        "hasMain": false,
+        "hasFooter": false,
+        "hasAside": false
+      },
+      "skipLink": null
+    }
+  },
+  "recommendation": {
+    "summary": {
+      "overallHealthScore": 85,
+      "overallPerformanceGrade": "B",
+      "totalIssues": 2,
+      "criticalIssues": 0,
+      "highIssues": 1,
+      "mediumIssues": 1,
+      "lowIssues": 0,
+      "potentialPerformanceImprovement": "No major transfer savings estimated",
+      "potentialBandwidthReduction": 0,
+      "estimatedTimeToFixEverything": "30 mins"
+    },
+    "recommendations": [
+      {
+        "id": "REC_SEO_META_DESC",
+        "findingId": "REC_SEO_META_DESC_001",
+        "analyzer": "seo",
+        "title": "Provide a meta description for search engine result snippets",
+        "description": "The meta description summarizes page content in search engine result pages, improving user click-through rates.",
+        "category": "seo",
+        "severity": "medium",
+        "confidence": "high",
+        "estimateType": "not_quantified",
+        "finding": {
+          "description": "No <meta name=\"description\"> tag was found in document <head>",
+          "metric": "SEO"
+        },
+        "evidence": "No <meta name=\"description\"> element detected in document <head>",
+        "evidenceDetails": [
+          {
+            "type": "missing-meta-tag",
+            "selector": "meta[name=\"description\"]",
+            "details": {
+              "found": 0
+            }
+          }
+        ],
+        "potentialImpact": "Search engine result snippet presentation and click-through rate (CTR).",
+        "estimatedSavings": null,
+        "measuredImprovement": null,
+        "suggestedFix": "Declare a <meta name=\"description\" content=\"...\"> tag (120-160 characters) in the page <head> section.",
+        "estimatedDifficulty": "easy",
+        "estimatedImplementationTime": "15 mins",
+        "refUrl": "https://developers.google.com/search/docs/appearance/snippet",
+        "issue": "Provide a meta description for search engine result snippets",
+        "whyItMatters": "Search engine result snippet presentation and click-through rate (CTR).",
+        "estimatedImprovement": "Not quantified",
+        "estimatedPerformanceGain": "None (CTR & search snippet presentation)",
+        "priority": "high",
+        "sourceAnalyzer": "seo",
+        "estimatedBandwidthSaving": 0,
+        "selector": "meta[name=\"description\"]",
+        "actualValue": "Missing (<meta name=\"description\"> tag absent)",
+        "expectedValue": "A descriptive meta description tag between 120 and 160 characters",
+        "reason": "Search engines use the meta description as the primary snippet preview in search result cards.",
+        "suggestedFixSummary": "Declare a <meta name=\"description\" content=\"...\"> tag (120-160 characters) in the page <head> section.",
+        "difficulty": "easy"
+      },
+      {
+        "id": "REC_SEO_CANONICAL",
+        "findingId": "REC_SEO_CANONICAL_001",
+        "analyzer": "seo",
+        "title": "Provide a canonical URL link tag",
+        "description": "Canonical link declarations notify search crawlers of preferred page targets, avoiding duplicate index penalties.",
+        "category": "seo",
+        "severity": "medium",
+        "confidence": "high",
+        "estimateType": "not_quantified",
+        "finding": {
+          "description": "No <link rel=\"canonical\"> element found in document <head>",
+          "metric": "SEO"
+        },
+        "evidence": "No link element with rel=\"canonical\" found in <head>",
+        "evidenceDetails": [
+          {
+            "type": "missing-link-tag",
+            "selector": "link[rel=\"canonical\"]",
+            "details": {
+              "found": 0
+            }
+          }
+        ],
+        "potentialImpact": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
+        "estimatedSavings": null,
+        "measuredImprovement": null,
+        "suggestedFix": "Declare <link rel=\"canonical\" href=\"https://example.com/authoritative-path\"> in the <head> of every page.",
+        "estimatedDifficulty": "easy",
+        "estimatedImplementationTime": "15 mins",
+        "refUrl": "https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls",
+        "issue": "Provide a canonical URL link tag",
+        "whyItMatters": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
+        "estimatedImprovement": "Not quantified",
+        "estimatedPerformanceGain": "None",
+        "priority": "medium",
+        "sourceAnalyzer": "seo",
+        "estimatedBandwidthSaving": 0,
+        "selector": "link[rel=\"canonical\"]",
+        "actualValue": "Missing (<link rel=\"canonical\"> absent)",
+        "expectedValue": "<link rel=\"canonical\" href=\"...\"> pointing to authoritative canonical URL",
+        "reason": "Canonical link declarations prevent duplicate content indexing penalties across query-parameter variations.",
+        "suggestedFixSummary": "Declare <link rel=\"canonical\" href=\"https://example.com/authoritative-path\"> in the <head> of every page.",
+        "difficulty": "easy"
+      }
+    ],
+    "quickWins": [
+      {
+        "id": "REC_SEO_META_DESC",
+        "findingId": "REC_SEO_META_DESC_001",
+        "analyzer": "seo",
+        "title": "Provide a meta description for search engine result snippets",
+        "description": "The meta description summarizes page content in search engine result pages, improving user click-through rates.",
+        "category": "seo",
+        "severity": "medium",
+        "confidence": "high",
+        "estimateType": "not_quantified",
+        "finding": {
+          "description": "No <meta name=\"description\"> tag was found in document <head>",
+          "metric": "SEO"
+        },
+        "evidence": "No <meta name=\"description\"> element detected in document <head>",
+        "evidenceDetails": [
+          {
+            "type": "missing-meta-tag",
+            "selector": "meta[name=\"description\"]",
+            "details": {
+              "found": 0
+            }
+          }
+        ],
+        "potentialImpact": "Search engine result snippet presentation and click-through rate (CTR).",
+        "estimatedSavings": null,
+        "measuredImprovement": null,
+        "suggestedFix": "Declare a <meta name=\"description\" content=\"...\"> tag (120-160 characters) in the page <head> section.",
+        "estimatedDifficulty": "easy",
+        "estimatedImplementationTime": "15 mins",
+        "refUrl": "https://developers.google.com/search/docs/appearance/snippet",
+        "issue": "Provide a meta description for search engine result snippets",
+        "whyItMatters": "Search engine result snippet presentation and click-through rate (CTR).",
+        "estimatedImprovement": "Not quantified",
+        "estimatedPerformanceGain": "None (CTR & search snippet presentation)",
+        "priority": "high",
+        "sourceAnalyzer": "seo",
+        "estimatedBandwidthSaving": 0,
+        "selector": "meta[name=\"description\"]",
+        "actualValue": "Missing (<meta name=\"description\"> tag absent)",
+        "expectedValue": "A descriptive meta description tag between 120 and 160 characters",
+        "reason": "Search engines use the meta description as the primary snippet preview in search result cards."
+      },
+      {
+        "id": "REC_SEO_CANONICAL",
+        "findingId": "REC_SEO_CANONICAL_001",
+        "analyzer": "seo",
+        "title": "Provide a canonical URL link tag",
+        "description": "Canonical link declarations notify search crawlers of preferred page targets, avoiding duplicate index penalties.",
+        "category": "seo",
+        "severity": "medium",
+        "confidence": "high",
+        "estimateType": "not_quantified",
+        "finding": {
+          "description": "No <link rel=\"canonical\"> element found in document <head>",
+          "metric": "SEO"
+        },
+        "evidence": "No link element with rel=\"canonical\" found in <head>",
+        "evidenceDetails": [
+          {
+            "type": "missing-link-tag",
+            "selector": "link[rel=\"canonical\"]",
+            "details": {
+              "found": 0
+            }
+          }
+        ],
+        "potentialImpact": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
+        "estimatedSavings": null,
+        "measuredImprovement": null,
+        "suggestedFix": "Declare <link rel=\"canonical\" href=\"https://example.com/authoritative-path\"> in the <head> of every page.",
+        "estimatedDifficulty": "easy",
+        "estimatedImplementationTime": "15 mins",
+        "refUrl": "https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls",
+        "issue": "Provide a canonical URL link tag",
+        "whyItMatters": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
+        "estimatedImprovement": "Not quantified",
+        "estimatedPerformanceGain": "None",
+        "priority": "medium",
+        "sourceAnalyzer": "seo",
+        "estimatedBandwidthSaving": 0,
+        "selector": "link[rel=\"canonical\"]",
+        "actualValue": "Missing (<link rel=\"canonical\"> absent)",
+        "expectedValue": "<link rel=\"canonical\" href=\"...\"> pointing to authoritative canonical URL",
+        "reason": "Canonical link declarations prevent duplicate content indexing penalties across query-parameter variations."
+      }
+    ],
+    "highImpact": [],
+    "mediumImpact": [],
+    "longTerm": [],
+    "roadmap": [
+      "Step 1 [SEO]: Provide a meta description for search engine result snippets (EASY | Est Time: 15 mins) - Declare a <meta name=\"description\" content=\"...\"> tag (120-160 characters) in the page <head> section.",
+      "Step 2 [SEO]: Provide a canonical URL link tag (EASY | Est Time: 15 mins) - Declare <link rel=\"canonical\" href=\"https://example.com/authoritative-path\"> in the <head> of every page."
+    ]
+  },
+  "summary": {
+    "overallHealthScore": 85,
+    "overallPerformanceGrade": "B",
+    "totalIssues": 2,
+    "criticalIssues": 0,
+    "highIssues": 1,
+    "mediumIssues": 1,
+    "lowIssues": 0,
+    "potentialPerformanceImprovement": "No major transfer savings estimated",
+    "potentialBandwidthReduction": 0,
+    "estimatedTimeToFixEverything": "30 mins"
+  },
+  "overallHealthScore": 85,
+  "overallPerformanceGrade": "B",
+  "validationData": {
+    "browserVersion": "Chrome/148.0.7778.97",
+    "debugLogs": {
+      "imageAnalyzer": {
+        "started": "2026-09-13T19:54:38.451Z",
+        "finished": "2026-09-13T19:54:38.453Z",
+        "executionTimeMs": 2,
+        "errors": [
+          "No images found on page."
+        ],
+        "warnings": [],
+        "fallbackUsed": "NO",
+        "confidence": "Low"
+      },
+      "cssAnalyzer": {
+        "started": "2026-09-13T19:54:38.453Z",
+        "finished": "2026-09-13T19:54:38.454Z",
+        "executionTimeMs": 1,
+        "errors": [
+          "Stylesheet elements detected in DOM but network resource timing was unavailable."
+        ],
+        "warnings": [],
+        "fallbackUsed": "NO",
+        "confidence": "High"
+      },
+      "jsAnalyzer": {
+        "started": "2026-09-13T19:54:38.454Z",
+        "finished": "2026-09-13T19:54:38.455Z",
+        "executionTimeMs": 1,
+        "errors": [
+          "No JavaScript resources found."
+        ],
+        "warnings": [],
+        "fallbackUsed": "NO",
+        "confidence": "Medium"
+      },
+      "seoAnalyzer": {
+        "started": "2026-09-13T19:54:38.455Z",
+        "finished": "2026-09-13T19:54:38.458Z",
+        "executionTimeMs": 3,
+        "errors": [],
+        "warnings": [
+          "Meta description tag is missing. Meta descriptions represent the default summary snippet on search engine listings.",
+          "Canonical URL link tag is missing. Canonical indicators eliminate duplicate indexing penalty risks.",
+          "Open Graph tags coverage is low (0%). Social media shares require OG metadata to compile rich listings.",
+          "JSON-LD Structured Data script missing. Providing Schema.org markup assists rich search snippet cards compiler."
+        ],
+        "fallbackUsed": "NO",
+        "confidence": "High"
+      },
+      "accessibilityAnalyzer": {
+        "started": "2026-09-13T19:54:38.458Z",
+        "finished": "2026-09-13T19:54:38.461Z",
+        "executionTimeMs": 3,
+        "errors": [],
+        "warnings": [
+          "Skip navigation link was not detected. Skip links allow keyboard users to bypass layout header items."
+        ],
+        "fallbackUsed": "NO",
+        "confidence": "High"
+      }
+    },
+    "screenshots": {
+      "fullPagePath": "C:\\Users\\itsak\\OneDrive\\Desktop\\Projects\\Perflens\\server\\temp\\screenshot_full_1789329278364.png",
+      "viewportPath": "C:\\Users\\itsak\\OneDrive\\Desktop\\Projects\\Perflens\\server\\temp\\screenshot_viewport_1789329278364.png"
+    },
+    "resources": [
+      {
+        "url": "https://example.com/",
+        "type": "document",
+        "sizeKb": 0.5,
+        "statusCode": 200,
+        "contentType": "text/html",
+        "transferSizeKb": 0.5,
+        "cacheControl": "no-cache, no-store",
+        "durationMs": 219,
+        "compression": "brotli",
+        "httpVersion": "HTTP/1.1",
+        "fromCache": false,
+        "initiator": "other",
+        "startTimeMs": 62939975,
+        "timingBreakdown": {
+          "dnsMs": 31,
+          "tcpMs": 91,
+          "tlsMs": 88,
+          "ttfbMs": 50,
+          "downloadMs": 0,
+          "startTimeMs": 62939975,
+          "durationMs": 219
+        }
+      }
+    ],
+    "imageAnalysis": {
+      "status": "NO_IMAGES_FOUND",
+      "summary": {
+        "measurementStatus": "NO_IMAGES_FOUND",
+        "totalImages": 0,
+        "largestImage": null,
+        "averageImageSize": 0,
+        "totalImageWeight": 0,
+        "imagesMissingLazyLoading": 0,
+        "belowTheFoldImagesMissingLazyLoading": 0,
+        "imagesMissingAltText": 0,
+        "oversizedImagesCount": 0,
+        "brokenImages": 0,
+        "duplicateImages": 0,
+        "heroImage": null
+      },
+      "images": [],
+      "statistics": {
+        "countByExtension": {},
+        "sizeByExtensionKb": {},
+        "averageSizeByExtensionKb": {}
+      },
+      "optimizationCandidates": [],
+      "errors": [
+        "No images found on page."
+      ]
+    },
+    "cssAnalysis": {
+      "status": "RESOURCE_TIMING_UNAVAILABLE",
+      "summary": {
+        "measurementStatus": "RESOURCE_TIMING_UNAVAILABLE",
+        "totalCSSFiles": 0,
+        "largestCSSFile": null,
+        "totalCSSWeight": 0,
+        "estimatedUnusedCSS": 0,
+        "hasCoverageData": false,
+        "duplicateStylesheets": 0,
+        "renderBlockingCSS": 0,
+        "inlineCSSCount": 0,
+        "externalCSSCount": 0
+      },
+      "stylesheets": [],
+      "statistics": {
+        "countByMinified": {
+          "minified": 0,
+          "unminified": 0
+        },
+        "sizeByMinifiedKb": {
+          "minified": 0,
+          "unminified": 0
+        },
+        "countByCompression": {
+          "brotli": 0,
+          "gzip": 0,
+          "none": 0
+        },
+        "averageSizeKb": 0
+      },
+      "optimizationCandidates": [],
+      "warnings": [],
+      "errors": [
+        "Stylesheet elements detected in DOM but network resource timing was unavailable."
+      ]
+    },
+    "jsAnalysis": {
+      "status": "NO_JS_FOUND",
+      "summary": {
+        "measurementStatus": "NO_JS_FOUND",
+        "totalJSFiles": 0,
+        "largestJSFile": null,
+        "totalJSWeight": 0,
+        "thirdPartyScripts": 0,
+        "duplicateScripts": 0,
+        "renderBlockingScripts": 0,
+        "estimatedUnusedJS": 0,
+        "hasCoverageData": false,
+        "largestLibrary": null
+      },
+      "scripts": [],
+      "statistics": {
+        "countByMinified": {
+          "minified": 0,
+          "unminified": 0
+        },
+        "sizeByMinifiedKb": {
+          "minified": 0,
+          "unminified": 0
+        },
+        "countByCompression": {
+          "brotli": 0,
+          "gzip": 0,
+          "none": 0
+        },
+        "thirdPartyCount": 0,
+        "thirdPartySizeKb": 0,
+        "detectedLibraries": {},
+        "averageSizeKb": 0
+      },
+      "optimizationCandidates": [],
+      "warnings": [],
+      "errors": [
+        "No JavaScript resources found."
+      ]
+    },
+    "seoAnalysis": {
+      "summary": {
+        "seoScoreEstimate": 50,
+        "missingMetaDescription": true,
+        "missingTitle": false,
+        "missingCanonical": true,
+        "missingViewport": false,
+        "missingH1": false,
+        "multipleH1": false,
+        "openGraphCoverage": 0,
+        "twitterCardCoverage": 0,
+        "structuredDataPresence": false
+      },
+      "seo": {
+        "pageTitle": "Example Domain",
+        "metaDescription": null,
+        "title": "Example Domain",
+        "description": null,
+        "canonical": null,
+        "sitemap": "Missing",
+        "metaKeywords": null,
+        "charset": "UTF-8",
+        "viewport": "width=device-width, initial-scale=1",
+        "canonicalUrl": null,
+        "metaRobots": null,
+        "openGraphTags": null,
+        "twitterCardTags": null,
+        "languageAttribute": "en",
+        "headingStructure": {
+          "h1": [
+            "Example Domain"
+          ],
+          "h2": [],
+          "h3": [],
+          "h4": [],
+          "h5": [],
+          "h6": []
+        },
+        "internalLinks": [],
+        "externalLinks": [
+          "https://iana.org/domains/example"
+        ],
+        "brokenLinks": [],
+        "hasRobotsTxt": false,
+        "hasSitemapXml": false,
+        "structuredData": null,
+        "favicon": "/data:,",
+        "ogTitle": "",
+        "ogDescription": "",
+        "ogImage": ""
+      },
+      "statistics": {
+        "titleLength": 14,
+        "descriptionLength": 0,
+        "headingsCount": {
+          "h1": 1,
+          "h2": 0,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "linksCount": {
+          "internal": 0,
+          "external": 1,
+          "total": 1
+        }
+      },
+      "optimizationCandidates": [
+        {
+          "url": "example.com",
+          "type": "seo",
+          "estimatedSizeReductionKb": 0,
+          "suggestion": "Meta description tag is missing. Meta descriptions represent the default summary snippet on search engine listings. [Evidence: Selector='none', Value='Missing', Source='']",
+          "isIssue": true
+        },
+        {
+          "url": "example.com",
+          "type": "seo",
+          "estimatedSizeReductionKb": 0,
+          "suggestion": "Canonical URL link tag is missing. Canonical indicators eliminate duplicate indexing penalty risks. [Evidence: Selector='none', Value='Missing', Source='']",
+          "isIssue": true
+        },
+        {
+          "url": "example.com",
+          "type": "seo",
+          "estimatedSizeReductionKb": 0,
+          "suggestion": "Open Graph tags coverage is low (0%). Social media shares require OG metadata to compile rich listings. [Evidence: Selector='none', Value='Missing', Source='']",
+          "isIssue": false
+        },
+        {
+          "url": "example.com",
+          "type": "seo",
+          "estimatedSizeReductionKb": 0,
+          "suggestion": "JSON-LD Structured Data script missing. Providing Schema.org markup assists rich search snippet cards compiler. [Evidence: Selector='none', Value='Missing', Source='']",
+          "isIssue": false
+        }
+      ],
+      "warnings": [
+        {
+          "code": "SEO_NO_DESCRIPTION",
+          "message": "Meta description tag is missing. Meta descriptions represent the default summary snippet on search engine listings.",
+          "severity": "warning"
+        },
+        {
+          "code": "SEO_NO_CANONICAL",
+          "message": "Canonical URL link tag is missing. Canonical indicators eliminate duplicate indexing penalty risks.",
+          "severity": "warning"
+        },
+        {
+          "code": "SEO_NO_OG_TAGS",
+          "message": "Open Graph tags coverage is low (0%). Social media shares require OG metadata to compile rich listings.",
+          "severity": "info"
+        },
+        {
+          "code": "SEO_NO_STRUCTURED_DATA",
+          "message": "JSON-LD Structured Data script missing. Providing Schema.org markup assists rich search snippet cards compiler.",
+          "severity": "info"
+        }
+      ],
+      "errors": [],
+      "validationEvidence": {
+        "title": {
+          "value": "Example Domain",
+          "selector": "head > title",
+          "html": "<title>Example Domain</title>"
+        },
+        "description": {
+          "value": "",
+          "selector": "none",
+          "html": ""
+        },
+        "canonical": {
+          "value": "",
+          "selector": "none",
+          "html": ""
+        },
+        "keywords": {
+          "value": "",
+          "selector": "none",
+          "html": ""
+        },
+        "charset": {
+          "value": "",
+          "selector": "none",
+          "html": ""
+        },
+        "viewport": {
+          "value": "width=device-width, initial-scale=1",
+          "selector": "meta[name=\"viewport\"]",
+          "html": "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+        },
+        "robots": {
+          "value": "",
+          "selector": "none",
+          "html": ""
+        },
+        "og": {},
+        "twitter": {},
+        "headings": {
+          "h1": [
+            "Example Domain"
+          ],
+          "h2": [],
+          "h3": [],
+          "h4": [],
+          "h5": [],
+          "h6": []
+        },
+        "internalLinks": [],
+        "externalLinks": [
+          "https://iana.org/domains/example"
+        ],
+        "languageAttribute": "en",
+        "jsonLd": [],
+        "headingsDetails": [
+          {
+            "tag": "h1",
+            "text": "Example Domain",
+            "html": "<h1>Example Domain</h1>"
+          }
+        ]
+      }
+    },
+    "accessibilityAnalysis": {
+      "summary": {
+        "accessibilityScoreEstimate": 80,
+        "imagesMissingAlt": 0,
+        "formsMissingLabels": 0,
+        "buttonsMissingLabels": 0,
+        "linksMissingText": 0,
+        "headingIssues": null,
+        "ariaIssues": 0,
+        "missingLandmarks": 5,
+        "missingSkipNavigation": true
+      },
+      "accessibility": {
+        "imagesMissingAltText": 0,
+        "emptyAltAttributes": 0,
+        "buttonsWithoutAccessibleLabels": 0,
+        "linksWithoutText": 0,
+        "formInputsWithoutLabels": 0,
+        "missingAriaLabels": 0,
+        "missingAriaRoles": 0,
+        "missingLandmarkElements": 5,
+        "headingHierarchy": null,
+        "colorContrastIndicators": null,
+        "missingHtmlLanguageAttribute": false,
+        "missingPageTitle": false,
+        "missingFocusableElements": null,
+        "keyboardNavigationIndicators": null,
+        "skipNavigationLink": null,
+        "accessibleTableHeaders": null,
+        "htmlLang": true,
+        "title": true,
+        "imagesWithoutAltCount": 0,
+        "imagesWithoutAltUrls": []
+      },
+      "statistics": {
+        "imagesCount": 0,
+        "formsCount": 0,
+        "buttonsCount": 0,
+        "linksCount": 1
+      },
+      "optimizationCandidates": [
+        {
+          "url": "example.com",
+          "type": "accessibility",
+          "estimatedSizeReductionKb": 0,
+          "suggestion": "Skip navigation link was not detected. Skip links allow keyboard users to bypass layout header items.",
+          "isIssue": true
+        }
+      ],
+      "warnings": [
+        {
+          "code": "A11Y_NO_SKIP_LINK",
+          "message": "Skip navigation link was not detected. Skip links allow keyboard users to bypass layout header items.",
+          "severity": "warning"
+        }
+      ],
+      "errors": [],
+      "validationEvidence": {
+        "htmlLang": "en",
+        "hasTitle": true,
+        "images": [],
+        "inputs": [],
+        "buttons": [],
+        "links": [
+          {
+            "hasLabel": true,
+            "selector": "a",
+            "html": "<a href=\"https://iana.org/domains/example\">Learn more</a>"
+          }
+        ],
+        "landmarks": {
+          "hasHeader": false,
+          "hasNav": false,
+          "hasMain": false,
+          "hasFooter": false,
+          "hasAside": false
+        },
+        "skipLink": null
+      }
+    },
+    "pageSpeedTelemetry": {
+      "performance": 100,
+      "accessibility": 96,
+      "seo": 80,
+      "bestPractices": 96,
+      "metrics": {
+        "lcp": "0.8 s",
+        "fcp": "0.8 s",
+        "inp": "N/A",
+        "tbt": "0 ms",
+        "cls": "0",
+        "ttfb": "1ms",
+        "speedIndex": "0.8 s"
+      },
+      "lighthouseScoreBreakdown": {
+        "first-contentful-paint": {
+          "id": "first-contentful-paint",
+          "weight": 10,
+          "score": 100,
+          "numericValue": 781,
+          "displayValue": "0.8 s"
+        },
+        "largest-contentful-paint": {
+          "id": "largest-contentful-paint",
+          "weight": 25,
+          "score": 100,
+          "numericValue": 781,
+          "displayValue": "0.8 s"
+        },
+        "total-blocking-time": {
+          "id": "total-blocking-time",
+          "weight": 30,
+          "score": 100,
+          "numericValue": 0,
+          "displayValue": "0 ms"
+        },
+        "cumulative-layout-shift": {
+          "id": "cumulative-layout-shift",
+          "weight": 25,
+          "score": 100,
+          "numericValue": 0,
+          "displayValue": "0"
+        },
+        "speed-index": {
+          "id": "speed-index",
+          "weight": 10,
+          "score": 100,
+          "numericValue": 781,
+          "displayValue": "0.8 s"
+        }
+      },
+      "tbtDetails": {
+        "totalBlockingTimeMs": 0,
+        "longTaskCount": 0,
+        "maxTaskDurationMs": 0,
+        "tasks": [],
+        "mainThreadWork": [
+          {
+            "group": "Style & Layout",
+            "durationMs": 51
+          },
+          {
+            "group": "Other",
+            "durationMs": 33
+          },
+          {
+            "group": "Script Evaluation",
+            "durationMs": 5
+          },
+          {
+            "group": "Rendering",
+            "durationMs": 1
+          },
+          {
+            "group": "Parse HTML & CSS",
+            "durationMs": 1
+          }
+        ],
+        "topScriptsByExecution": [
+          {
+            "url": "https://example.com/",
+            "totalCpuMs": 58,
+            "scriptEvalMs": 2
+          }
+        ]
+      }
+    },
+    "networkAnalysis": {
+      "resourcesList": [
+        {
+          "name": "https://example.com/",
+          "url": "https://example.com/",
+          "type": "document",
+          "sizeKb": 0.5,
+          "transferSizeKb": 0.5,
+          "statusCode": 200,
+          "timeMs": 219,
+          "durationMs": 219,
+          "startTimeMs": 62939975,
+          "initiator": "other",
+          "fromCache": false,
+          "timingBreakdown": {
+            "dnsMs": 31,
+            "tcpMs": 91,
+            "tlsMs": 88,
+            "ttfbMs": 50,
+            "downloadMs": 0,
+            "startTimeMs": 62939975,
+            "durationMs": 219
+          },
+          "compression": "brotli",
+          "cacheControl": "no-cache, no-store",
+          "isThirdParty": false,
+          "isCompressed": true
+        }
+      ],
+      "stats": {
+        "totalRequests": 1,
+        "totalSizeKb": 0.5,
+        "totalTransferSizeKb": 0.5,
+        "thirdPartyCount": 0,
+        "thirdPartySizeKb": 0,
+        "compressionRate": 100,
+        "cacheCoverageRate": 0,
+        "uncompressedSizeKb": 0
+      }
+    }
+  }
+}

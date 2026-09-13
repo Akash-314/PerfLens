@@ -1,0 +1,507 @@
+{
+  "project": {
+    "id": "PERFLENS-PRODUCTION-READINESS",
+    "name": "PerfLens",
+    "version": "2.0",
+    "goal": "Turn PerfLens into a trustworthy production-grade website performance and engineering audit platform whose measurements, classifications, scores, recommendations, reports, and persisted data are evidence-backed, traceable, reproducible, and internally consistent.",
+    "definition_of_done": [
+      "All P0 and P1 tasks pass their acceptance criteria.",
+      "No known critical measurement, unit, source, scoring, recommendation, security, or persistence defects remain.",
+      "Fresh scans of the regression domains complete without runtime errors.",
+      "Backend JSON, database records, frontend presentation, and PDF reports agree on the same underlying results.",
+      "Every quantitative claim is traceable to measured evidence or explicitly labeled as a model with assumptions.",
+      "No hardcoded domain-specific results, localhost production URLs, fabricated metrics, or fabricated optimization savings remain.",
+      "npm test, npm run lint, and npm run build pass.",
+      "A final production-readiness report documents remaining limitations and explicitly confirms whether the system is safe to demo and deploy."
+    ]
+  },
+  "product": {
+    "problem": "Existing website audits can produce plausible-looking numbers while hiding unit errors, false positives, unsupported recommendations, inconsistent scoring, source ambiguity, and differences between lab and field measurements.",
+    "promise": "PerfLens should tell a developer what was measured, how it was measured, what evidence supports the finding, how confident the system is, what action is justified, and what improvement can or cannot be quantified.",
+    "non_goals": [
+      "Do not redesign the existing UI/UX.",
+      "Do not replace the product with a different architecture without evidence.",
+      "Do not optimize for having every metric populated.",
+      "Do not imitate Google Lighthouse scores.",
+      "Do not claim real-user performance from a single synthetic lab run.",
+      "Do not manufacture estimates merely to make reports look complete."
+    ]
+  },
+  "engineering_principles": [
+    "Evidence before recommendation.",
+    "One source of truth for metric definitions and thresholds.",
+    "One canonical internal unit per metric.",
+    "Unavailable is not zero.",
+    "Measured is not modeled.",
+    "Transfer savings are not FCP/LCP savings.",
+    "Lab data is not field data.",
+    "Frontend and PDF render backend truth; they do not silently recalculate it.",
+    "No hardcoded domain-specific behavior.",
+    "Prefer N/A with an explanation over fabricated data.",
+    "Tests must validate real production data paths, not only isolated helper functions.",
+    "Fix root causes before downstream symptoms.",
+    "Do not mark a task passed without objective acceptance evidence."
+  ],
+  "architecture": {
+    "pipeline": [
+      "URL",
+      "Browser/Puppeteer",
+      "Metric/resource collectors",
+      "Analyzer layer",
+      "Normalization",
+      "Classification",
+      "Evidence model",
+      "Score engine",
+      "Recommendation engine",
+      "Persistence",
+      "API",
+      "Frontend",
+      "PDF/JSON validation"
+    ],
+    "canonical_cwv": {
+      "core_web_vitals": [
+        "LCP",
+        "INP",
+        "CLS"
+      ],
+      "other_performance_metrics": [
+        "FCP",
+        "TBT",
+        "TTFB"
+      ],
+      "thresholds": {
+        "LCP": {
+          "good_max_ms": 2500,
+          "needs_improvement_max_ms": 4000
+        },
+        "INP": {
+          "good_max_ms": 200,
+          "needs_improvement_max_ms": 500
+        },
+        "CLS": {
+          "good_max": 0.1,
+          "needs_improvement_max": 0.25
+        }
+      },
+      "units": {
+        "LCP": "ms",
+        "INP": "ms",
+        "CLS": "unitless",
+        "FCP": "ms",
+        "TBT": "ms",
+        "TTFB": "ms"
+      }
+    },
+    "source_labels": [
+      "puppeteer",
+      "performance_observer",
+      "lighthouse",
+      "pagespeed",
+      "crux",
+      "unknown"
+    ],
+    "modes": [
+      "lab",
+      "field"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "priority": "P0",
+      "title": "Establish audit and baseline",
+      "status": "completed",
+      "acceptance": [
+        "Current analyzer architecture is documented.",
+        "Current production scan path is traced.",
+        "Known historical defects are documented.",
+        "Fresh baseline reports are retained for regression comparison."
+      ]
+    },
+    {
+      "id": "TASK-002",
+      "priority": "P0",
+      "title": "Fix historical metric and validation defects",
+      "status": "completed",
+      "acceptance": [
+        "Historical 1.9s LCP is GOOD.",
+        "Historical 7.2s TTI/interactive value cannot become INP.",
+        "CLS 0 is valid GOOD data.",
+        "Unavailable values do not silently become zero.",
+        "Tests cover historical regressions."
+      ]
+    },
+    {
+      "id": "TASK-003",
+      "priority": "P1",
+      "title": "Centralize frontend API base URL",
+      "status": "completed",
+      "acceptance": [
+        "No hardcoded localhost backend URL remains in src.",
+        "API base is centralized.",
+        "Tests, lint, and production build pass."
+      ]
+    },
+    {
+      "id": "TASK-004",
+      "priority": "P1",
+      "title": "Remove deprecated root MongoDB dependency",
+      "status": "completed",
+      "acceptance": [
+        "Confirm whether the deprecated MongoDB package is actually unused.",
+        "Remove only if safe.",
+        "Server dependencies remain functional.",
+        "Install/test/build pass.",
+        "No database runtime regression."
+      ]
+    },
+    {
+      "id": "TASK-005",
+      "priority": "P0",
+      "title": "Core Web Vitals production correctness",
+      "status": "completed",
+      "acceptance": [
+        "LCP is collected from real LCP performance entries.",
+        "INP is never sourced from TTI, interactive, TBT, FCP, or arbitrary fallback.",
+        "CLS uses real layout-shift data and appropriate session-window logic.",
+        "LCP, INP, CLS use canonical units.",
+        "Thresholds are centralized and boundary-tested.",
+        "Lab and field data are explicit per metric.",
+        "Unavailable metrics use null/N/A and do not receive a semantic poor score.",
+        "Frontend, API, DB, JSON, and PDF preserve source/mode/value/unit/status/reason.",
+        "Fresh scans of google.com, react.dev, github.com, and developer.mozilla.org are captured.",
+        "Extreme values such as MDN LCP 21.46s are accompanied by actual evidence before being accepted.",
+        "No regression to the historical CWV bugs."
+      ]
+    },
+    {
+      "id": "TASK-006",
+      "priority": "P0",
+      "title": "Recommendation engine evidence and estimate correctness",
+      "status": "completed",
+      "acceptance": [
+        "Every recommendation originates from a real finding.",
+        "Every recommendation contains evidence, category, severity, confidence, and potential impact.",
+        "Large JS does not automatically imply unminified, unused, or code-splitting problems.",
+        "Unused JS claims require actual coverage/source-map evidence.",
+        "Render-blocking JS claims identify actual blocking resources.",
+        "TBT recommendations trace to long-task evidence where possible.",
+        "LCP recommendations use actual LCP-element evidence.",
+        "CLS recommendations identify affected elements where possible.",
+        "INP recommendations never use TTI/TBT/FCP as a substitute.",
+        "SEO and accessibility recommendations are not represented as performance savings.",
+        "Transfer-time estimates are explicitly labeled TRANSFER_ONLY.",
+        "No unsupported numeric savings remain.",
+        "Measured, modeled, heuristic, transfer-only, and unquantified estimates are distinct.",
+        "PDF/JSON/frontend recommendation data match."
+      ]
+    },
+    {
+      "id": "TASK-007",
+      "priority": "P0",
+      "title": "Performance analyzer correctness",
+      "status": "completed",
+      "acceptance": [
+        "Performance analyzer consumes canonical metric results.",
+        "It does not duplicate conflicting threshold logic.",
+        "LCP/FCP/TBT/TTFB timing values are traceable to browser data.",
+        "Long-task/TBT diagnostics are available when supported.",
+        "Timing failures are represented as unavailable rather than zero.",
+        "No metric is silently substituted for another.",
+        "Performance findings explain their evidence."
+      ]
+    },
+    {
+      "id": "TASK-008",
+      "priority": "P1",
+      "title": "SEO and Meta analyzer evidence overhaul",
+      "status": "completed",
+      "acceptance": [
+        "Title is checked from rendered DOM.",
+        "Meta description is checked from rendered DOM.",
+        "Canonical is checked and validated from rendered DOM.",
+        "Robots meta and robots.txt are distinguished.",
+        "Heading structure is reported without overstating non-errors.",
+        "HTML language is checked.",
+        "Open Graph metadata is categorized separately from ranking claims.",
+        "Relevant internal links are analyzed without inventing crawl results.",
+        "Every SEO finding includes selector/raw DOM evidence.",
+        "Failed parsing is not treated as missing metadata.",
+        "No recommendation is produced without evidence."
+      ]
+    },
+    {
+      "id": "TASK-009",
+      "priority": "P1",
+      "title": "Accessibility analyzer correctness",
+      "status": "completed",
+      "acceptance": [
+        "Rendered DOM is the source for DOM-level findings.",
+        "Missing alt findings identify actual elements.",
+        "Form controls have associated accessible names where applicable.",
+        "Buttons/links are distinguishable and actionable.",
+        "Landmarks and heading structure are evaluated with defensible rules.",
+        "ARIA findings are not overgeneralized.",
+        "Selectors/evidence are included.",
+        "Analyzer does not crash inside page.evaluate due to unavailable server-side helpers.",
+        "Accessibility recommendations are not presented as performance savings."
+      ]
+    },
+    {
+      "id": "TASK-010",
+      "priority": "P1",
+      "title": "Image optimization analyzer correctness",
+      "status": "completed",
+      "acceptance": [
+        "No images is distinguished from image-resource measurement failure.",
+        "Actual image URLs, dimensions, formats, transfer sizes, and loading attributes are captured where available.",
+        "Natural dimensions versus rendered dimensions are distinguished.",
+        "Lazy-loading recommendations require evidence.",
+        "Modern-format recommendations require evidence.",
+        "Oversized-image recommendations identify affected resources.",
+        "Cached/unavailable resource timing is not converted to 0 KB."
+      ]
+    },
+    {
+      "id": "TASK-011",
+      "priority": "P1",
+      "title": "JavaScript analyzer correctness",
+      "status": "completed",
+      "acceptance": [
+        "Total JS size is measured separately from minification state.",
+        "Minification is never inferred solely from payload size.",
+        "Unused JS is never inferred from payload size.",
+        "Async/defer/module attributes are inspected.",
+        "Resource-level evidence is retained.",
+        "Compression and transfer sizes are distinguished from source sizes.",
+        "Recommendations use measured evidence."
+      ]
+    },
+    {
+      "id": "TASK-012",
+      "priority": "P1",
+      "title": "CSS analyzer correctness",
+      "status": "completed",
+      "acceptance": [
+        "CSS size is measured correctly.",
+        "Minification is not inferred solely from file size.",
+        "Render-blocking CSS is identified from actual HTML/resource behavior.",
+        "Unused CSS claims require coverage or equivalent evidence.",
+        "Critical CSS recommendations require evidence.",
+        "Zero-size and unavailable resource timing are distinguished."
+      ]
+    },
+    {
+      "id": "TASK-013",
+      "priority": "P1",
+      "title": "Network and waterfall analyzer",
+      "status": "completed",
+      "acceptance": [
+        "Requests include URL, type, status, timing, transfer size, cache information where available, and initiator when available.",
+        "DNS/TCP/TLS/TTFB timing is not fabricated.",
+        "Cached resources are identified where browser evidence permits.",
+        "Failed timing entries are represented as unavailable.",
+        "Waterfall ordering is consistent with browser timestamps.",
+        "Network findings link to actual resources."
+      ]
+    },
+    {
+      "id": "TASK-014",
+      "priority": "P1",
+      "title": "Bundle analyzer",
+      "status": "completed",
+      "acceptance": [
+        "Bundle/chunk sizes are real.",
+        "Compression sizes are distinguished from raw sizes.",
+        "Source-map/module analysis is used when available.",
+        "Duplicate/unused-module findings require evidence.",
+        "No arbitrary unused-code percentage is used.",
+        "Recommendations link to actual chunks/modules."
+      ]
+    },
+    {
+      "id": "TASK-015",
+      "priority": "P0",
+      "title": "Score analyzer correctness and explainability",
+      "status": "completed",
+      "acceptance": [
+        "All score inputs come from canonical metric results.",
+        "Unavailable metrics are not treated as poor.",
+        "Available metric score 0 remains distinct from unavailable score null.",
+        "Weighted contributions are calculated only for available metrics.",
+        "Weight normalization is deterministic.",
+        "Overall score is bounded to 0-100.",
+        "Formula is documented.",
+        "PerfLens scores are never labeled as Google Lighthouse scores.",
+        "Frontend/PDF show score inputs and contributions sufficiently to audit the result.",
+        "Score behavior is tested when metrics are missing."
+      ]
+    },
+    {
+      "id": "TASK-016",
+      "priority": "P0",
+      "title": "Cross-analyzer contract and data integrity",
+      "status": "completed",
+      "acceptance": [
+        "Every analyzer has a canonical result contract.",
+        "Raw value, normalized value, unit, status, source, mode, evidence, reason, and availability are preserved where relevant.",
+        "No analyzer silently changes another analyzer's values.",
+        "No duplicate/conflicting threshold definitions remain.",
+        "JSON, API, DB, frontend, and PDF agree."
+      ]
+    },
+    {
+      "id": "TASK-017",
+      "priority": "P0",
+      "title": "Fresh regression and adversarial scan suite",
+      "status": "completed",
+      "acceptance": [
+        "Fresh scans cover google.com, react.dev, github.com, developer.mozilla.org, news.ycombinator.com, vercel.com, and at least one additional stable site.",
+        "No site-specific hardcoded expectations are used for production calculations.",
+        "Same URL scans are repeated enough to detect structural instability.",
+        "Expected variance is distinguished from logic errors.",
+        "Impossible units, negative values, impossible classifications, and unavailable-as-zero defects are detected.",
+        "Stale reports are excluded from validation."
+      ]
+    },
+    {
+      "id": "TASK-018",
+      "priority": "P1",
+      "title": "Report and validation integrity",
+      "status": "completed",
+      "acceptance": [
+        "PDF is generated from current backend result.",
+        "JSON and PDF values match.",
+        "Validation reports contain raw evidence and source metadata.",
+        "Reports clearly separate CWV from other performance metrics.",
+        "Reports distinguish lab from field data.",
+        "Report timestamps and analyzer versions are recorded.",
+        "No stale report is presented as a fresh scan."
+      ]
+    },
+    {
+      "id": "TASK-019",
+      "priority": "P0",
+      "title": "Security and production configuration",
+      "status": "completed",
+      "acceptance": [
+        "No frontend secret/service-role credential exposure.",
+        "PageSpeed API keys remain server-side.",
+        "Production API URL is environment-driven.",
+        "CORS, authentication, authorization, and report ownership are validated.",
+        "URL scanning prevents unsafe internal/private network targets as appropriate.",
+        "SSRF protections are implemented for server-side URL fetching.",
+        "Input validation and request limits exist.",
+        "Sensitive scan/error data is not leaked.",
+        "Production environment does not depend on localhost."
+      ]
+    },
+    {
+      "id": "TASK-020",
+      "priority": "P1",
+      "title": "Performance and reliability of PerfLens itself",
+      "status": "completed",
+      "acceptance": [
+        "Concurrent scans are bounded.",
+        "Browser instances/pages are cleaned up.",
+        "Timeouts are explicit.",
+        "PageSpeed timeout/fallback behavior is deterministic.",
+        "One analyzer failure does not destroy unrelated valid results.",
+        "Errors are observable and attached to analyzer diagnostics.",
+        "Memory/resource leaks are investigated."
+      ]
+    },
+    {
+      "id": "TASK-021",
+      "priority": "P1",
+      "title": "Production deployment validation",
+      "status": "completed",
+      "acceptance": [
+        "Production frontend can reach the configured API.",
+        "Authentication works in production configuration.",
+        "A complete scan works from production UI.",
+        "PDF export works.",
+        "Supabase persistence works.",
+        "History/report retrieval works.",
+        "No localhost dependency remains.",
+        "Environment variables are documented."
+      ]
+    },
+    {
+      "id": "TASK-022",
+      "priority": "P0",
+      "title": "Final clean-room audit",
+      "status": "completed",
+      "acceptance": [
+        "Stop all old/stale backend processes.",
+        "Start the current production code from a clean state.",
+        "Delete or isolate stale validation artifacts.",
+        "Run fresh scans.",
+        "Compare raw values through the complete pipeline.",
+        "Verify frontend/API/DB/PDF consistency.",
+        "Verify no hardcoded domain-specific logic.",
+        "Run all tests, lint, and build.",
+        "Produce FINAL_PRODUCTION_READINESS_REPORT.md.",
+        "Do not mark project complete if any P0/P1 acceptance criterion fails."
+      ]
+    }
+  ],
+  "validation": {
+    "required_commands": [
+      "npm test",
+      "npm run lint",
+      "npm run build"
+    ],
+    "regression_domains": [
+      "https://www.google.com",
+      "https://react.dev",
+      "https://github.com",
+      "https://developer.mozilla.org",
+      "https://news.ycombinator.com",
+      "https://vercel.com"
+    ],
+    "required_artifacts": [
+      "AUDIT_REPORT.md",
+      "CWV_AUDIT.md",
+      "CWV_FINAL_VALIDATION_REPORT.md",
+      "RECOMMENDATION_AUDIT.md",
+      "RECOMMENDATION_VALIDATION_REPORT.md",
+      "FINAL_PRODUCTION_READINESS_REPORT.md"
+    ]
+  },
+  "ralph_loop": {
+    "mode": "continuous_until_definition_of_done",
+    "rules": [
+      "Read prd.json before every iteration.",
+      "Select the highest-priority incomplete task whose prerequisites are satisfied.",
+      "Inspect before editing.",
+      "Implement the smallest root-cause fix.",
+      "Run targeted tests first.",
+      "Run full test/lint/build gates after meaningful changes.",
+      "Perform fresh runtime validation for analyzer changes.",
+      "Only set passes=true after objective acceptance criteria are satisfied.",
+      "If a test passes but runtime evidence fails, the task remains incomplete.",
+      "If a task reveals a dependency defect, create or update the appropriate prerequisite task rather than masking it.",
+      "Never start a later task merely because an earlier task has compilation success.",
+      "Never mark a task complete because a report looks plausible.",
+      "Never fabricate missing measurements.",
+      "Never modify unrelated UI/UX unless required for correctness.",
+      "Continue until all required P0/P1 tasks pass or a genuine external blocker is documented."
+    ]
+  },
+  "gsd": {
+    "role": "planning_and_execution_quality",
+    "rules": [
+      "Before each substantial task, inspect repository state and current PRD status.",
+      "Create a concise implementation plan tied directly to acceptance criteria.",
+      "Identify affected files and dependencies before editing.",
+      "Prefer incremental changes over rewrites.",
+      "After implementation, verify the plan against actual behavior.",
+      "Record deviations and newly discovered root causes.",
+      "Do not treat passing unit tests as proof of browser/runtime correctness.",
+      "For analyzer work, require evidence-level validation.",
+      "Preserve existing visual identity unless correctness requires a minimal presentation change.",
+      "Update documentation and validation artifacts after completing a major analyzer."
+    ]
+  }
+}

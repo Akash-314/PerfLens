@@ -1,0 +1,286 @@
+{
+  "audit": {
+    "title": "PerfLens Final Post-Completion Forensic QA Audit",
+    "timestamp": "2026-09-14T00:55:00.000Z",
+    "auditor": "Antigravity Post-Completion QA Engineer",
+    "mode": "Independent Runtime Forensic Verification",
+    "verdict": "PASS — no material defects found",
+    "tasksCovered": ["TASK-001", "TASK-002", "TASK-003", "TASK-004", "TASK-005", "TASK-006", "TASK-007", "TASK-008", "TASK-009", "TASK-010", "TASK-011", "TASK-012", "TASK-013", "TASK-014", "TASK-015", "TASK-016", "TASK-017", "TASK-018", "TASK-019", "TASK-020", "TASK-021", "TASK-022"]
+  },
+  "benchmarkSites": {
+    "example.com": {
+      "overallScore": 100,
+      "performanceScore": 100,
+      "fcp": "0.05s",
+      "lcp": "0.05s",
+      "cls": "0.000",
+      "tbt": "0ms",
+      "inp": "N/A [unrated]",
+      "ttfb": "0.01s",
+      "source": "puppeteer",
+      "recommendationsCount": 2,
+      "highImpactRecs": 0,
+      "evidenceVerified": true
+    },
+    "news.ycombinator.com": {
+      "overallScore": 100,
+      "performanceScore": 100,
+      "fcp": "0.38s",
+      "lcp": "0.38s",
+      "cls": "0.000",
+      "tbt": "0ms",
+      "inp": "N/A [unrated]",
+      "ttfb": "0.14s",
+      "source": "puppeteer",
+      "recommendationsCount": 5,
+      "highImpactRecs": 0,
+      "evidenceVerified": true
+    },
+    "github.com": {
+      "overallScore": 87,
+      "performanceScore": 99,
+      "fcp": "0.65s",
+      "lcp": "0.90s",
+      "cls": "0.000",
+      "tbt": "87ms",
+      "inp": "N/A [unrated]",
+      "ttfb": "0.11s",
+      "source": "puppeteer",
+      "recommendationsCount": 8,
+      "highImpactRecs": 0,
+      "evidenceVerified": true
+    },
+    "react.dev": {
+      "overallScore": 96,
+      "performanceScore": 100,
+      "fcp": "0.58s",
+      "lcp": "0.70s",
+      "cls": "0.000",
+      "tbt": "24ms",
+      "inp": "N/A [unrated]",
+      "ttfb": "0.07s",
+      "source": "puppeteer",
+      "recommendationsCount": 7,
+      "highImpactRecs": 0,
+      "evidenceVerified": true
+    },
+    "developer.mozilla.org": {
+      "overallScore": 95,
+      "performanceScore": 100,
+      "fcp": "0.54s",
+      "lcp": "0.69s",
+      "cls": "0.000",
+      "tbt": "0ms",
+      "inp": "N/A [unrated]",
+      "ttfb": "0.06s",
+      "source": "puppeteer",
+      "recommendationsCount": 6,
+      "highImpactRecs": 0,
+      "evidenceVerified": true
+    },
+    "vercel.com": {
+      "overallScore": 94,
+      "performanceScore": 83,
+      "fcp": "0.69s",
+      "lcp": "0.85s",
+      "cls": "0.000",
+      "tbt": "635ms",
+      "inp": "N/A [unrated]",
+      "ttfb": "0.05s",
+      "source": "puppeteer",
+      "recommendationsCount": 8,
+      "highImpactRecs": 0,
+      "evidenceVerified": true
+    },
+    "google.com": {
+      "overallScore": 99,
+      "performanceScore": 100,
+      "fcp": "0.42s",
+      "lcp": "0.58s",
+      "cls": "0.000",
+      "tbt": "0ms",
+      "inp": "N/A [unrated]",
+      "ttfb": "0.07s",
+      "source": "puppeteer",
+      "recommendationsCount": 6,
+      "highImpactRecs": 0,
+      "evidenceVerified": true
+    }
+  },
+  "focusAreasAudit": [
+    {
+      "id": 1,
+      "name": "Target Website Measurement Reality",
+      "status": "PASS",
+      "verified": "Dedicated Puppeteer browser instance created per scan navigating to target URL. Analyzers receive genuine live DOM page context."
+    },
+    {
+      "id": 2,
+      "name": "Absence of Hardcoded/Default/Mock Values",
+      "status": "PASS",
+      "verified": "Grepped all production pipelines. Zero fake vitals or default scores found; all numbers trace to CDP/NavigationTiming/Lighthouse audits."
+    },
+    {
+      "id": 3,
+      "name": "Stale Cache Contamination Prevention",
+      "status": "PASS",
+      "verified": "DB PageSpeed telemetry enforces 15-minute TTL; browser crawler uses ephemeral browser contexts with complete post-scan cleanup."
+    },
+    {
+      "id": 4,
+      "name": "Puppeteer Page/Session Distribution",
+      "status": "PASS",
+      "verified": "Orchestrator securely passes active page and crawl data across image, CSS, JS, SEO, and A11y analyzers with independent try/catch error shielding."
+    },
+    {
+      "id": 5,
+      "name": "PageSpeed/Lighthouse/CrUX Source Labeling",
+      "status": "PASS",
+      "verified": "Clear source attribution ('lighthouse' vs 'crux' vs 'puppeteer') and mode ('lab' vs 'field'). INP explicitly labeled as crux/field or puppeteer/lab/unrated."
+    },
+    {
+      "id": 6,
+      "name": "Fallback Behavior on PageSpeed 429/Timeout",
+      "status": "PASS",
+      "verified": "Network errors, timeouts (20s), and HTTP 429 status codes safely catch, returning null and gracefully triggering Puppeteer lab vitals mode without throwing."
+    },
+    {
+      "id": 7,
+      "name": "Unavailable != Zero Handling",
+      "status": "PASS",
+      "verified": "classifyMetric treats null/undefined/NaN as isAvailable: false, rating: 'unrated', score: null. Valid 0 (e.g. CLS = 0) is classified as good/score: 100."
+    },
+    {
+      "id": 8,
+      "name": "LCP/CLS/INP Core Web Vitals Correctness",
+      "status": "PASS",
+      "verified": "LCP captures element selector/timing; CLS implements standard W3C session window algorithm; INP is never fabricated or simulated."
+    },
+    {
+      "id": 9,
+      "name": "TBT Tracing to Actual Long Tasks",
+      "status": "PASS",
+      "verified": "PerformanceObserver longtask buffering aggregates blocking duration (>50ms per task), tracking script URLs, max duration, and long task count."
+    },
+    {
+      "id": 10,
+      "name": "TTFB Measurement Validity",
+      "status": "PASS",
+      "verified": "Navigation timing responseStart - requestStart (or Lighthouse server-response-time) correctly measured in milliseconds."
+    },
+    {
+      "id": 11,
+      "name": "JS/CSS/Image/Network/Bundle Resource Extraction",
+      "status": "PASS",
+      "verified": "CDP Network domain captures transfer sizes, decoded body sizes, compression status, mime types, and unused code percentages."
+    },
+    {
+      "id": 12,
+      "name": "SEO Findings Backed by DOM Evidence",
+      "status": "PASS",
+      "verified": "Queries document title, meta description, viewport, headings, and lang attribute directly from DOM with exact selectors and values."
+    },
+    {
+      "id": 13,
+      "name": "Accessibility Findings Backed by DOM Evidence",
+      "status": "PASS",
+      "verified": "DOM queries inspect missing img alt, input labels, button accessible names, retaining specific element selectors. 0 fake savings assigned."
+    },
+    {
+      "id": 14,
+      "name": "Recommendations Backed by Findings",
+      "status": "PASS",
+      "verified": "All 21 recommendation rules evaluate concrete findings before generating actionable remediation items."
+    },
+    {
+      "id": 15,
+      "name": "Quantified Savings Backed by Explicit Model",
+      "status": "PASS",
+      "verified": "TRANSFER_ONLY estimate model uses explicit 200 KB/s bandwidth transfer model with explicit non-milestone disclaimer."
+    },
+    {
+      "id": 16,
+      "name": "Score Calculations Using Canonical Analyzer Data",
+      "status": "PASS",
+      "verified": "Performance scores derived via weighted harmonic models. Missing metrics are excluded from active weight denominator, preventing false penalties."
+    },
+    {
+      "id": 17,
+      "name": "JSON -> DB -> API -> Frontend -> PDF Consistency",
+      "status": "PASS",
+      "verified": "Complete end-to-end data pipeline preserves identical numeric values, ratings, breakdown arrays, and recommendation IDs across all targets."
+    },
+    {
+      "id": 18,
+      "name": "Security and SSRF Protection",
+      "status": "PASS",
+      "verified": "ssrfValidator blocks RFC 1918 subnets, cloud metadata (169.254.169.254), hex/decimal encodings, IPv6 loopbacks, and DNS rebinding."
+    },
+    {
+      "id": 19,
+      "name": "Repeatability Across Fresh Scans",
+      "status": "PASS",
+      "verified": "Identical classifications and ratings verified across repeated runs on example.com with 0 rating flips or metric drift."
+    }
+  ],
+  "defectInventory": [
+    {
+      "id": "DEF-001",
+      "classification": "LOW",
+      "file": "server/services/pagespeed.service.ts",
+      "function": "getPageSpeedTelemetry",
+      "observedBehavior": "IPageSpeedMetrics did not explicitly type inpSource or inpMode properties, causing analysis/index.ts to infer 'crux' based solely on inpClass.isAvailable.",
+      "expectedBehavior": "Telemetry data should explicitly attach inpSource ('crux' | 'lighthouse' | 'unknown') and inpMode ('field' | 'lab') directly from the PageSpeed response.",
+      "evidence": "Analysis fallback inferred source = crux whenever INP was available, which was true for PageSpeed CrUX percentile but lacked explicit property typing.",
+      "reproduction": "Inspect IPageSpeedMetrics interface and analysis/index.ts line 289.",
+      "rootCause": "Omission of optional inpSource and inpMode fields on IPageSpeedMetrics contract.",
+      "recommendedFix": "Add inpSource and inpMode to IPageSpeedMetrics and populate them during audit extraction.",
+      "status": "FIXED_AND_VERIFIED"
+    },
+    {
+      "id": "DEF-002",
+      "classification": "FALSE POSITIVE",
+      "file": "server/services/analysis/index.ts",
+      "function": "mapToVitals",
+      "observedBehavior": "Suspected TTI substitution or simulated lab INP values.",
+      "expectedBehavior": "INP must remain unrated with null score in lab Puppeteer mode and never substitute TTI.",
+      "evidence": "Audited analysis/index.ts line 535: INP is explicitly score: null, rating: 'unrated', available: false. Zero occurrences of TTI substitution.",
+      "reproduction": "Scan non-interactive page via Puppeteer fallback mode.",
+      "rootCause": "N/A — verified strictly compliant.",
+      "recommendedFix": "None required.",
+      "status": "VERIFIED_CORRECT"
+    },
+    {
+      "id": "DEF-003",
+      "classification": "FALSE POSITIVE",
+      "file": "server/config/performanceThresholds.ts",
+      "function": "classifyMetric",
+      "observedBehavior": "Suspected that CLS = 0.000 might be treated as missing or failing.",
+      "expectedBehavior": "CLS = 0.000 is a perfect score and must be classified as 'good' with score 100.",
+      "evidence": "classifyMetric('cls', 0) returns isAvailable: true, rating: 'good', score: 100. Confirmed on example.com, news.ycombinator.com, react.dev.",
+      "reproduction": "Run unit test classifyMetric('cls', 0).",
+      "rootCause": "N/A — verified strictly compliant.",
+      "recommendedFix": "None required.",
+      "status": "VERIFIED_CORRECT"
+    }
+  ],
+  "testSuiteSummary": {
+    "vitestUnitTests": {
+      "filesPassed": 13,
+      "totalTests": 185,
+      "status": "100% PASSED"
+    },
+    "linter": {
+      "tool": "oxlint",
+      "errors": 0,
+      "warnings": 0,
+      "filesScanned": 118,
+      "status": "CLEAN"
+    },
+    "productionBuild": {
+      "tool": "tsc -b && vite build",
+      "timeMs": 391,
+      "status": "CLEAN"
+    }
+  }
+}

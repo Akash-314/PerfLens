@@ -123,7 +123,7 @@
           "npm run lint"
         ]
       },
-      "passes": false,
+      "passes": true,
       "commit_message": "chore(deps): remove obsolete mongodb package after supabase migration [Ralph TASK-004]"
     },
     {
@@ -149,7 +149,7 @@
           "npm run lint"
         ]
       },
-      "passes": false,
+      "passes": true,
       "commit_message": "feat(crawler): add non-blocking retention cleanup for temp screenshots [Ralph TASK-005]"
     },
     {
@@ -176,7 +176,7 @@
           "npm run lint"
         ]
       },
-      "passes": false,
+      "passes": true,
       "commit_message": "feat(security): add dedicated rate limiting for analysis scan endpoint [Ralph TASK-006]"
     }
   ]

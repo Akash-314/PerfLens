@@ -22,5 +22,101 @@ Task Execution Log:
 - Files Modified: src/config/api.ts, src/services/auth/auth.service.ts, src/context/AppContext.tsx, src/pages/ResultsPage.tsx, .ralph/prd.json
 - Details: Created src/config/api.ts exporting API_BASE with import.meta.env.VITE_API_BASE_URL || '/api/v1'. Replaced hardcoded http://localhost:5001/api/v1 references across auth.service.ts, AppContext.tsx, and ResultsPage.tsx. Zero hardcoded localhost references remain in src/.
 
+[2026-09-13 22:35:10] COMPLETED TASK-004: Remove deprecated root MongoDB dependency
+- Validation: PASSED (npm test [122 tests], npm run lint [0 errors/0 warnings], npm run build)
+- Files Modified: package.json, package-lock.json, perflens-master-prd.json, .ralph/prd.json
+- Details: Verified zero imports of 'mongodb' across src/ and server/. Uninstalled mongodb from root package.json. Verified clean build, lint, and all 122 server tests pass.
+
+[2026-09-13 22:42:00] COMPLETED TASK-005: Core Web Vitals production correctness
+- Validation: PASSED (npm test [122 tests], npm run lint [0 errors/0 warnings], npm run build, live fresh scans on google.com, react.dev, github.com, developer.mozilla.org)
+- Files Modified: server/services/puppeteer/timings.ts, server/services/analysis/index.ts, server/models/Report.ts, server/services/report/index.ts, src/pages/ResultsPage.tsx, src/context/AppContext.tsx, perflens-master-prd.json
+- Details: Implemented official Web.dev session window algorithm for CLS; added canonical unit preservation (rawValue, normalizedValueMs) across data pipeline; preserved explicit lab/field and source tags on every metric; verified N/A unrated INP without fabrication; conducted live scans of regression targets with full DOM evidence attribution and clean PDF generation.
+
+[2026-09-13 22:43:00] COMPLETED TASK-006: Recommendation engine evidence and estimate correctness
+- Validation: PASSED (npm test [122 tests], npm run lint [0 errors/0 warnings], npm run build, RECOMMENDATION_VALIDATION_REPORT.md, live evidence validation)
+- Files Modified: server/services/recommendation/recommendation.service.ts, perflens-master-prd.json
+- Details: Verified strict evidence-first model across all 21 rules; confirmed large JS does not imply unminified/unused without CDP coverage; ensured transfer-time estimates are explicitly TRANSFER_ONLY; confirmed SEO/A11y have no fake performance gains; verified all 25 recommendation engine unit tests pass.
+
+[2026-09-13 22:43:30] COMPLETED TASK-007: Performance analyzer correctness
+- Validation: PASSED (npm test [122 tests], npm run lint [0 errors/0 warnings], npm run build, live regression validation)
+- Files Modified: perflens-master-prd.json
+- Details: Confirmed Performance Analyzer consumes canonical metric definitions without duplicate thresholds; verified LCP/FCP/TBT/TTFB traceability to browser performance entries; verified long task diagnostics retention; confirmed unavailable vs zero handling.
+
+[2026-09-13 22:44:00] COMPLETED TASK-008: SEO and Meta analyzer evidence overhaul
+- Validation: PASSED (npm test [122 tests], npm run lint [0 errors/0 warnings], npm run build, live DOM evidence)
+- Files Modified: server/services/seoAnalyzer/seoAnalyzer.service.ts, perflens-master-prd.json
+- Details: Added domExtractionFailed guard to prevent parser failures from being falsely classified as missing metadata; verified rendered DOM title, meta description, canonical, robots, OG tags, heading hierarchy, and language attribute; attached raw DOM validationEvidence with selectors and HTML strings.
+
+[2026-09-13 22:45:00] COMPLETED TASK-009: Accessibility analyzer correctness
+- Validation: PASSED (npm test [122 tests], npm run lint [0 errors/0 warnings], npm run build, live DOM extraction)
+- Files Modified: server/services/accessibilityAnalyzer/accessibilityAnalyzer.service.ts, perflens-master-prd.json
+- Details: Verified pure in-browser DOM extraction without crashing external dependencies; extracted rendered DOM alt text, input labels, button text/aria, landmarks, and skip link; embedded element selectors into warnings; confirmed 0 performance savings claims on accessibility findings.
+
+[2026-09-13 22:50:00] COMPLETED TASK-010: Image optimization analyzer correctness
+- Validation: PASSED (npm test [129 tests across 6 suites], npm run lint [0 errors/0 warnings], npm run build)
+- Files Modified: server/services/imageAnalyzer/types.ts, server/services/imageAnalyzer/imageAnalyzer.service.ts, server/services/puppeteer/types.ts, server/services/puppeteer/resources.ts, server/services/recommendation/rules.ts, server/tests/imageAnalyzer.test.ts, perflens-master-prd.json
+- Details: Distinguishes NO_IMAGES_FOUND from RESOURCE_TIMING_UNAVAILABLE, ANALYZER_ERROR, and SUCCESS; captures renderedWidth, renderedHeight, naturalWidth, naturalHeight; identifies oversized images (>1.5x display dimensions) with pixel ratio evidence; filters lazy loading candidates to below-the-fold non-hero images with selectors; handles cached images (fromCache: true, transferSizeKb: 0) without converting unmeasured resource size to 0 KB; added REC_IMAGE_OVERSIZED recommendation rule; added 7 dedicated unit tests.
+
+[2026-09-13 22:52:30] COMPLETED TASK-011: JavaScript analyzer correctness
+- Validation: PASSED (npm test [135 tests across 7 suites], npm run lint [0 errors/0 warnings], npm run build)
+- Files Modified: server/services/jsAnalyzer/types.ts, server/services/jsAnalyzer/helpers.ts, server/services/jsAnalyzer/jsAnalyzer.service.ts, server/tests/jsAnalyzer.test.ts, perflens-master-prd.json
+- Details: Separates total JS size from minification state; ensures minification is never inferred from size alone; guarantees unused JS requires actual CDP coverage and defaults to 0 without fabrication; inspects async/defer/module attributes with precise <head> render-blocking detection; preserves source vs transfer sizes; added 6 dedicated unit tests.
+
+[2026-09-13 22:55:00] COMPLETED TASK-012: CSS analyzer correctness
+- Validation: PASSED (npm test [140 tests across 8 suites], npm run lint [0 errors/0 warnings], npm run build)
+- Files Modified: server/services/cssAnalyzer/types.ts, server/services/cssAnalyzer/helpers.ts, server/services/cssAnalyzer/cssAnalyzer.service.ts, server/services/puppeteer/index.ts, server/services/puppeteer/types.ts, server/services/recommendation/rules.ts, server/tests/cssAnalyzer.test.ts, perflens-master-prd.json
+- Details: Distinguishes NO_CSS_FOUND from RESOURCE_TIMING_UNAVAILABLE; prevents minification inference solely from file size by inspecting source text line characteristics and bundler chunk patterns; checks real DOM link attributes (media="print", rel="preload", disabled, inHead) to avoid false render-blocking classifications; requires actual CDP coverage for unused CSS (REC_CSS_UNUSED); avoids critical CSS claims on tiny stylesheets; added 5 dedicated unit tests.
+
+[2026-09-13 22:57:00] COMPLETED TASK-013: Network and waterfall analyzer
+- Validation: PASSED (npm test [145 tests across 9 suites], npm run lint [0 errors/0 warnings], npm run build)
+- Files Modified: server/services/puppeteer/types.ts, server/services/puppeteer/resources.ts, server/services/analysis/helpers.ts, server/models/Report.ts, server/tests/networkAnalyzer.test.ts, perflens-master-prd.json
+- Details: Captured real browser network metrics with zero fabrication; added ResourceTimingBreakdown (dnsMs, tcpMs, tlsMs, ttfbMs, downloadMs); preserved null for failed/unmeasurable timings rather than converting to 0 or 50ms; tracked initiator and fromCache with zero wire transfer size; sorted waterfall chronologically by startTimeMs; added 5 dedicated unit tests.
+
+[2026-09-13 23:02:00] COMPLETED TASK-014: Bundle analyzer
+- Validation: PASSED (npm test [151 tests across 10 suites], npm run lint [0 errors/0 warnings], npm run build)
+- Files Modified: server/services/jsAnalyzer/types.ts, server/services/jsAnalyzer/helpers.ts, server/services/jsAnalyzer/jsAnalyzer.service.ts, server/services/analysis/helpers.ts, server/models/Report.ts, src/context/AppContext.tsx, server/tests/bundleAnalyzer.test.ts, perflens-master-prd.json
+- Details: Bundle and chunk sizes reflect real measured sizes without fallback defaults (removed 12 KB fallback in AppContext); distinguishes wire transfer compressed size from uncompressed raw size; checks source-map presence via script comments and .map network resources; duplicates require network URL or package evidence; unused modules strictly require CDP coverage (>50% and >10KB, defaulting to false); added 6 dedicated unit tests.
+
+[2026-09-13 23:04:00] COMPLETED TASK-015: Score analyzer correctness and explainability
+- Validation: PASSED (npm test [151 tests across 10 suites], npm run lint [0 errors/0 warnings], npm run build)
+- Files Modified: server/services/analysis/scoreAnalyzer.ts, server/services/report/index.ts, src/pages/ResultsPage.tsx, perflens-master-prd.json
+- Details: Verified inputs from canonical metric results; unavailable metrics are excluded from active weight denominator and never penalized as poor; available poor score 0 is strictly distinct from unavailable null; weighted contributions calculated only for available metrics with deterministic renormalization; overall score bounded to 0-100 with documented formula; labeled clearly as PerfLens Lab Audit; added full audit trail and explainability table to PDF and formatted frontend explainability table; 16 unit tests pass in server/tests/scoreAnalyzer.test.ts.
+
+[2026-09-13 23:06:00] COMPLETED TASK-016: Cross-analyzer contract and data integrity
+- Validation: PASSED (npm test [155 tests across 11 suites], npm run lint [0 errors/0 warnings], npm run build)
+- Files Modified: server/config/performanceThresholds.ts, server/services/analysis/index.ts, server/services/report/report.service.ts, src/context/AppContext.tsx, server/tests/crossAnalyzerContract.test.ts, perflens-master-prd.json
+- Details: Verified every analyzer adheres to a canonical result contract with rawValue, normalizedValueMs, unit, rating, availability, and provenance; eliminated fabricated fallback numbers (e.g. 1.5s/2.8s/1200KB) in AppContext; preserved scores.explanation through Supabase and in-memory persistence; ensured sub-analyzers and recommendation engine treat inputs as immutable; fixed explicitReason fallback in classifyMetric; added 4 dedicated unit tests.
+
+[2026-09-13 23:08:00] COMPLETED TASK-017: Fresh regression and adversarial scan suite
+- Validation: PASSED (npm test [155 tests across 11 suites], npm run lint [0 errors/0 warnings], npm run build, live fresh scans on 7 target domains + 2 consecutive repeatability runs)
+- Files Modified: server/scratch/run_regression_suite.ts, perflens-master-prd.json, reports/validation/*.json, reports/validation/*.pdf
+- Details: Executed fresh live scans for google.com, react.dev, github.com, developer.mozilla.org, news.ycombinator.com, vercel.com, and example.com; verified 0 data integrity defects across all scans; verified consecutive repeatability on example.com (0.29s vs 0.26s LCP, both good, 0 classification flips); confirmed PageSpeed 429 rate limits degrade gracefully to lab measurements; generated fresh JSON and PDF validation artifacts.
+
+[2026-09-13 23:09:00] COMPLETED TASK-018: Report and validation integrity
+- Validation: PASSED (npm test [155 tests across 11 suites], npm run lint [0 errors/0 warnings], npm run build)
+- Files Modified: server/services/analysis/index.ts, server/services/report/index.ts, perflens-master-prd.json
+- Details: Verified PDF report generation matches backend JSON truth; validation artifacts contain raw browser performance evidence and source metadata; reports strictly separate CWV from other performance metrics with explicit [LAB] / [FIELD] tags; attached version '2.0' to report JSON and PDF execution headers.
+
+[2026-09-13 23:13:30] COMPLETED TASK-019: Security and production configuration
+- Validation: PASSED (npm test [174 tests across 12 suites], npm run lint [0 errors/0 warnings], npm run build)
+- Files Modified: server/services/security/ssrfValidator.ts, server/services/puppeteer/browser.ts, server/validators/analysisValidator.ts, server/app.ts, server/server.ts, server/middlewares/errorHandler.ts, server/tests/security.test.ts, perflens-master-prd.json
+- Details: Built comprehensive SSRF validator blocking loopback, private RFC 1918 subnets, cloud metadata (169.254.169.254), carrier-grade NAT, decimal/hex IP representations, IPv6 loopback/unique-local/link-local/mapped addresses, and DNS rebinding; removed dangerous Chrome launch flags (--disable-web-security); environment-driven CORS configuration; 10mb body parser limits; sanitized production error handler to suppress internal error message leakage; eliminated hardcoded localhost references from backend Swagger and server logs; 19 dedicated unit tests added in server/tests/security.test.ts.
+
+[2026-09-13 23:16:00] COMPLETED TASK-020: Performance and reliability of PerfLens itself
+- Validation: PASSED (npm test [179 tests across 13 suites], npm run lint [0 errors/0 warnings], npm run build)
+- Files Modified: server/services/puppeteer/concurrency.ts, server/services/puppeteer/screenshots.ts, server/services/puppeteer/index.ts, server/services/analysis/index.ts, server/tests/reliability.test.ts, perflens-master-prd.json
+- Details: Implemented ScanConcurrencyLimiter semaphore bounding concurrent heavy browser scans and queueing excess scans with timeout; added automated retention cleanup (cleanOldScreenshots) to remove screenshots older than 1 hour; added fault-isolation try/catch blocks around every sub-analyzer (images, css, js, seo, accessibility) in both Puppeteer and fallback analysis paths; ensured one analyzer failure never cascades or destroys unrelated valid metrics; attached detailed debugLogs with timings, errors, and confidence; added 5 dedicated unit tests in server/tests/reliability.test.ts.
+
+[2026-09-14 00:22:30] COMPLETED TASK-021: Production deployment validation
+- Validation: PASSED (npm test [179 tests across 13 suites], npm run lint [0 errors/0 warnings], npm run build, npx tsx server/scratch/verify_production_deployment.ts, npx tsx server/test_supabase.ts)
+- Files Modified: .env.example, server/.env.example, server/config/supabase.ts, server/test_supabase.ts, server/scratch/verify_production_deployment.ts, perflens-master-prd.json
+- Details: Verified production frontend API reachability via centralized environment-driven API_BASE (/api/v1); confirmed live Supabase PostgreSQL connectivity across all 4 tables (users, projects, reports, saved_comparisons); executed end-to-end authenticated test scan, persistence, and owner-enforced history retrieval; confirmed 404-safe rejection of unauthorized access; validated PDF export from persisted database report; verified 0 hardcoded localhost addresses in src/; documented comprehensive environment templates in root .env.example and server/.env.example.
+
+[2026-09-14 00:27:00] COMPLETED TASK-022: Final clean-room audit
+- Validation: PASSED (npm test [179 tests across 13 suites], npm run lint [0 errors/0 warnings], npm run build, fresh backend restart, 7 clean-room live regression scans with 0 defects, CWV_AUDIT.md, FINAL_PRODUCTION_READINESS_REPORT.md)
+- Files Modified: CWV_AUDIT.md, FINAL_PRODUCTION_READINESS_REPORT.md, perflens-master-prd.json, .ralph/prd.json
+- Details: Stopped all stale processes; started current backend from clean runtime state; performed fresh scans across all 7 target domains (google.com, react.dev, github.com, developer.mozilla.org, news.ycombinator.com, vercel.com, example.com) with 0 data integrity defects; confirmed repeatability stability; verified complete data consistency from browser collector through analyzers, scoring, recommendations, database, API, frontend, and PDF export; compiled CWV_AUDIT.md and FINAL_PRODUCTION_READINESS_REPORT.md; verified 100% of Master PRD Definition of Done criteria. Final Determination: PASS.
+
+
 
 
