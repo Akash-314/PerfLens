@@ -69,4 +69,5 @@ export interface SEOAnalysisResult {
   optimizationCandidates: SEOOptimizationCandidate[];
   warnings: SEOAnalysisWarning[];
   errors: string[];
+  validationEvidence?: any;
 }

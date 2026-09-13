@@ -57,4 +57,5 @@ export interface AccessibilityAnalysisResult {
   optimizationCandidates: AccessibilityOptimizationCandidate[];
   warnings: AccessibilityAnalysisWarning[];
   errors: string[];
+  validationEvidence?: any;
 }

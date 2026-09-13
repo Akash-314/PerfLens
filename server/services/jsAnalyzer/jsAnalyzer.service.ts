@@ -1,3 +1,4 @@
+import { Page } from 'puppeteer';
 import { PuppeteerScanResult } from '../puppeteer/types.js';
 import {
   JSScriptItem,
@@ -5,34 +6,39 @@ import {
   JSAnalysisStatistics,
   JSAnalysisWarning,
   JSOptimizationCandidate,
-  JSAnalysisResult
+  JSAnalysisResult,
+  BundleChunkItem
 } from './types.js';
 import {
   isScriptMinified,
   detectCommonLibrary,
-  estimateUnusedJS,
+  detectChunkOrPackageName,
   estimateJSCosts,
   isThirdPartyScript
 } from './helpers.js';
 
 /**
  * Analyzes the JavaScript scripts discovered in a website scan.
- * Operating solely on network resource records, it identifies minification, compression,
- * third-party status, duplicate requests, and estimates CPU parsing/execution costs.
+ * Uses real JS coverage profiles to calculate exact unused byte sizes.
+ * Queries DOM scripts for async, defer, and module attributes.
  * 
+ * @param page Active Puppeteer page instance
  * @param puppeteerResult Result object from the Puppeteer service
  * @returns JSAnalysisResult object containing summary, scripts, stats, optimization candidates, warnings, and errors.
  */
-export const analyzeJavaScript = (
+export const analyzeJavaScript = async (
+  page: Page | null,
   puppeteerResult: PuppeteerScanResult | null
-): JSAnalysisResult => {
+): Promise<JSAnalysisResult> => {
   const errors: string[] = [];
   const scripts: JSScriptItem[] = [];
   const warnings: JSAnalysisWarning[] = [];
   const optimizationCandidates: JSOptimizationCandidate[] = [];
 
   const emptyResult: JSAnalysisResult = {
+    status: 'NO_JS_FOUND',
     summary: {
+      measurementStatus: 'NO_JS_FOUND',
       totalJSFiles: 0,
       largestJSFile: null,
       totalJSWeight: 0,
@@ -40,6 +46,7 @@ export const analyzeJavaScript = (
       duplicateScripts: 0,
       renderBlockingScripts: 0,
       estimatedUnusedJS: 0,
+      hasCoverageData: false,
       largestLibrary: null
     },
     scripts: [],
@@ -59,20 +66,60 @@ export const analyzeJavaScript = (
 
   if (!puppeteerResult) {
     errors.push('No Puppeteer result provided.');
-    return { ...emptyResult, errors };
+    return {
+      ...emptyResult,
+      status: 'ANALYZER_ERROR',
+      summary: { ...emptyResult.summary, measurementStatus: 'ANALYZER_ERROR' },
+      errors
+    };
   }
 
   if (puppeteerResult.errors && puppeteerResult.errors.length > 0) {
     errors.push(...puppeteerResult.errors);
   }
 
+  // 1. Scan DOM for script attributes with document position if page is available
+  let domScripts: any[] = [];
+  if (page) {
+    try {
+      domScripts = await page.evaluate(() => {
+        return Array.from(document.querySelectorAll('script')).map(el => {
+          const inHead = !!el.closest('head');
+          return {
+            src: el.src || '',
+            async: el.async,
+            defer: el.defer,
+            type: el.getAttribute('type') || '',
+            html: el.outerHTML,
+            inHead,
+            location: inHead ? '<head>' : '<body>'
+          };
+        });
+      });
+    } catch (err: any) {
+      console.error(`[JS Service DOM extraction error]: ${err.message}`);
+      errors.push(`DOM Script Scrape Failed: ${err.message}`);
+    }
+  }
+
   const resources = puppeteerResult.resources || [];
   const jsResources = resources.filter((res) => res.type === 'js');
 
   if (jsResources.length === 0) {
+    if (domScripts.length === 0) {
+      return {
+        ...emptyResult,
+        status: 'NO_JS_FOUND',
+        summary: { ...emptyResult.summary, measurementStatus: 'NO_JS_FOUND' },
+        errors: errors.length > 0 ? errors : ['No JavaScript resources found.']
+      };
+    }
+
     return {
       ...emptyResult,
-      errors: errors.length > 0 ? errors : ['No JavaScript resources found.']
+      status: 'RESOURCE_TIMING_UNAVAILABLE',
+      summary: { ...emptyResult.summary, measurementStatus: 'RESOURCE_TIMING_UNAVAILABLE' },
+      errors: [...errors, 'Script elements detected in DOM but network resource timing was unavailable.']
     };
   }
 
@@ -83,6 +130,7 @@ export const analyzeJavaScript = (
   });
 
   const siteUrl = puppeteerResult.metadata?.redirectUrl || puppeteerResult.metadata?.url || '';
+  const coverageList = puppeteerResult.jsCoverage || [];
 
   let largestJSFile: { url: string; sizeKb: number } | null = null;
   let totalJSWeight = 0;
@@ -102,20 +150,58 @@ export const analyzeJavaScript = (
   let gzipCount = 0;
   let noneCount = 0;
   const detectedLibrariesMap: Record<string, { count: number; sizeKb: number }> = {};
+  const packagesList: BundleChunkItem[] = [];
+
+  const detectedNames = new Set<string>();
 
   jsResources.forEach((res) => {
     const filename = res.url.split('/').pop()?.split('?')[0] || 'script.js';
     
-    const isMinified = isScriptMinified(res.url);
+    // Find matching DOM script tag
+    const matchedDom = domScripts.find((s: any) => {
+      if (!s.src) return false;
+      const cleanSrc = s.src.split('?')[0].replace(/^(https?:\/\/)?(www\.)?/, '').toLowerCase();
+      const cleanRes = res.url.split('?')[0].replace(/^(https?:\/\/)?(www\.)?/, '').toLowerCase();
+      return cleanSrc === cleanRes || cleanSrc.includes(cleanRes) || cleanRes.includes(cleanSrc);
+    });
+
+    const isAsync = matchedDom ? matchedDom.async : false;
+    const isDefer = matchedDom ? matchedDom.defer : false;
+    const isModuleScript = matchedDom ? matchedDom.type === 'module' : false;
+
+    // Check Puppeteer coverage for unused JS calculation
+    const matchingCoverage = coverageList.find(c => {
+      const cleanCovUrl = c.url.split('?')[0].replace(/^(https?:\/\/)?(www\.)?/, '').toLowerCase();
+      const cleanResUrl = res.url.split('?')[0].replace(/^(https?:\/\/)?(www\.)?/, '').toLowerCase();
+      return cleanCovUrl === cleanResUrl || cleanCovUrl.includes(cleanResUrl) || cleanResUrl.includes(cleanCovUrl);
+    });
+
+    const isMinified = isScriptMinified(res.url, matchingCoverage?.text);
     const isDuplicate = (urlCountMap.get(res.url) || 0) > 1;
     const isThirdParty = isThirdPartyScript(res.url, siteUrl);
-    
-    // Heuristic: script blocks rendering if unminified, large (> 50KB), or has no public caching
-    const isRenderBlocking = !isMinified || res.sizeKb > 50 || !res.cacheControl.toLowerCase().includes('public');
-    
-    const unusedJsKb = estimateUnusedJS(res.sizeKb);
+
+    let unusedJsKb = 0;
+    if (matchingCoverage && matchingCoverage.text) {
+      const totalBytes = matchingCoverage.text.length;
+      const usedBytes = matchingCoverage.ranges.reduce((acc: number, r: any) => acc + (r.end - r.start), 0);
+      const unusedBytes = Math.max(0, totalBytes - usedBytes);
+      unusedJsKb = parseFloat((unusedBytes / 1024).toFixed(1));
+      if (unusedJsKb > res.sizeKb) {
+        unusedJsKb = res.sizeKb;
+      }
+    } else {
+      // If code coverage was not tracked via CDP, do NOT fabricate an arbitrary 15% multiplier
+      unusedJsKb = 0;
+    }
+
     const { parseCostMs, executionCostMs, mainThreadBlockingMs } = estimateJSCosts(res.sizeKb);
     const detectedLibrary = detectCommonLibrary(res.url);
+
+    const inHead = matchedDom ? (matchedDom.inHead ?? (matchedDom.location === '<head>')) : false;
+    const documentPosition = matchedDom?.location || (inHead ? '<head>' : '<body>');
+
+    // Script is render-blocking ONLY if matched in DOM in <head> and lacks async, defer, and type="module"
+    const isRenderBlocking = matchedDom ? (inHead && !isAsync && !isDefer && !isModuleScript) : false;
 
     // Track aggregates
     if (!largestJSFile || res.sizeKb > largestJSFile.sizeKb) {
@@ -145,6 +231,29 @@ export const analyzeJavaScript = (
       }
     }
 
+    // Catalog chunk or package in bundle analysis with real sizes and evidence
+    const chunkOrPkgName = detectChunkOrPackageName(res.url);
+    const hasSourceMap = (matchingCoverage?.text && (matchingCoverage.text.includes('sourceMappingURL=') || matchingCoverage.text.includes('//# sourceMappingURL='))) || resources.some(r => r.url === res.url + '.map') || false;
+    const isPkgDuplicate = (urlCountMap.get(res.url) || 0) > 1 || (detectedLibrary ? detectedNames.has(detectedLibrary) : detectedNames.has(chunkOrPkgName));
+    detectedNames.add(detectedLibrary || chunkOrPkgName);
+
+    // Unused modules require actual CDP code coverage evidence (>50% unused and >10KB)
+    const isPkgUnused = matchingCoverage && matchingCoverage.text ? (unusedJsKb > (res.sizeKb * 0.5) && unusedJsKb > 10) : false;
+
+    packagesList.push({
+      packageName: chunkOrPkgName,
+      name: chunkOrPkgName,
+      sizeKb: res.sizeKb,
+      transferSizeKb: typeof res.transferSizeKb === 'number' ? res.transferSizeKb : res.sizeKb,
+      compression: res.compression || 'none',
+      isDuplicate: isPkgDuplicate,
+      duplicate: isPkgDuplicate,
+      isUnused: isPkgUnused,
+      unused: isPkgUnused,
+      hasSourceMap,
+      url: res.url
+    });
+
     // Statistics
     if (isMinified) {
       minifiedCount++;
@@ -169,10 +278,9 @@ export const analyzeJavaScript = (
       cacheControl: res.cacheControl,
       isDuplicate,
       isMinified,
-      // DOM-specific configurations default to null (unknown/not detectable from network logs)
-      isAsync: null,
-      isDefer: null,
-      isModuleScript: null,
+      isAsync,
+      isDefer,
+      isModuleScript,
       isThirdParty,
       estimatedUnusedJsKb: unusedJsKb,
       estimatedParseCostMs: parseCostMs,
@@ -180,7 +288,9 @@ export const analyzeJavaScript = (
       estimatedMainThreadBlockingMs: mainThreadBlockingMs,
       detectedLibrary,
       hasDynamicImports: null,
-      isRenderBlocking
+      isRenderBlocking,
+      documentPosition,
+      parserBlockingStatus: isRenderBlocking
     };
 
     scripts.push(item);
@@ -207,7 +317,7 @@ export const analyzeJavaScript = (
     if (isRenderBlocking) {
       warnings.push({
         code: 'JS_RENDER_BLOCKING',
-        message: `Script "${filename}" is render-blocking. Consider using "async" or "defer" attributes or loading it at the bottom of the page.`,
+        message: `Script "${filename}" is render-blocking. Consider adding "async" or "defer" attributes or loading it dynamically.`,
         severity: 'warning',
         url: res.url
       });
@@ -234,7 +344,7 @@ export const analyzeJavaScript = (
     if (unusedJsKb > 30) {
       warnings.push({
         code: 'JS_UNUSED_CODE',
-        message: `Script "${filename}" contains an estimated ${unusedJsKb}KB of unused code. Consider code-splitting or removing dead imports.`,
+        message: `Script "${filename}" contains an estimated ${unusedJsKb}KB of unused code (${Math.round((unusedJsKb / res.sizeKb) * 100)}% unused). Consider code-splitting or removing dead imports.`,
         severity: 'info',
         url: res.url
       });
@@ -286,8 +396,10 @@ export const analyzeJavaScript = (
   });
 
   const totalJSFiles = scripts.length;
+  const hasCoverageData = coverageList.length > 0 && coverageList.some(c => c.text && c.text.length > 0);
 
   const summary: JSAnalysisSummary = {
+    measurementStatus: 'SUCCESS',
     totalJSFiles,
     largestJSFile,
     totalJSWeight: parseFloat(totalJSWeight.toFixed(1)),
@@ -295,6 +407,7 @@ export const analyzeJavaScript = (
     duplicateScripts: duplicateCount,
     renderBlockingScripts: renderBlockingCount,
     estimatedUnusedJS: parseFloat(estimatedUnusedJS.toFixed(1)),
+    hasCoverageData,
     largestLibrary
   };
 
@@ -319,11 +432,14 @@ export const analyzeJavaScript = (
   };
 
   return {
+    status: 'SUCCESS',
     summary,
     scripts,
     statistics,
     optimizationCandidates,
     warnings,
-    errors
-  };
+    errors,
+    packages: packagesList, // aligned for frontend AppContext mapping
+    bundleAnalysis: packagesList
+  } as any;
 };

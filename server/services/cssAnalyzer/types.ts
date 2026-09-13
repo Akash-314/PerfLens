@@ -16,13 +16,18 @@ export interface CSSStylesheetItem {
   hasCssVariables: boolean | null;
   estimatedUnusedCssKb: number;
   isCriticalCssCandidate: boolean;
+  media?: string;
+  fromCache?: boolean;
+  isTimingUnavailable?: boolean;
 }
 
 export interface CSSAnalysisSummary {
+  measurementStatus: 'SUCCESS' | 'NO_CSS_FOUND' | 'RESOURCE_TIMING_UNAVAILABLE' | 'ANALYZER_ERROR';
   totalCSSFiles: number;
   largestCSSFile: { url: string; sizeKb: number } | null;
   totalCSSWeight: number; // in KB
   estimatedUnusedCSS: number; // in KB
+  hasCoverageData?: boolean;
   duplicateStylesheets: number;
   renderBlockingCSS: number;
   inlineCSSCount: number;
@@ -56,6 +61,7 @@ export interface CSSOptimizationCandidate {
 }
 
 export interface CSSAnalysisResult {
+  status: 'SUCCESS' | 'NO_CSS_FOUND' | 'RESOURCE_TIMING_UNAVAILABLE' | 'ANALYZER_ERROR';
   summary: CSSAnalysisSummary;
   stylesheets: CSSStylesheetItem[];
   statistics: CSSAnalysisStatistics;

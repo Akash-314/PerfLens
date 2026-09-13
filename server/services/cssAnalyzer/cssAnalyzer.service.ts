@@ -10,20 +10,19 @@ import {
 import {
   isStylesheetMinified,
   isRenderBlockingCSS,
-  estimateUnusedCSS,
   checkCriticalCssCandidate
 } from './helpers.js';
 
 /**
  * Analyzes the CSS stylesheets discovered in a website scan.
- * Operating solely on network resource records, it identifies minification, caching,
- * render-blocking rules, duplication, and unused code estimations.
+ * Uses real CSS coverage profiles to compute exact unused byte sizes.
  * 
  * @param puppeteerResult Result object from the Puppeteer service
  * @returns CSSAnalysisResult object containing summary, stylesheets, stats, optimization candidates, warnings, and errors.
  */
 export const analyzeCSS = (
-  puppeteerResult: PuppeteerScanResult | null
+  puppeteerResult: PuppeteerScanResult | null,
+  domStylesheetsOrPage?: any
 ): CSSAnalysisResult => {
   const errors: string[] = [];
   const stylesheets: CSSStylesheetItem[] = [];
@@ -31,11 +30,14 @@ export const analyzeCSS = (
   const optimizationCandidates: CSSOptimizationCandidate[] = [];
 
   const emptyResult: CSSAnalysisResult = {
+    status: 'NO_CSS_FOUND',
     summary: {
+      measurementStatus: 'NO_CSS_FOUND',
       totalCSSFiles: 0,
       largestCSSFile: null,
       totalCSSWeight: 0,
       estimatedUnusedCSS: 0,
+      hasCoverageData: false,
       duplicateStylesheets: 0,
       renderBlockingCSS: 0,
       inlineCSSCount: 0,
@@ -55,22 +57,45 @@ export const analyzeCSS = (
 
   if (!puppeteerResult) {
     errors.push('No Puppeteer result provided.');
-    return { ...emptyResult, errors };
+    return {
+      ...emptyResult,
+      status: 'ANALYZER_ERROR',
+      summary: { ...emptyResult.summary, measurementStatus: 'ANALYZER_ERROR' },
+      errors
+    };
   }
 
   if (puppeteerResult.errors && puppeteerResult.errors.length > 0) {
     errors.push(...puppeteerResult.errors);
   }
 
+  const domStylesheets: any[] = Array.isArray(domStylesheetsOrPage)
+    ? domStylesheetsOrPage
+    : (puppeteerResult.domStylesheets || []);
+
   const resources = puppeteerResult.resources || [];
   const cssResources = resources.filter((res) => res.type === 'css');
 
   if (cssResources.length === 0) {
+    if (domStylesheets.length === 0) {
+      return {
+        ...emptyResult,
+        status: 'NO_CSS_FOUND',
+        summary: { ...emptyResult.summary, measurementStatus: 'NO_CSS_FOUND' },
+        errors: errors.length > 0 ? errors : ['No CSS stylesheets found.']
+      };
+    }
+
     return {
       ...emptyResult,
-      errors: errors.length > 0 ? errors : ['No CSS resources found.']
+      status: 'RESOURCE_TIMING_UNAVAILABLE',
+      summary: { ...emptyResult.summary, measurementStatus: 'RESOURCE_TIMING_UNAVAILABLE' },
+      errors: [...errors, 'Stylesheet elements detected in DOM but network resource timing was unavailable.']
     };
   }
+
+  // Also include coverages mapping
+  const coverageList = puppeteerResult.cssCoverage || [];
 
   // Count stylesheet URL occurrences to flag duplicates
   const urlCountMap = new Map<string, number>();
@@ -83,8 +108,7 @@ export const analyzeCSS = (
   let estimatedUnusedCSS = 0;
   let duplicateCount = 0;
   let renderBlockingCount = 0;
-  let inlineCount = 0;
-  let externalCount = 0;
+  let externalCount = cssResources.length;
 
   // Breakdown metrics
   let minifiedCount = 0;
@@ -98,12 +122,46 @@ export const analyzeCSS = (
   cssResources.forEach((res) => {
     const filename = res.url.split('/').pop()?.split('?')[0] || 'style.css';
     
-    // Check minification, render-blocking, and unused CSS estimations
-    const isMinified = isStylesheetMinified(res.url);
-    const isRenderBlocking = isRenderBlockingCSS(res.sizeKb, res.cacheControl);
-    const unusedCssKb = estimateUnusedCSS(res.sizeKb);
-    const isCriticalCandidate = checkCriticalCssCandidate(res.sizeKb, isRenderBlocking);
+    // Check actual Puppeteer CSS coverage for this stylesheet
+    const matchingCoverage = coverageList.find(c => {
+      const cleanCovUrl = c.url.split('?')[0].replace(/^(https?:\/\/)?(www\.)?/, '').toLowerCase();
+      const cleanResUrl = res.url.split('?')[0].replace(/^(https?:\/\/)?(www\.)?/, '').toLowerCase();
+      return cleanCovUrl === cleanResUrl || cleanCovUrl.includes(cleanResUrl) || cleanResUrl.includes(cleanCovUrl);
+    });
+
+    // Reconcile with DOM stylesheets to inspect real attributes (media, disabled, async, inHead)
+    const matchedDom = domStylesheets.find((s: any) => {
+      if (!s.href) return false;
+      const cleanHref = s.href.split('?')[0].replace(/^(https?:\/\/)?(www\.)?/, '').toLowerCase();
+      const cleanRes = res.url.split('?')[0].replace(/^(https?:\/\/)?(www\.)?/, '').toLowerCase();
+      return cleanHref === cleanRes || cleanHref.includes(cleanRes) || cleanRes.includes(cleanHref);
+    });
+
+    const isMinified = isStylesheetMinified(res.url, matchingCoverage?.text);
+    const isRenderBlocking = matchedDom
+      ? matchedDom.isRenderBlocking ?? isRenderBlockingCSS(matchedDom.media, matchedDom.isAsync, matchedDom.disabled, matchedDom.inHead)
+      : (res as any).isRenderBlocking !== undefined 
+        ? (res as any).isRenderBlocking 
+        : isRenderBlockingCSS((res as any).media, (res as any).isAsync, (res as any).disabled, (res as any).inHead);
+
     const isDuplicate = (urlCountMap.get(res.url) || 0) > 1;
+
+    let unusedCssKb = 0;
+    if (matchingCoverage && matchingCoverage.text) {
+      const totalBytes = matchingCoverage.text.length;
+      const usedBytes = matchingCoverage.ranges.reduce((acc: number, r: any) => acc + (r.end - r.start), 0);
+      const unusedBytes = Math.max(0, totalBytes - usedBytes);
+      unusedCssKb = parseFloat((unusedBytes / 1024).toFixed(1));
+      // Clamp to maximum resource size
+      if (unusedCssKb > res.sizeKb) {
+        unusedCssKb = res.sizeKb;
+      }
+    } else {
+      // If coverage was not tracked, do not fabricate an arbitrary 15% multiplier
+      unusedCssKb = 0; 
+    }
+
+    const isCriticalCandidate = checkCriticalCssCandidate(res.sizeKb, isRenderBlocking);
 
     // Track aggregates
     if (!largestCSSFile || res.sizeKb > largestCSSFile.sizeKb) {
@@ -114,14 +172,6 @@ export const analyzeCSS = (
     if (isDuplicate) duplicateCount++;
     if (isRenderBlocking) renderBlockingCount++;
     
-    // All network request stylesheets are external.
-    const isInline = false;
-    if (isInline) {
-      inlineCount++;
-    } else {
-      externalCount++;
-    }
-
     // Breakdown for statistics
     if (isMinified) {
       minifiedCount++;
@@ -138,7 +188,7 @@ export const analyzeCSS = (
     const item: CSSStylesheetItem = {
       url: res.url,
       filename,
-      isInline,
+      isInline: false,
       fileSizeKb: res.sizeKb,
       transferSizeKb: res.transferSizeKb,
       statusCode: res.statusCode,
@@ -148,7 +198,6 @@ export const analyzeCSS = (
       isMinified,
       isDuplicate,
       isRenderBlocking,
-      // DOM-specific configurations default to null (unknown/not detectable from network logs)
       hasAtImport: null,
       hasMediaQueries: null,
       hasCssVariables: null,
@@ -198,7 +247,7 @@ export const analyzeCSS = (
     if (unusedCssKb > 20) {
       warnings.push({
         code: 'CSS_HIGH_UNUSED',
-        message: `Stylesheet "${filename}" has an estimated ${unusedCssKb}KB of unused styles. Purge unused selectors to trim weight.`,
+        message: `Stylesheet "${filename}" has an estimated ${unusedCssKb}KB of unused styles (${Math.round((unusedCssKb / res.sizeKb) * 100)}% unused). Purge unused selectors to trim weight.`,
         severity: 'info',
         url: res.url
       });
@@ -251,13 +300,21 @@ export const analyzeCSS = (
     }
   });
 
+  // Extract inline styles count from metadata if present
+  const inlineCount = puppeteerResult.metadata && (puppeteerResult.metadata as any).inlineCSSCount 
+    ? (puppeteerResult.metadata as any).inlineCSSCount 
+    : 0;
+
   const totalCSSFiles = stylesheets.length;
+  const hasCoverageData = coverageList.length > 0 && coverageList.some(c => c.text && c.text.length > 0);
 
   const summary: CSSAnalysisSummary = {
+    measurementStatus: 'SUCCESS',
     totalCSSFiles,
     largestCSSFile,
     totalCSSWeight: parseFloat(totalCSSWeight.toFixed(1)),
     estimatedUnusedCSS: parseFloat(estimatedUnusedCSS.toFixed(1)),
+    hasCoverageData,
     duplicateStylesheets: duplicateCount,
     renderBlockingCSS: renderBlockingCount,
     inlineCSSCount: inlineCount,
@@ -282,6 +339,7 @@ export const analyzeCSS = (
   };
 
   return {
+    status: 'SUCCESS',
     summary,
     stylesheets,
     statistics,

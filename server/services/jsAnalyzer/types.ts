@@ -20,9 +20,12 @@ export interface JSScriptItem {
   detectedLibrary: string | null;
   hasDynamicImports: boolean | null;
   isRenderBlocking: boolean;
+  documentPosition?: string;
+  parserBlockingStatus?: boolean;
 }
 
 export interface JSAnalysisSummary {
+  measurementStatus: 'SUCCESS' | 'NO_JS_FOUND' | 'RESOURCE_TIMING_UNAVAILABLE' | 'ANALYZER_ERROR';
   totalJSFiles: number;
   largestJSFile: { url: string; sizeKb: number } | null;
   totalJSWeight: number; // in KB
@@ -30,6 +33,7 @@ export interface JSAnalysisSummary {
   duplicateScripts: number;
   renderBlockingScripts: number;
   estimatedUnusedJS: number; // in KB
+  hasCoverageData?: boolean;
   largestLibrary: { name: string; sizeKb: number } | null;
 }
 
@@ -62,11 +66,29 @@ export interface JSOptimizationCandidate {
   suggestion: string;
 }
 
+export interface BundleChunkItem {
+  packageName: string;
+  name: string;
+  sizeKb: number;
+  transferSizeKb: number;
+  compression: 'gzip' | 'brotli' | 'none' | string;
+  isDuplicate: boolean;
+  duplicate: boolean;
+  isUnused: boolean;
+  unused: boolean;
+  hasSourceMap: boolean;
+  url: string;
+}
+
 export interface JSAnalysisResult {
+  status: 'SUCCESS' | 'NO_JS_FOUND' | 'RESOURCE_TIMING_UNAVAILABLE' | 'ANALYZER_ERROR';
   summary: JSAnalysisSummary;
   scripts: JSScriptItem[];
   statistics: JSAnalysisStatistics;
   optimizationCandidates: JSOptimizationCandidate[];
   warnings: JSAnalysisWarning[];
   errors: string[];
+  packages?: BundleChunkItem[];
+  bundleAnalysis?: BundleChunkItem[];
 }
+

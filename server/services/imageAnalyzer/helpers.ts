@@ -43,7 +43,7 @@ export const parseDimensionsFromUrl = (
       if (!width) width = parseInt(sizeMatch[1], 10);
       if (!height) height = parseInt(sizeMatch[2], 10);
     }
-  } catch (_) {
+  } catch {
     // Fallback regex matching on the raw URL string
     const sizeMatch = url.match(/[-_/](\d+)x(\d+)(?:\.|$)/i);
     if (sizeMatch) {
@@ -74,7 +74,7 @@ export const extractExtension = (url: string, contentType: string): string => {
         return ext;
       }
     }
-  } catch (_) {
+  } catch {
     // Fallback to Content-Type parsing
   }
 
