@@ -9,16 +9,17 @@ import {
   RecommendationSummary,
   RecommendationEngineResult
 } from './types.js';
-import { rules } from './rules.js';
+import { rules, createTransferSavings, createTransferGainString } from './rules.js';
 import { calculateHealthScore, getPerformanceGrade, formatTimeEstimate } from './helpers.js';
 
-interface SubAnalyzerOutputs {
+export interface SubAnalyzerOutputs {
   pagespeed: PageSpeedScanResult | null;
   image: ImageAnalysisResult | null;
   css: CSSAnalysisResult | null;
   js: JSAnalysisResult | null;
   seo: SEOAnalysisResult | null;
   accessibility: AccessibilityAnalysisResult | null;
+  vitals?: any;
 }
 
 /**
@@ -31,7 +32,7 @@ interface SubAnalyzerOutputs {
 export const generateRecommendations = (
   inputs: SubAnalyzerOutputs
 ): RecommendationEngineResult => {
-  const recommendations: Recommendation[] = [];
+  const rawRecommendations: Recommendation[] = [];
 
   // 1. Evaluate all rules
   rules.forEach(rule => {
@@ -42,26 +43,73 @@ export const generateRecommendations = (
         css: inputs.css,
         js: inputs.js,
         seo: inputs.seo,
-        accessibility: inputs.accessibility
+        accessibility: inputs.accessibility,
+        vitals: inputs.vitals || inputs.pagespeed?.vitals
       });
       if (recommendation) {
-        recommendations.push(recommendation);
+        rawRecommendations.push(recommendation);
       }
     } catch (err) {
       console.error(`[Recommendation Engine Error]: Failed evaluating rule ${rule.id}:`, err);
     }
   });
 
-  // 2. Rank recommendations
-  // Order priority: critical > high > medium > low
+  // 2. Deduplicate and consolidate recommendations
+  const recommendations: Recommendation[] = [];
+  const seenIds = new Map<string, Recommendation>();
   const priorityWeight = { critical: 4, high: 3, medium: 2, low: 1 };
+
+  rawRecommendations.forEach(rec => {
+    if (seenIds.has(rec.id)) {
+      const existing = seenIds.get(rec.id)!;
+      // Merge structured evidenceDetails
+      if (Array.isArray(rec.evidenceDetails)) {
+        existing.evidenceDetails = [...(existing.evidenceDetails || []), ...rec.evidenceDetails];
+      }
+      // Merge evidence string/array
+      if (Array.isArray(rec.evidence) && Array.isArray(existing.evidence)) {
+        existing.evidence = [...existing.evidence, ...rec.evidence];
+      } else if (typeof rec.evidence === 'string' && typeof existing.evidence === 'string') {
+        if (!existing.evidence.includes(rec.evidence)) {
+          existing.evidence = `${existing.evidence}; ${rec.evidence}`;
+        }
+      } else if (rec.evidence && !existing.evidence) {
+        existing.evidence = rec.evidence;
+      }
+      // Upgrade priority and severity if incoming is higher
+      if (priorityWeight[rec.priority] > priorityWeight[existing.priority]) {
+        existing.priority = rec.priority;
+        existing.severity = rec.severity;
+      }
+      // Recalculate bandwidth savings and update estimatedSavings contract
+      if (existing.estimatedSavings?.type === 'transfer_only' || rec.estimatedSavings?.type === 'transfer_only') {
+        const totalSavings = (existing.estimatedBandwidthSaving || 0) + (rec.estimatedBandwidthSaving || 0);
+        if (totalSavings > 0) {
+          existing.estimatedBandwidthSaving = totalSavings;
+          existing.estimatedSavings = createTransferSavings(totalSavings);
+          existing.estimateType = 'transfer_only';
+          existing.estimatedImprovement = existing.estimatedSavings?.displayString || 'Not quantified';
+          existing.estimatedPerformanceGain = createTransferGainString(totalSavings);
+          if (existing.finding) {
+            existing.finding.value = totalSavings;
+          }
+        }
+      }
+    } else {
+      seenIds.set(rec.id, rec);
+      recommendations.push(rec);
+    }
+  });
+
+  // 3. Rank recommendations
+  // Order priority: critical > high > medium > low, then by bandwidth savings
   recommendations.sort((a, b) => {
     const weightDiff = priorityWeight[b.priority] - priorityWeight[a.priority];
     if (weightDiff !== 0) return weightDiff;
-    return b.estimatedBandwidthSaving - a.estimatedBandwidthSaving;
+    return (b.estimatedBandwidthSaving || 0) - (a.estimatedBandwidthSaving || 0);
   });
 
-  // 3. Categorize recommendations
+  // 4. Categorize recommendations
   // - Quick Wins: Easy to implement and critical/high/medium priority
   const quickWins = recommendations.filter(
     rec => rec.estimatedDifficulty === 'easy' && (rec.priority === 'critical' || rec.priority === 'high' || rec.priority === 'medium')
@@ -82,16 +130,15 @@ export const generateRecommendations = (
     rec => rec.estimatedDifficulty === 'hard' || rec.priority === 'low'
   );
 
-  // 4. Generate Developer Roadmap
-  // Map ordered recommendations to clear developer steps
+  // 5. Generate Developer Roadmap
   const roadmap = recommendations.map((rec, index) => {
     const stepNum = index + 1;
     const timeLabel = rec.estimatedImplementationTime;
-    const difficultyLabel = rec.estimatedDifficulty.toUpperCase();
+    const difficultyLabel = (rec.estimatedDifficulty || (rec as any).difficulty || 'medium').toUpperCase();
     return `Step ${stepNum} [${rec.category.toUpperCase()}]: ${rec.title} (${difficultyLabel} | Est Time: ${timeLabel}) - ${rec.suggestedFix}`;
   });
 
-  // 5. Generate Summary
+  // 6. Generate Summary
   const overallHealthScore = calculateHealthScore(recommendations);
   const overallPerformanceGrade = getPerformanceGrade(overallHealthScore);
 
@@ -108,19 +155,18 @@ export const generateRecommendations = (
     else if (rec.priority === 'medium') mediumIssues++;
     else if (rec.priority === 'low') lowIssues++;
 
-    potentialBandwidthReduction += rec.estimatedBandwidthSaving;
+    potentialBandwidthReduction += (rec.estimatedBandwidthSaving || 0);
 
-    // Find the rule configuration to get original implementation hours
     const originalRule = rules.find(r => r.id === rec.id);
     if (originalRule) {
       totalHours += originalRule.hoursToImplement;
     }
   });
 
-  // Project overall load speed savings
+  // Project overall wire transfer savings (clearly labeled as network transfer, not rendering speed)
   const potentialPerformanceImprovement = potentialBandwidthReduction > 0
-    ? `Save up to ${(potentialBandwidthReduction / 150).toFixed(1)}s on slow 3G loads`
-    : 'No major latency savings estimated';
+    ? `Save up to ${(potentialBandwidthReduction / 200).toFixed(1)}s transfer on Fast 3G`
+    : 'No major transfer savings estimated';
 
   const summary: RecommendationSummary = {
     overallHealthScore,

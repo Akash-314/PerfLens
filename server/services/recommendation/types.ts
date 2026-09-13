@@ -1,17 +1,74 @@
+export type EstimateType =
+  | 'measured'
+  | 'modeled'
+  | 'transfer_only'
+  | 'heuristic'
+  | 'not_quantified'
+  | 'unavailable';
+
+export interface RecommendationFinding {
+  description: string;
+  metric?: string; // e.g. "TBT", "LCP", "CLS", "FCP", "INP", "NETWORK"
+  value?: number | string | null;
+  unit?: string | null;
+}
+
+export interface RecommendationEvidence {
+  type: string; // e.g. "long-task", "lcp-element", "layout-shift", "render-blocking", "unminified", "uncompressed", "dom-element"
+  resource?: string | null;
+  selector?: string | null;
+  duration?: number | null;
+  sizeKb?: number | null;
+  details?: Record<string, any>;
+  [key: string]: any;
+}
+
+export interface EstimatedSavings {
+  value: number | null; // null if not quantified
+  unit: string | null; // e.g. "KB", "ms", "s"
+  type: EstimateType;
+  assumption: string | null; // e.g. "Fast 3G (200 KB/s)"
+  displayString: string; // e.g. "89 KB transfer reduction (~0.45s on Fast 3G)" or "Not quantified"
+}
+
 export interface Recommendation {
-  id: string; // Unique rule identifier (e.g. REC_IMAGE_COMPRESSION)
+  id: string; // Unique rule identifier (e.g. REC_PERF_TBT_LONG_TASKS)
   title: string;
   description: string;
   category: 'performance' | 'seo' | 'accessibility' | 'best-practices';
-  sourceAnalyzer: 'pagespeed' | 'image' | 'css' | 'js' | 'seo' | 'accessibility' | 'merged';
-  priority: 'critical' | 'high' | 'medium' | 'low';
-  severity: 'error' | 'warning' | 'info';
-  estimatedPerformanceGain: string; // e.g. "Save ~1.5s on mobile"
-  estimatedBandwidthSaving: number; // in KB
-  estimatedLcpImprovement: string; // e.g. "Up to 300ms"
+  severity: 'high' | 'medium' | 'low' | 'info';
+  confidence: 'high' | 'medium' | 'low';
+  estimateType: EstimateType;
+
+  // Core Evidence-Based Architecture
+  finding: RecommendationFinding;
+  evidence: RecommendationEvidence[] | string;
+  evidenceDetails?: RecommendationEvidence[];
+  potentialImpact: string;
+  estimatedSavings: EstimatedSavings | null;
+  measuredImprovement: number | null; // null unless verified before/after
+
+  suggestedFix: string;
   estimatedDifficulty: 'easy' | 'medium' | 'hard';
   estimatedImplementationTime: string; // e.g. "30 mins", "2 hours"
-  suggestedFix: string;
+  refUrl: string;
+
+  // Backward-compatibility and UI/PDF presentation fields
+  issue: string; // alias for title
+  whyItMatters: string; // alias for potentialImpact or description
+  estimatedImprovement: string; // alias for estimatedSavings.displayString
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  sourceAnalyzer?: 'pagespeed' | 'image' | 'css' | 'js' | 'seo' | 'accessibility' | 'puppeteer' | 'crux' | 'merged';
+  estimatedBandwidthSaving?: number; // in KB
+  estimatedPerformanceGain?: string; // alias for estimatedImprovement
+  estimatedLcpImprovement?: string;
+  findingId?: string;
+  analyzer?: string;
+  actualValue?: string;
+  expectedValue?: string;
+  resource?: string;
+  selector?: string;
+  reason?: string;
 }
 
 export interface RecommendationSummary {

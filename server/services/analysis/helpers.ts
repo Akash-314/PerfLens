@@ -1,11 +1,12 @@
 import { ResourceItem } from '../puppeteer/types.js';
+import { detectChunkOrPackageName } from '../jsAnalyzer/helpers.js';
 
 export class ImageAnalyzer {
   analyze(images: any[]) {
     const list = images.map((img) => {
-      const src = img.src;
-      const sizeKb = img.sizeKb || 20;
-      const format = img.format || 'PNG';
+      const src = img.src || img.url || '';
+      const sizeKb = typeof img.sizeKb === 'number' ? img.sizeKb : (typeof img.fileSizeKb === 'number' ? img.fileSizeKb : 0);
+      const format = (img.format || img.extension || 'unknown').toUpperCase();
       const isLegacy = format === 'PNG' || format === 'JPEG' || format === 'JPG';
       
       return {
@@ -13,9 +14,9 @@ export class ImageAnalyzer {
         sizeKb,
         format,
         suggestedFormat: isLegacy ? 'WebP/AVIF' : format,
-        savingsKb: isLegacy ? parseFloat((sizeKb * 0.75).toFixed(1)) : 0,
-        hasAlt: img.hasAlt !== undefined ? img.hasAlt : true,
-        lazyLoaded: img.lazyLoaded !== undefined ? img.lazyLoaded : true
+        savingsKb: isLegacy && sizeKb > 0 ? parseFloat((sizeKb * 0.30).toFixed(1)) : 0,
+        hasAlt: img.hasAlt !== undefined ? img.hasAlt : (img.altText !== undefined ? Boolean(img.altText) : false),
+        lazyLoaded: Boolean(img.lazyLoaded || img.lazyLoading)
       };
     });
 
@@ -43,16 +44,14 @@ export class CssAnalyzer {
     
     const count = cssResources.length;
     const sizeKb = parseFloat(cssResources.reduce((sum, r) => sum + r.sizeKb, 0).toFixed(1));
-    const unusedKb = parseFloat((sizeKb * 0.45).toFixed(1));
+    // Do not fabricate unused CSS if coverage was not captured; report 0 if unmeasured
+    const unusedKb = 0;
     
-    const renderBlockingCount = cssResources.filter(r => !r.cacheControl.includes('public') || r.sizeKb > 50).length;
+    const renderBlockingCount = cssResources.filter((r: any) => Boolean(r.isRenderBlocking)).length;
 
     const criticalSuggestions: string[] = [];
-    if (sizeKb > 50) {
-      criticalSuggestions.push('Inline Critical CSS directly in HTML header and defer global styles');
-    }
-    if (unusedKb > 20) {
-      criticalSuggestions.push('De-duplicate unused styles using PurgeCSS plugin configurations');
+    if (sizeKb > 100) {
+      criticalSuggestions.push('Consider splitting CSS and inlining critical styles above the fold.');
     }
 
     return {
@@ -73,27 +72,63 @@ export class JsAnalyzer {
     const jsResources = resources.filter(r => r.type === 'js');
     
     const count = jsResources.length;
-    const sizeKb = parseFloat(jsResources.reduce((sum, r) => sum + r.sizeKb, 0).toFixed(1));
-    const unusedKb = parseFloat((sizeKb * 0.35).toFixed(1));
+    const sizeKb = parseFloat(jsResources.reduce((sum, r) => sum + (r.sizeKb || 0), 0).toFixed(1));
+    const unusedKb = 0;
 
-    const bundleAnalysis = [
-      { packageName: 'lodash', sizeKb: 71.2, isUnused: true, isDuplicate: false },
-      { packageName: 'react-dom.production.min.js', sizeKb: 124.5, isUnused: false, isDuplicate: false },
-      { packageName: 'moment.js', sizeKb: 280.1, isUnused: false, isDuplicate: true },
-      { packageName: 'moment-timezone', sizeKb: 180.4, isUnused: true, isDuplicate: false },
-      { packageName: 'framer-motion', sizeKb: 142.3, isUnused: false, isDuplicate: false },
-      { packageName: 'uuid', sizeKb: 12.4, isUnused: true, isDuplicate: true }
-    ];
+    const urlCountMap = new Map<string, number>();
+    for (const r of jsResources) {
+      if (r.url) {
+        urlCountMap.set(r.url, (urlCountMap.get(r.url) || 0) + 1);
+      }
+    }
 
-    const duplicateCount = bundleAnalysis.filter(b => b.isDuplicate).length;
-    const unusedModulesCount = bundleAnalysis.filter(b => b.isUnused).length;
+    const detectedPackages: Array<{
+      packageName: string;
+      name?: string;
+      sizeKb: number;
+      transferSizeKb?: number;
+      compression?: string;
+      isUnused: boolean;
+      unused?: boolean;
+      isDuplicate: boolean;
+      duplicate?: boolean;
+      hasSourceMap?: boolean;
+      url?: string;
+    }> = [];
+    const seenPackages = new Set<string>();
+
+    for (const r of jsResources) {
+      const url = r.url || '';
+      const pkgName = detectChunkOrPackageName(url);
+      const isDuplicate = (urlCountMap.get(url) || 0) > 1 || seenPackages.has(pkgName.toLowerCase());
+      seenPackages.add(pkgName.toLowerCase());
+
+      const hasSourceMap = resources.some(res => res.url === url + '.map');
+
+      detectedPackages.push({
+        packageName: pkgName,
+        name: pkgName,
+        sizeKb: r.sizeKb || 0,
+        transferSizeKb: typeof r.transferSizeKb === 'number' ? r.transferSizeKb : (r.sizeKb || 0),
+        compression: r.compression || 'none',
+        isUnused: false,
+        unused: false,
+        isDuplicate,
+        duplicate: isDuplicate,
+        hasSourceMap,
+        url
+      });
+    }
+
+    const duplicateCount = detectedPackages.filter(b => b.isDuplicate).length;
+    const unusedModulesCount = detectedPackages.filter(b => b.isUnused).length;
 
     const suggestions: string[] = [];
-    if (sizeKb > 300) {
-      suggestions.push('Utilize dynamic import() structures or React lazy routes split blocks');
+    if (sizeKb > 500) {
+      suggestions.push('Total JavaScript payload exceeds 500KB. Consider code-splitting with dynamic import().');
     }
     if (duplicateCount > 0) {
-      suggestions.push('Consolidate package versions (e.g., moments, uuids) inside dependency trees');
+      suggestions.push('Duplicate JavaScript packages detected in page resources.');
     }
 
     return {
@@ -104,7 +139,7 @@ export class JsAnalyzer {
         duplicateCount,
         unusedModulesCount
       },
-      bundleAnalysis,
+      bundleAnalysis: detectedPackages,
       suggestions
     };
   }
@@ -112,58 +147,83 @@ export class JsAnalyzer {
 
 export class NetworkAnalyzer {
   analyze(resources: ResourceItem[], targetUrl: string) {
-    const cleanHost = targetUrl.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
+    const cleanHost = targetUrl.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0].toLowerCase();
     
     let thirdPartyCount = 0;
     let thirdPartySizeKb = 0;
     let compressedCount = 0;
     let uncompressedSizeKb = 0;
-    let cachedCount = 0;
+    let totalTransferSizeKb = 0;
 
-    const waterfall = resources.map((res) => {
-      const isThirdParty = !res.url.includes(cleanHost) && !res.url.startsWith('/');
-      const isCompressed = res.compression === 'brotli' || res.compression === 'gzip';
-      
-      const hasCache = res.cacheControl && 
-        (res.cacheControl.includes('max-age') || res.cacheControl.includes('public')) &&
-        !res.cacheControl.includes('no-cache') &&
-        !res.cacheControl.includes('no-store');
+    const resourcesList = resources.map(r => {
+      let isThirdParty = false;
+      try {
+        const host = new URL(r.url).hostname.replace(/^www\./i, '').toLowerCase();
+        isThirdParty = host !== cleanHost && !host.endsWith('.' + cleanHost);
+      } catch {
+        isThirdParty = false;
+      }
 
       if (isThirdParty) {
         thirdPartyCount++;
-        thirdPartySizeKb += res.sizeKb;
+        thirdPartySizeKb += (r.sizeKb || 0);
       }
+
+      const isCompressed = r.compression && r.compression !== 'none';
       if (isCompressed) {
         compressedCount++;
       } else {
-        uncompressedSizeKb += res.sizeKb;
-      }
-      if (hasCache) {
-        cachedCount++;
+        uncompressedSizeKb += (r.sizeKb || 0);
       }
 
+      const transferSizeKb = r.transferSizeKb !== undefined ? r.transferSizeKb : r.sizeKb;
+      totalTransferSizeKb += transferSizeKb;
+
       return {
-        name: res.url.split('/').pop() || res.url,
-        type: res.type,
-        sizeKb: res.sizeKb,
-        timeMs: res.durationMs,
-        compression: res.compression,
-        cacheControl: res.cacheControl,
+        name: r.url.split('/').pop()?.split('?')[0] || r.url,
+        url: r.url,
+        type: r.type,
+        sizeKb: r.sizeKb,
+        transferSizeKb,
+        statusCode: r.statusCode,
+        timeMs: r.durationMs ?? null,
+        durationMs: r.durationMs ?? null,
+        startTimeMs: r.startTimeMs ?? null,
+        initiator: r.initiator ?? null,
+        fromCache: r.fromCache ?? false,
+        timingBreakdown: r.timingBreakdown ?? null,
+        compression: r.compression || 'none',
+        cacheControl: r.cacheControl || 'none',
         isThirdParty,
-        isCompressed,
-        isCached: hasCache
+        isCompressed
       };
     });
 
+    // Sort waterfall order chronologically by startTimeMs where available
+    resourcesList.sort((a, b) => {
+      if (a.startTimeMs !== null && b.startTimeMs !== null) {
+        return a.startTimeMs - b.startTimeMs;
+      }
+      return 0;
+    });
+
+    const totalRequests = resources.length;
+    const totalSizeKb = parseFloat(resources.reduce((sum, r) => sum + (r.sizeKb || 0), 0).toFixed(1));
+    const compressionRate = totalRequests > 0 ? Math.round((compressedCount / totalRequests) * 100) : 100;
+    const cachedCount = resources.filter(r => r.fromCache || (r.cacheControl && !r.cacheControl.toLowerCase().includes('no-store'))).length;
+    const cacheCoverageRate = totalRequests > 0 ? Math.round((cachedCount / totalRequests) * 100) : 0;
+
     return {
-      resourcesList: waterfall,
+      resourcesList,
       stats: {
-        totalRequests: waterfall.length,
+        totalRequests,
+        totalSizeKb,
+        totalTransferSizeKb: parseFloat(totalTransferSizeKb.toFixed(1)),
         thirdPartyCount,
         thirdPartySizeKb: parseFloat(thirdPartySizeKb.toFixed(1)),
-        compressionRate: waterfall.length > 0 ? parseFloat(((compressedCount / waterfall.length) * 100).toFixed(1)) : 100,
-        uncompressedBytesKb: parseFloat(uncompressedSizeKb.toFixed(1)),
-        cacheCoverageRate: waterfall.length > 0 ? parseFloat(((cachedCount / waterfall.length) * 100).toFixed(1)) : 100
+        compressionRate,
+        cacheCoverageRate,
+        uncompressedSizeKb: parseFloat(uncompressedSizeKb.toFixed(1))
       }
     };
   }

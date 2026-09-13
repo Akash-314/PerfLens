@@ -61,12 +61,12 @@ export const analyzeWebsite = async (url: string): Promise<AnalysisEngineResult>
     status = 'failed';
   }
 
-  // Execute secondary analyzers synchronously using the resulting Puppeteer dataset
-  const imageAnalysis = analyzeImages(puppeteerResult);
-  const cssAnalysis = analyzeCSS(puppeteerResult);
-  const jsAnalysis = analyzeJavaScript(puppeteerResult);
-  const seoAnalysis = analyzeSEO(puppeteerResult);
-  const accessibilityAnalysis = analyzeAccessibility(puppeteerResult);
+  // Execute secondary analyzers using the resulting Puppeteer dataset
+  const imageAnalysis = puppeteerResult?.imageAnalysis || await analyzeImages(null, puppeteerResult);
+  const cssAnalysis = puppeteerResult?.cssAnalysis || analyzeCSS(puppeteerResult);
+  const jsAnalysis = puppeteerResult?.jsAnalysis || await analyzeJavaScript(null, puppeteerResult);
+  const seoAnalysis = puppeteerResult?.seoAnalysis || await analyzeSEO(null, puppeteerResult);
+  const accessibilityAnalysis = puppeteerResult?.accessibilityAnalysis || await analyzeAccessibility(null, puppeteerResult);
 
   // Generate consolidation roadmap of all findings
   const recommendationResult = generateRecommendations({
@@ -75,7 +75,8 @@ export const analyzeWebsite = async (url: string): Promise<AnalysisEngineResult>
     css: cssAnalysis,
     js: jsAnalysis,
     seo: seoAnalysis,
-    accessibility: accessibilityAnalysis
+    accessibility: accessibilityAnalysis,
+    vitals: puppeteerResult?.performance?.vitals || pagespeedResult?.vitals
   });
 
   const duration = Date.now() - startTime;

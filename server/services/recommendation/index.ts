@@ -1,46 +1,47 @@
 import { generateRecommendations } from './recommendation.service.js';
+import { RecommendationEngineResult } from './types.js';
 
-// Backwards compatibility wrapper for legacy ReportGenerator
+// Compatibility wrapper for ReportGenerator
 class LegacyRecommendationEngine {
-  generate(vitals: any, breakdown: any, images: any[], dom: any): any[] {
+  generateResult(vitals: any, breakdown: any, images: any[], dom: any, pageSpeed: any = null, actualAnalyzers: any = {}): RecommendationEngineResult {
     const mappedImages = images || [];
     const mappedBreakdown = breakdown || { js: { sizeKb: 0 }, css: { sizeKb: 0 } };
     const mappedDom = dom || { hasTitle: true, hasMetaDesc: true };
 
-    const imageResult: any = {
+    const imageResult: any = actualAnalyzers.image || {
       summary: {
         totalImages: mappedImages.length,
-        imagesMissingLazyLoading: mappedImages.filter(img => !img.lazyLoaded && img.sizeKb > 50).length,
-        imagesMissingAltText: mappedImages.filter(img => !img.hasAlt).length,
+        imagesMissingLazyLoading: mappedImages.filter((img: any) => !img.lazyLoaded && img.sizeKb > 50).length,
+        imagesMissingAltText: mappedImages.filter((img: any) => !img.hasAlt).length,
         brokenImages: 0,
         duplicateImages: 0
       },
-      optimizationCandidates: mappedImages.map(img => ({
+      optimizationCandidates: mappedImages.map((img: any) => ({
         url: img.src || '',
         estimatedSizeReductionKb: img.savingsKb || 0
       }))
     };
     
-    const cssResult: any = {
+    const cssResult: any = actualAnalyzers.css || {
       summary: {
-        totalCSSFiles: 1,
-        renderBlockingCSS: (mappedBreakdown.css?.sizeKb || 0) > 60 ? 1 : 0
+        totalCSSFiles: mappedBreakdown.css?.count || 0,
+        renderBlockingCSS: 0
       },
       stylesheets: [],
       optimizationCandidates: []
     };
 
-    const jsResult: any = {
+    const jsResult: any = actualAnalyzers.js || {
       summary: {
-        totalJSFiles: 1,
-        renderBlockingScripts: (mappedBreakdown.js?.sizeKb || 0) > 350 ? 1 : 0
+        totalJSFiles: mappedBreakdown.js?.count || 0,
+        renderBlockingScripts: 0
       },
       scripts: [],
       warnings: [],
       optimizationCandidates: []
     };
 
-    const seoResult: any = {
+    const seoResult: any = actualAnalyzers.seo || {
       summary: {
         missingTitle: !mappedDom.hasTitle,
         missingMetaDescription: !mappedDom.hasMetaDesc,
@@ -49,7 +50,7 @@ class LegacyRecommendationEngine {
       }
     };
 
-    const a11yResult: any = {
+    const a11yResult: any = actualAnalyzers.accessibility || {
       summary: {
         missingSkipNavigation: false
       },
@@ -59,25 +60,52 @@ class LegacyRecommendationEngine {
     };
 
     const result = generateRecommendations({
-      pagespeed: { success: true, vitals } as any,
+      pagespeed: pageSpeed || ({ success: true, vitals } as any),
       image: imageResult,
       css: cssResult,
       js: jsResult,
       seo: seoResult,
-      accessibility: a11yResult
+      accessibility: a11yResult,
+      vitals: vitals || pageSpeed?.vitals
     });
 
-    // Map new Recommendation format back to legacy IRecommendation fields
-    return result.recommendations.map(rec => ({
-      category: rec.category === 'performance' ? 'js' : rec.category,
-      issue: rec.title,
-      whyItMatters: rec.description,
+    // Return complete evidence-based recommendation objects with backward-compatible aliases
+    const mappedRecs = result.recommendations.map(rec => ({
+      ...rec,
+      id: rec.id,
+      title: rec.title,
+      description: rec.description,
+      category: rec.category,
+      severity: rec.severity,
+      confidence: rec.confidence,
+      finding: rec.finding,
+      evidence: rec.evidence,
+      evidenceDetails: rec.evidenceDetails || [],
+      potentialImpact: rec.potentialImpact,
+      estimateType: rec.estimateType,
+      estimatedSavings: rec.estimatedSavings ?? null,
+      measuredImprovement: rec.measuredImprovement ?? null,
       suggestedFix: rec.suggestedFix,
-      estimatedImprovement: rec.estimatedPerformanceGain,
+      estimatedDifficulty: rec.estimatedDifficulty,
+      estimatedImplementationTime: rec.estimatedImplementationTime,
+      refUrl: rec.refUrl || 'https://web.dev/',
+      // Backward-compatibility aliases for legacy UI/consumers
+      issue: rec.title || rec.issue,
+      whyItMatters: rec.potentialImpact || rec.description || rec.whyItMatters,
+      suggestedFixSummary: rec.suggestedFix,
+      estimatedImprovement: rec.estimatedSavings?.displayString || rec.estimatedImprovement || 'Not quantified',
       difficulty: rec.estimatedDifficulty,
-      priority: rec.priority === 'critical' ? 'high' : rec.priority,
-      refUrl: 'https://web.dev/'
+      priority: rec.priority
     }));
+
+    return {
+      ...result,
+      recommendations: mappedRecs
+    };
+  }
+
+  generate(vitals: any, breakdown: any, images: any[], dom: any, pageSpeed: any = null, actualAnalyzers: any = {}): any[] {
+    return this.generateResult(vitals, breakdown, images, dom, pageSpeed, actualAnalyzers).recommendations;
   }
 }
 
