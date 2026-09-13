@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
 import { AuthenticatedRequest } from '../middlewares/auth.js';
-import * as reportService from '../services/report/index.js';
+import pdfService, * as reportService from '../services/report/index.js';
 
 /**
  * @desc    Save a new consolidated performance report
@@ -134,3 +134,41 @@ export const deleteReport = async (
     next(error);
   }
 };
+
+/**
+ * @desc    Download performance report as PDF
+ * @route   GET /api/v1/reports/:id/pdf
+ * @access  Private
+ */
+export const exportReportPdf = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'Unauthenticated.' });
+    }
+
+    const id = req.params.id as string;
+    try {
+      const report = await reportService.getReport(id, req.user._id.toString());
+      const pdfBuffer = await pdfService.generateReportPdf(report);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="perflens-report-${report.url}.pdf"`);
+      res.send(pdfBuffer);
+    } catch (error: any) {
+      if (error.message === 'Invalid ID') {
+        return res.status(400).json({ success: false, message: 'Invalid report ID format.' });
+      }
+      if (error.message === 'Missing Report') {
+        return res.status(404).json({ success: false, message: 'Performance report not found.' });
+      }
+      throw error;
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+

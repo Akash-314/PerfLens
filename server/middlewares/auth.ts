@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User, { IUser } from '../models/User.js';
+import { supabase } from '../config/supabase.js';
+import { IUser } from '../models/User.js';
 
 export interface AuthenticatedRequest extends Request {
   user?: IUser | null;
@@ -33,18 +34,31 @@ export const protect = async (req: AuthenticatedRequest, res: Response, next: Ne
       process.env.JWT_SECRET || 'perflens_developer_secret_key_88f910a2'
     ) as DecodedToken;
 
-    // Attach decoded user info to request
-    req.user = await User.findById(decoded.id).select('-password');
+    // Attach decoded user info to request from Supabase
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, email, role, created_at')
+      .eq('id', decoded.id)
+      .maybeSingle();
 
-    if (!req.user) {
+    if (!user || error) {
       return res.status(404).json({
         success: false,
         message: 'No active user found matching token credentials.'
       });
     }
 
+    req.user = {
+      _id: user.id,
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      createdAt: new Date(user.created_at),
+      created_at: user.created_at
+    };
+
     next();
-  } catch (error) {
+  } catch {
     return res.status(401).json({
       success: false,
       message: 'Access denied. Invalid or expired token.'
@@ -82,8 +96,24 @@ export const loadUserPassively = async (req: AuthenticatedRequest, res: Response
       token,
       process.env.JWT_SECRET || 'perflens_developer_secret_key_88f910a2'
     ) as DecodedToken;
-    req.user = await User.findById(decoded.id).select('-password');
-  } catch (_) {
+
+    const { data: user } = await supabase
+      .from('users')
+      .select('id, email, role, created_at')
+      .eq('id', decoded.id)
+      .maybeSingle();
+
+    if (user) {
+      req.user = {
+        _id: user.id,
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        createdAt: new Date(user.created_at),
+        created_at: user.created_at
+      };
+    }
+  } catch {
     // Ignore decoding faults to allow guests
   }
   next();

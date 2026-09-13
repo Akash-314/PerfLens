@@ -1,43 +1,23 @@
 import { body } from 'express-validator';
-import { URL } from 'url';
+import { validateUrlForSsrf, validateUrlSsrfAsync } from '../services/security/ssrfValidator.js';
 
 export const scanValidator = [
   body('url')
     .notEmpty()
     .withMessage('URL target is required')
     .trim()
-    .custom((value: string) => {
-      const urlLower = value.toLowerCase();
+    .custom(async (value: string) => {
+      const urlToValidate = /^https?:\/\//i.test(value) ? value : 'https://' + value;
 
-      // Reject protocols like javascript: or file://
-      if (urlLower.startsWith('javascript:') || /javascript:/i.test(urlLower)) {
-        throw new Error('JavaScript URIs are not allowed');
-      }
-      if (urlLower.startsWith('file:') || /file:/i.test(urlLower)) {
-        throw new Error('Local file URIs are not allowed');
+      // 1. Static structural and scheme SSRF checks
+      if (!validateUrlForSsrf(urlToValidate)) {
+        throw new Error('Scanning private IP addresses, loopback links, cloud metadata, or unsafe schemes is prohibited');
       }
 
-      // Extract hostname
-      let host = value;
-      try {
-        const urlToParse = /^https?:\/\//i.test(value) ? value : 'https://' + value;
-        const parsed = new URL(urlToParse);
-        host = parsed.hostname;
-      } catch (err) {
-        throw new Error('Please provide a valid website URL structure');
-      }
-
-      const hostLower = host.toLowerCase();
-
-      // Reject localhost
-      if (hostLower === 'localhost' || hostLower.endsWith('.localhost')) {
-        throw new Error('Localhost scanning is not allowed for security reasons');
-      }
-
-      // Reject loopbacks & private subnets (IPv4 and IPv6)
-      const ipPattern = /^(?:127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[0-1])\.\d+\.\d+)$/;
-      if (ipPattern.test(hostLower) || hostLower === '::1' || hostLower === '[::1]' || hostLower === '0.0.0.0') {
-        throw new Error('Scanning private IP addresses or loopback links is prohibited');
+      // 2. Asynchronous DNS resolution check (blocks DNS rebinding and internal host resolution)
+      const ssrfCheck = await validateUrlSsrfAsync(urlToValidate);
+      if (!ssrfCheck.safe) {
+        throw new Error(ssrfCheck.reason || 'Restricted target host rejected for security reasons');
       }
 
       return true;

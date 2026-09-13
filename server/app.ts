@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import mongoose from 'mongoose';
+import { isSupabaseConfigured, checkSupabaseConnection } from './config/supabase.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 
@@ -16,37 +16,41 @@ import errorHandler from './middlewares/errorHandler.js';
 import { apiLimiter } from './middlewares/rateLimiter.js';
 
 const app = express();
-console.log("APP FILE LOADED");
-app.use((req, res, next) => {
-  console.log("REQUEST:", req.method, req.originalUrl);
-  next();
-});
-
 // Security HTTP Headers
 app.use(helmet({
   contentSecurityPolicy: false
 }));
 
-// CORS Configuration
+// CORS Configuration - environment-driven with safe fallback
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(s => s.trim())
+  : '*';
+
 app.use(cors({
-  origin: '*',
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // HTTP Request Logging
-app.use(morgan('dev'));
+if (process.env.NODE_ENV !== 'test') {
+  app.use(morgan('dev'));
+}
 
-// Body parser
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Body parser with explicit limits
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Global Rate Limiter
 app.use('/api', apiLimiter);
 
 // API Health Check
-app.get('/api/v1/health', (req: Request, res: Response) => {
-  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+app.get('/api/v1/health', async (req: Request, res: Response) => {
+  let dbStatus = 'unconfigured';
+  if (isSupabaseConfigured()) {
+    const isConnected = await checkSupabaseConnection();
+    dbStatus = isConnected ? 'connected' : 'disconnected';
+  }
   res.status(200).json({
     success: true,
     message: 'PerfLens API Server running smoothly',
@@ -61,13 +65,13 @@ const swaggerOptions = {
     openapi: '3.0.0',
     info: {
       title: 'PerfLens API Documentation',
-      version: '1.0.0',
+      version: '2.0.0',
       description: 'API Documentation for PerfLens Frontend Performance Inspector backend.'
     },
     servers: [
       {
-        url: 'http://localhost:5001',
-        description: 'Local Development Server'
+        url: process.env.API_URL || '/api/v1',
+        description: process.env.NODE_ENV === 'production' ? 'Production Gateway' : 'Development Gateway'
       }
     ],
     components: {
@@ -87,23 +91,20 @@ const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api/docs', swaggerUi.serve as any, swaggerUi.setup(swaggerDocs) as any);
 
 // Connect Versioned API Routers
-console.log("Registering routes...");
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/analysis', analysisRoutes);
 app.use('/api/v1/reports', reportRoutes);
 app.use('/api/v1/projects', projectRoutes);
 
-// Global Error Catch Middleware
-app.use(errorHandler);
-
-app.get("/", (req, res) => {
-    res.send("ROOT WORKING");
+app.get("/", (_req, res) => {
+  res.send("PerfLens API Gateway Active");
 });
 
-app.get("/hello", (req, res) => {
-    res.send("HELLO");
+app.get("/hello", (_req, res) => {
+  res.send("HELLO");
 });
+
 // Handle undefined routes
 app.use('*', (req: Request, res: Response) => {
   res.status(404).json({
@@ -111,5 +112,8 @@ app.use('*', (req: Request, res: Response) => {
     message: `Resource not found on endpoint: ${req.originalUrl}`
   });
 });
+
+// Global Error Catch Middleware (must be last)
+app.use(errorHandler);
 
 export default app;

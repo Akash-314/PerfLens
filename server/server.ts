@@ -10,14 +10,11 @@ validateEnv();
 
 const PORT = process.env.PORT || 5001;
 
-// Connect to MongoDB
+// Verify Supabase Database Connection
 connectDatabase();
 
-const server = app.listen(PORT, () => {
-  console.log("Server object created");
-  console.log(`[PerfLens Server]: Web application backend active in ${process.env.NODE_ENV || 'development'} mode.`);
-  console.log(`[PerfLens Server]: API Gateway: http://localhost:${PORT}/api/v1`);
-  console.log(`[PerfLens Server]: OpenAPI Swagger Docs: http://localhost:${PORT}/api/docs`);
+app.listen(PORT, () => {
+  console.log(`[PerfLens Server]: Web application backend active in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}.`);
 });
 
 // Capture global promise rejections

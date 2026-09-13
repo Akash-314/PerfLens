@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 /**
  * Express error handling gateway
  */
-const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+const errorHandler = (err: any, req: Request, res: Response, _next: NextFunction) => {
   let error = { ...err };
   error.message = err.message;
 
@@ -31,10 +31,16 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
     return res.status(404).json({ success: false, message });
   }
 
-  res.status(err.statusCode || 500).json({
+  const statusCode = err.statusCode || 500;
+  const isProduction = process.env.NODE_ENV === 'production';
+  const clientMessage = isProduction && statusCode >= 500
+    ? 'Internal Server Error. Please contact support.'
+    : (error.message || 'Internal Server Error. Please contact support.');
+
+  res.status(statusCode).json({
     success: false,
-    message: error.message || 'Internal Server Error. Please contact support.',
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    message: clientMessage,
+    stack: isProduction ? undefined : err.stack
   });
 };
 
