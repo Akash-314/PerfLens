@@ -6,16 +6,55 @@ import { API_BASE } from '../config/api';
 
 // Interfaces for our state
 export interface MetricDetail {
-  score: number;
+  score: number | null;
   value: string;
-  rating: 'good' | 'needs-improvement' | 'poor';
+  rating: 'good' | 'needs-improvement' | 'poor' | 'unrated';
   source?: string;
   mode?: string;
+  available?: boolean;
+  reason?: string;
+  unavailableReason?: string;
+  rawValue?: number | null;
+  normalizedValueMs?: number | null;
+  unit?: string;
+}
+
+export type EstimateType =
+  | 'measured'
+  | 'modeled'
+  | 'transfer_only'
+  | 'heuristic'
+  | 'not_quantified'
+  | 'unavailable';
+
+export interface RecommendationEvidence {
+  type: string;
+  resource?: string | null;
+  selector?: string | null;
+  duration?: number | null;
+  sizeKb?: number | null;
+  value?: any;
+  details?: Record<string, any>;
+}
+
+export interface EstimatedSavings {
+  value: number | null;
+  unit: string | null;
+  type: EstimateType;
+  assumption: string | null;
+  displayString: string;
+}
+
+export interface RecommendationFinding {
+  description: string;
+  metric?: string;
+  value?: number | string | null;
+  unit?: string | null;
 }
 
 export interface Recommendation {
   id: string;
-  category: 'performance' | 'accessibility' | 'seo' | 'security' | 'css' | 'js' | 'images';
+  category: 'performance' | 'accessibility' | 'seo' | 'security' | 'css' | 'js' | 'images' | 'best-practices';
   issue: string;
   whyItMatters: string;
   suggestedFix: string;
@@ -24,6 +63,18 @@ export interface Recommendation {
   priority: 'high' | 'medium' | 'low';
   refUrl: string;
   expanded?: boolean;
+  title?: string;
+  finding?: RecommendationFinding;
+  evidence?: RecommendationEvidence[] | string;
+  evidenceDetails?: RecommendationEvidence[];
+  potentialImpact?: string;
+  estimateType?: EstimateType;
+  estimatedSavings?: EstimatedSavings | null;
+  measuredImprovement?: number | null;
+  confidence?: 'high' | 'medium' | 'low';
+  severity?: 'critical' | 'high' | 'medium' | 'low' | 'info';
+  estimatedDifficulty?: 'easy' | 'medium' | 'hard';
+  estimatedImplementationTime?: string;
 }
 
 export interface ResourceItem {
@@ -69,6 +120,10 @@ export interface Report {
     sizeKb: number;
     isDuplicate: boolean;
     isUnused: boolean;
+    transferSizeKb?: number;
+    compression?: string;
+    hasSourceMap?: boolean;
+    url?: string;
   }[];
   images: {
     src: string;
@@ -237,43 +292,50 @@ const mapBackendReportToFrontend = (r: any): Report => {
   let vitals = r.vitals;
   if (!vitals || !vitals.fcp) {
     const puppeteerVitals = r.puppeteer?.performance?.vitals || {};
-    const fcpSec = puppeteerVitals.fcp ?? 1.5;
-    const lcpSec = puppeteerVitals.lcp ?? 2.8;
-    const clsVal = puppeteerVitals.cls ?? 0.05;
-    const tbtMs = puppeteerVitals.tbt ?? 300;
-    const ttfbSec = puppeteerVitals.ttfb ?? 0.3;
-    const fidMs = puppeteerVitals.fid ?? 45;
+    const fcpSec = puppeteerVitals.fcp ?? null;
+    const lcpSec = puppeteerVitals.lcp ?? null;
+    const clsVal = puppeteerVitals.cls ?? null;
+    const tbtMs = puppeteerVitals.tbt ?? null;
+    const ttfbSec = puppeteerVitals.ttfb ?? null;
+    const inpMs = puppeteerVitals.inp ?? null;
 
     vitals = {
       fcp: {
-        score: Math.round(performance),
-        value: `${fcpSec.toFixed(2)}s`,
-        rating: getRating(fcpSec, 1.8, 3.0)
+        score: fcpSec !== null ? Math.round(performance) : null,
+        value: fcpSec !== null ? `${fcpSec.toFixed(2)}s` : 'N/A',
+        rating: fcpSec !== null ? getRating(fcpSec, 1.8, 3.0) : 'unrated',
+        available: fcpSec !== null
       },
       lcp: {
-        score: Math.round(performance),
-        value: `${lcpSec.toFixed(2)}s`,
-        rating: getRating(lcpSec, 2.5, 4.0)
+        score: lcpSec !== null ? Math.round(performance) : null,
+        value: lcpSec !== null ? `${lcpSec.toFixed(2)}s` : 'N/A',
+        rating: lcpSec !== null ? getRating(lcpSec, 2.5, 4.0) : 'unrated',
+        available: lcpSec !== null
       },
-      fid: {
-        score: Math.round(performance),
-        value: `${fidMs}ms`,
-        rating: getRating(fidMs, 100, 300)
+      inp: {
+        score: inpMs !== null ? Math.round(performance) : null,
+        value: inpMs !== null ? `${inpMs}ms` : 'N/A',
+        rating: inpMs !== null ? (inpMs <= 200 ? 'good' : inpMs <= 500 ? 'needs-improvement' : 'poor') : 'unrated',
+        available: inpMs !== null,
+        reason: 'CrUX Field Core Web Vital; not available in lab crawl'
       },
       cls: {
-        score: Math.round(performance),
-        value: clsVal.toString(),
-        rating: getRatingCls(clsVal)
+        score: clsVal !== null ? Math.round(performance) : null,
+        value: clsVal !== null ? clsVal.toString() : 'N/A',
+        rating: clsVal !== null ? getRatingCls(clsVal) : 'unrated',
+        available: clsVal !== null
       },
       ttfb: {
-        score: Math.round(performance),
-        value: `${(ttfbSec * 1000).toFixed(0)}ms`,
-        rating: getRating(ttfbSec, 0.8, 1.8)
+        score: ttfbSec !== null ? Math.round(performance) : null,
+        value: ttfbSec !== null ? `${(ttfbSec * 1000).toFixed(0)}ms` : 'N/A',
+        rating: ttfbSec !== null ? getRating(ttfbSec, 0.8, 1.8) : 'unrated',
+        available: ttfbSec !== null
       },
       tbt: {
-        score: Math.round(performance),
-        value: `${tbtMs}ms`,
-        rating: getRatingTbt(tbtMs)
+        score: tbtMs !== null ? Math.round(performance) : null,
+        value: tbtMs !== null ? `${tbtMs}ms` : 'N/A',
+        rating: tbtMs !== null ? getRatingTbt(tbtMs) : 'unrated',
+        available: tbtMs !== null
       }
     };
   }
@@ -285,22 +347,26 @@ const mapBackendReportToFrontend = (r: any): Report => {
   const imageCoverage = r.image?.summary || {};
 
   const breakdown = {
-    html: { sizeKb: r.breakdown?.html?.sizeKb ?? network.htmlSizeKb ?? 25, count: r.breakdown?.html?.count ?? 1 },
-    js: { sizeKb: r.breakdown?.js?.sizeKb ?? network.jsSizeKb ?? 450, unusedKb: r.breakdown?.js?.unusedKb ?? jsCoverage.unusedKb ?? 120 },
-    css: { sizeKb: r.breakdown?.css?.sizeKb ?? network.cssSizeKb ?? 80, unusedKb: r.breakdown?.css?.unusedKb ?? cssCoverage.unusedKb ?? 30 },
-    images: { sizeKb: r.breakdown?.images?.sizeKb ?? network.imageSizeKb ?? 1200, count: r.breakdown?.images?.count ?? imageCoverage.totalCount ?? 8 },
-    fonts: { sizeKb: r.breakdown?.fonts?.sizeKb ?? network.fontSizeKb ?? 120, count: r.breakdown?.fonts?.count ?? 2 },
-    thirdParty: { sizeKb: r.breakdown?.thirdParty?.sizeKb ?? r.recommendation?.summary?.thirdPartySizeKb ?? 150, count: r.breakdown?.thirdParty?.count ?? r.recommendation?.summary?.thirdPartyResourcesCount ?? 3 },
-    other: { sizeKb: r.breakdown?.other?.sizeKb ?? network.otherSizeKb ?? 40, count: r.breakdown?.other?.count ?? 1 }
+    html: { sizeKb: r.breakdown?.html?.sizeKb ?? network.htmlSizeKb ?? 0, count: r.breakdown?.html?.count ?? (network.htmlSizeKb ? 1 : 0) },
+    js: { sizeKb: r.breakdown?.js?.sizeKb ?? network.jsSizeKb ?? 0, count: r.breakdown?.js?.count ?? 0, unusedKb: r.breakdown?.js?.unusedKb ?? jsCoverage.unusedKb ?? 0 },
+    css: { sizeKb: r.breakdown?.css?.sizeKb ?? network.cssSizeKb ?? 0, count: r.breakdown?.css?.count ?? 0, unusedKb: r.breakdown?.css?.unusedKb ?? cssCoverage.unusedKb ?? 0 },
+    images: { sizeKb: r.breakdown?.images?.sizeKb ?? network.imageSizeKb ?? 0, count: r.breakdown?.images?.count ?? imageCoverage.totalCount ?? 0 },
+    fonts: { sizeKb: r.breakdown?.fonts?.sizeKb ?? network.fontSizeKb ?? 0, count: r.breakdown?.fonts?.count ?? 0 },
+    thirdParty: { sizeKb: r.breakdown?.thirdParty?.sizeKb ?? r.recommendation?.summary?.thirdPartySizeKb ?? 0, count: r.breakdown?.thirdParty?.count ?? r.recommendation?.summary?.thirdPartyResourcesCount ?? 0 },
+    other: { sizeKb: r.breakdown?.other?.sizeKb ?? network.otherSizeKb ?? 0, count: r.breakdown?.other?.count ?? 0 }
   };
 
   // 4. JS Script bundle duplicate logic checks
   const jsPackages = r.bundleAnalysis || r.js?.packages || [];
   const bundleAnalysis = jsPackages.map((p: any) => ({
     packageName: p.packageName || p.name || 'unknown-package',
-    sizeKb: p.sizeKb || 12,
+    sizeKb: typeof p.sizeKb === 'number' ? p.sizeKb : 0,
+    transferSizeKb: typeof p.transferSizeKb === 'number' ? p.transferSizeKb : (typeof p.sizeKb === 'number' ? p.sizeKb : 0),
+    compression: p.compression || 'none',
     isDuplicate: p.isDuplicate ?? p.duplicate ?? false,
-    isUnused: p.isUnused ?? p.unused ?? false
+    isUnused: p.isUnused ?? p.unused ?? false,
+    hasSourceMap: p.hasSourceMap ?? false,
+    url: p.url || ''
   }));
 
   // 5. Raw resources breakdown mapping
@@ -341,23 +407,32 @@ const mapBackendReportToFrontend = (r: any): Report => {
   const recItems = r.recommendations || r.recommendation?.recommendations || [];
   const recommendations: Recommendation[] = recItems.map((rec: any, idx: number) => {
     let diff: Recommendation['difficulty'] = 'medium';
-    if (rec.difficulty === 'low' || rec.difficulty === 'easy') diff = 'easy';
-    else if (rec.difficulty === 'high' || rec.difficulty === 'hard') diff = 'hard';
+    if (rec.difficulty === 'low' || rec.difficulty === 'easy' || rec.estimatedDifficulty === 'easy') diff = 'easy';
+    else if (rec.difficulty === 'high' || rec.difficulty === 'hard' || rec.estimatedDifficulty === 'hard') diff = 'hard';
 
     let prio: Recommendation['priority'] = 'medium';
-    if (rec.priority === 'high' || rec.priority === 'critical') prio = 'high';
-    else if (rec.priority === 'low') prio = 'low';
+    if (rec.priority === 'high' || rec.priority === 'critical' || rec.severity === 'high') prio = 'high';
+    else if (rec.priority === 'low' || rec.severity === 'low') prio = 'low';
 
     return {
       id: rec.id || `rec-${idx}`,
       category: rec.category || 'performance',
-      issue: rec.issue,
-      whyItMatters: rec.whyItMatters || rec.impact || '',
+      issue: rec.title || rec.issue,
+      whyItMatters: rec.potentialImpact || rec.whyItMatters || rec.description || rec.impact || '',
       suggestedFix: rec.suggestedFix || rec.solution || '',
-      estimatedImprovement: rec.estimatedImprovement || rec.estimatedSaving || 'Moderate',
+      estimatedImprovement: rec.estimatedSavings?.displayString || rec.estimatedImprovement || rec.estimatedSaving || 'Not quantified',
       difficulty: diff,
       priority: prio,
-      refUrl: rec.refUrl || rec.reference || '#'
+      refUrl: rec.refUrl || rec.reference || 'https://web.dev/',
+      title: rec.title || rec.issue,
+      finding: rec.finding,
+      evidence: rec.evidence,
+      evidenceDetails: rec.evidenceDetails || [],
+      potentialImpact: rec.potentialImpact || rec.whyItMatters || rec.description || '',
+      estimatedSavings: rec.estimatedSavings,
+      measuredImprovement: rec.measuredImprovement ?? null,
+      confidence: rec.confidence || 'high',
+      severity: rec.severity || (prio === 'high' ? 'high' : 'medium')
     };
   });
 

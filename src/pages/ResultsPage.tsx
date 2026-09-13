@@ -451,7 +451,13 @@ export const ResultsPage: React.FC = () => {
                   {[
                     { name: 'Largest Contentful Paint (LCP)', item: currentReport.vitals.lcp, desc: 'Measures perceived loading speed (2.5s threshold)' },
                     { name: 'Cumulative Layout Shift (CLS)', item: currentReport.vitals.cls, desc: 'Measures visual stability (0.1 threshold)' },
-                    { name: 'Interaction to Next Paint (INP)', item: currentReport.vitals.inp || (currentReport.pageSpeed?.metrics?.inp ? { value: currentReport.pageSpeed.metrics.inp, rating: 'unrated' } : { value: 'N/A (Lab)', rating: 'unrated' }), desc: 'Measures responsiveness to user input (200ms threshold)' }
+                    { 
+                      name: 'Interaction to Next Paint (INP)', 
+                      item: currentReport.vitals.inp || (currentReport.pageSpeed?.metrics?.inp 
+                        ? { value: currentReport.pageSpeed.metrics.inp, rating: 'unrated' as const, source: 'crux', mode: 'field', score: null, available: true } 
+                        : { value: 'N/A (Lab)', rating: 'unrated' as const, source: 'puppeteer', mode: 'lab', score: null, available: false, reason: 'INP requires real user input events and is not available in non-interactive lab crawl' }), 
+                      desc: 'Measures responsiveness to user input (200ms threshold)' 
+                    }
                   ].map((vit, idx) => (
                     <div
                       key={idx}
@@ -469,26 +475,40 @@ export const ResultsPage: React.FC = () => {
                         <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
                           {vit.name}
                         </span>
-                        <span
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            borderRadius: '50%',
-                            backgroundColor:
-                              vit.item?.rating === 'good'
-                                ? 'var(--color-success)'
-                                : vit.item?.rating === 'needs-improvement'
-                                ? 'var(--color-warning)'
-                                : vit.item?.rating === 'poor'
-                                ? 'var(--color-danger)'
-                                : 'var(--color-muted)'
-                          }}
-                        />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          {vit.item?.source && (
+                            <span style={{ fontSize: '9px', padding: '1px 5px', borderRadius: '3px', background: 'rgba(255,255,255,0.06)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.4px', fontWeight: 600 }}>
+                              {vit.item?.mode ? `${vit.item.mode} • ` : ''}{vit.item.source}
+                            </span>
+                          )}
+                          <span
+                            style={{
+                              width: '8px',
+                              height: '8px',
+                              borderRadius: '50%',
+                              backgroundColor:
+                                vit.item?.rating === 'good'
+                                  ? 'var(--color-success)'
+                                  : vit.item?.rating === 'needs-improvement'
+                                  ? 'var(--color-warning)'
+                                  : vit.item?.rating === 'poor'
+                                  ? 'var(--color-danger)'
+                                  : 'var(--color-muted)'
+                            }}
+                          />
+                        </div>
                       </div>
-                      <p style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                      <p 
+                        style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}
+                        title={vit.item?.unavailableReason || vit.item?.reason || undefined}
+                      >
                         {vit.item?.value ?? 'N/A'}
                       </p>
-                      <span style={{ fontSize: '10px', color: 'var(--color-muted)' }}>{vit.desc}</span>
+                      <span style={{ fontSize: '10px', color: 'var(--color-muted)' }} title={vit.item?.unavailableReason || vit.item?.reason || undefined}>
+                        {vit.item?.available === false && (vit.item?.unavailableReason || vit.item?.reason)
+                          ? (vit.item.unavailableReason || vit.item.reason)
+                          : vit.desc}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -520,26 +540,40 @@ export const ResultsPage: React.FC = () => {
                           <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
                             {vit.name}
                           </span>
-                          <span
-                            style={{
-                              width: '8px',
-                              height: '8px',
-                              borderRadius: '50%',
-                              backgroundColor:
-                                vit.item?.rating === 'good'
-                                ? 'var(--color-success)'
-                                : vit.item?.rating === 'needs-improvement'
-                                ? 'var(--color-warning)'
-                                : vit.item?.rating === 'poor'
-                                ? 'var(--color-danger)'
-                                : 'var(--color-muted)'
-                            }}
-                          />
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            {vit.item?.source && (
+                              <span style={{ fontSize: '9px', padding: '1px 5px', borderRadius: '3px', background: 'rgba(255,255,255,0.06)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.4px', fontWeight: 600 }}>
+                                {vit.item?.mode ? `${vit.item.mode} • ` : ''}{vit.item.source}
+                              </span>
+                            )}
+                            <span
+                              style={{
+                                width: '8px',
+                                height: '8px',
+                                borderRadius: '50%',
+                                backgroundColor:
+                                  vit.item?.rating === 'good'
+                                  ? 'var(--color-success)'
+                                  : vit.item?.rating === 'needs-improvement'
+                                  ? 'var(--color-warning)'
+                                  : vit.item?.rating === 'poor'
+                                  ? 'var(--color-danger)'
+                                  : 'var(--color-muted)'
+                              }}
+                            />
+                          </div>
                         </div>
-                        <p style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                        <p 
+                          style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}
+                          title={vit.item?.unavailableReason || vit.item?.reason || undefined}
+                        >
                           {vit.item?.value ?? 'N/A'}
                         </p>
-                        <span style={{ fontSize: '10px', color: 'var(--color-muted)' }}>{vit.desc}</span>
+                        <span style={{ fontSize: '10px', color: 'var(--color-muted)' }} title={vit.item?.unavailableReason || vit.item?.reason || undefined}>
+                          {vit.item?.available === false && (vit.item?.unavailableReason || vit.item?.reason)
+                            ? (vit.item.unavailableReason || vit.item.reason)
+                            : vit.desc}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -597,10 +631,12 @@ export const ResultsPage: React.FC = () => {
                                 {row.classification}
                               </span>
                             </td>
-                            <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)' }}>{row.weight}</td>
+                            <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)' }}>
+                              {row.weightFormatted || (typeof row.weight === 'number' ? `${Math.round(row.weight * 100)}%` : '0%')}
+                            </td>
                             <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)' }}>{row.score ?? 'N/A'}</td>
                             <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)', fontWeight: 600, textAlign: 'right' }}>
-                              {row.contribution != null ? `+${row.contribution}` : '0'}
+                              {row.contribution != null ? `+${row.contribution}` : (row.available === false ? 'N/A' : '0')}
                             </td>
                           </tr>
                         ))}
@@ -684,8 +720,13 @@ export const ResultsPage: React.FC = () => {
                           }}
                         />
                         <div style={{ flex: 1 }}>
-                          <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--color-text-primary)' }}>{rec.issue}</p>
-                          <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Est. Improvement: {rec.estimatedImprovement}</span>
+                          <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--color-text-primary)', margin: 0 }}>{rec.issue}</p>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px', flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: '9.5px', textTransform: 'uppercase', padding: '1px 5px', borderRadius: '3px', backgroundColor: 'var(--color-surface-secondary)', color: 'var(--color-text-secondary)', fontWeight: 600 }}>
+                              {(rec.estimateType || rec.estimatedSavings?.type || 'not_quantified').replace('_', ' ')}
+                            </span>
+                            <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>{rec.estimatedSavings?.displayString || rec.estimatedImprovement || 'Not quantified'}</span>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -920,7 +961,7 @@ export const ResultsPage: React.FC = () => {
               <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Actionable Asset Code Fixes</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {currentReport.recommendations.filter(r => r.category === 'js' || r.category === 'css').map((rec) => (
+                  {currentReport.recommendations.filter(r => r.category === 'js' || r.category === 'css' || r.category === 'performance').map((rec) => (
                     <div key={rec.id} className="expandable-card">
                       <div className="expandable-card-header" onClick={() => toggleRec(rec.id)}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -933,17 +974,41 @@ export const ResultsPage: React.FC = () => {
                       </div>
                       {expandedRecs[rec.id] && (
                         <div className="expandable-card-body" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                          <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-                            <strong>Why it matters:</strong> {rec.whyItMatters}
+                          {rec.finding && (
+                            <div style={{ padding: '8px 12px', backgroundColor: 'rgba(59, 130, 246, 0.05)', border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: '6px', fontSize: '12px', color: 'var(--color-text-primary)' }}>
+                              <strong>Finding:</strong> {rec.finding.description}
+                            </div>
+                          )}
+
+                          <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', margin: 0 }}>
+                            <strong>Potential Impact:</strong> {rec.potentialImpact || rec.whyItMatters}
                           </p>
+
+                          {rec.evidence && (
+                            <div style={{ padding: '8px 12px', backgroundColor: 'var(--color-surface-secondary)', border: '1px solid var(--color-border)', borderRadius: '6px', fontSize: '11.5px', fontFamily: 'monospace' }}>
+                              {Array.isArray(rec.evidence) ? (
+                                rec.evidence.map((ev: any, evIdx: number) => (
+                                  <div key={evIdx}>
+                                    • {ev.type}: {ev.resource || ev.selector || ''} {ev.duration ? `(${ev.duration}ms)` : ''} {ev.sizeKb ? `(${ev.sizeKb} KB)` : ''}
+                                  </div>
+                                ))
+                              ) : (
+                                <span>{String(rec.evidence)}</span>
+                              )}
+                            </div>
+                          )}
+
                           <div style={{ padding: '12px', backgroundColor: 'var(--color-surface-secondary)', border: '1px solid var(--color-border)', borderRadius: '6px' }}>
                             <code style={{ fontSize: '12px', color: 'var(--color-text-primary)', whiteSpace: 'pre-wrap', background: 'none', padding: 0 }}>
                               {rec.suggestedFix}
                             </code>
                           </div>
-                          <div style={{ display: 'flex', gap: '16px', fontSize: '11px', color: 'var(--color-muted)' }}>
+
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '11px', color: 'var(--color-muted)', alignItems: 'center' }}>
+                            <span>Estimate Type: <strong style={{ textTransform: 'uppercase', color: 'var(--color-primary)' }}>{(rec.estimateType || rec.estimatedSavings?.type || 'not_quantified').replace('_', ' ')}</strong></span>
+                            <span>Savings: <strong style={{ color: 'var(--color-success)' }}>{rec.estimatedSavings?.displayString || rec.estimatedImprovement || 'Not quantified'}</strong></span>
+                            <span>Confidence: <strong style={{ textTransform: 'uppercase' }}>{rec.confidence || 'HIGH'}</strong></span>
                             <span>Difficulty: <strong>{rec.difficulty.toUpperCase()}</strong></span>
-                            <span>Est. Improvement: <strong>{rec.estimatedImprovement}</strong></span>
                             <a href={rec.refUrl} target="_blank" rel="noopener noreferrer" style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
                               <span>Docs</span> <ExternalLink size={10} />
                             </a>

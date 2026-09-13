@@ -8,7 +8,7 @@ export const getUserNameFromEmail = (email: string): string => {
   
   const prefix = email.split('@')[0];
   return prefix
-    .split(/[\._-]/)
+    .split(/[._-]/)
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 };

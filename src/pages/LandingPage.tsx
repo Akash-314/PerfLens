@@ -3,13 +3,21 @@ import { useApp } from '../context/AppContext';
 import { Globe, ArrowRight, Zap, Shield, Sparkles, CheckCircle, ChevronDown, Cpu } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
-  const { startAnalysis, setCurrentTab } = useApp();
+  const { startAnalysis, setCurrentTab, isAuthenticated, user } = useApp();
   const [url, setUrl] = useState('');
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
 
   const handleAnalyze = (e: React.FormEvent) => {
     e.preventDefault();
     if (url.trim()) {
+      // If the user isn't logged in, redirect them to register or login first,
+      // or let them scan if scanning is allowed publically. Let's keep scanning public if the backend allows it,
+      // but if not, they will be redirected. The backend scans are protected by auth tokens in startAnalysis.
+      // So if not authenticated, redirect to register/login.
+      if (!isAuthenticated) {
+        setCurrentTab('register');
+        return;
+      }
       startAnalysis(url.trim());
     }
   };
@@ -45,9 +53,68 @@ export const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="fade-in" style={{ maxWidth: '1080px', margin: '0 auto', padding: '60px 24px 100px 24px' }}>
+    <div className="fade-in" style={{ maxWidth: '1080px', margin: '0 auto', padding: '16px 24px 100px 24px' }}>
+      {/* Navigation Header */}
+      <header
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '16px 0',
+          borderBottom: '1px solid var(--color-border)',
+          marginBottom: '60px'
+        }}
+      >
+        <div 
+          onClick={() => setCurrentTab('landing')}
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '8px', 
+            fontSize: '18px', 
+            fontWeight: 700, 
+            cursor: 'pointer',
+            color: 'var(--color-text-primary)'
+          }}
+        >
+          <Globe size={20} style={{ color: 'var(--color-accent)' }} />
+          <span>PerfLens</span>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          {isAuthenticated ? (
+            <>
+              <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)', display: 'inline-block', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                Hi, {user?.name || user?.email.split('@')[0]}
+              </span>
+              <button 
+                className="btn btn-secondary btn-sm" 
+                onClick={() => setCurrentTab('dashboard')}
+              >
+                Go to Dashboard
+              </button>
+            </>
+          ) : (
+            <>
+              <button 
+                className="btn btn-ghost btn-sm" 
+                onClick={() => setCurrentTab('login')}
+              >
+                Login
+              </button>
+              <button 
+                className="btn btn-primary btn-sm" 
+                onClick={() => setCurrentTab('register')}
+              >
+                Get Started
+              </button>
+            </>
+          )}
+        </div>
+      </header>
+
       {/* Hero Section */}
-      <section style={{ textAlign: 'center', marginBottom: '80px', paddingTop: '40px' }}>
+      <section style={{ textAlign: 'center', marginBottom: '80px', paddingTop: '20px' }}>
         <div
           style={{
             display: 'inline-flex',
@@ -341,12 +408,18 @@ export const LandingPage: React.FC = () => {
           No credit card required. Explore pre-scanned mock reports or run a diagnostic immediately.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
-          <button className="btn btn-primary" onClick={() => setCurrentTab('analyze')}>
-            <span>Analyze Website</span>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => setCurrentTab(isAuthenticated ? 'analyze' : 'register')}
+          >
+            <span>{isAuthenticated ? 'Analyze Website' : 'Get Started for Free'}</span>
             <ArrowRight size={14} />
           </button>
-          <button className="btn btn-secondary" onClick={() => setCurrentTab('dashboard')}>
-            <span>Browse Dashboard</span>
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => setCurrentTab(isAuthenticated ? 'dashboard' : 'login')}
+          >
+            <span>{isAuthenticated ? 'Browse Dashboard' : 'Sign In'}</span>
           </button>
         </div>
       </section>

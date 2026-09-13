@@ -95,6 +95,7 @@ export const Login: React.FC = () => {
         {/* Brand header */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', textAlign: 'center' }}>
           <div
+            onClick={() => setCurrentTab('landing')}
             style={{
               width: '40px',
               height: '40px',
@@ -104,8 +105,10 @@ export const Login: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'var(--color-accent)'
+              color: 'var(--color-accent)',
+              cursor: 'pointer'
             }}
+            title="Go to landing page"
           >
             <Globe size={22} className="text-accent" />
           </div>

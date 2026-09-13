@@ -5,12 +5,13 @@ import { Globe, ArrowRight, CheckCircle2, Loader2, Terminal } from 'lucide-react
 export const WebsiteAnalysis: React.FC = () => {
   const { startAnalysis, scanningUrl, scanProgress, scanLogs } = useApp();
   const [urlInput, setUrlInput] = useState('');
+  const [includeLighthouse, setIncludeLighthouse] = useState(true);
   const logEndRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (urlInput.trim()) {
-      startAnalysis(urlInput.trim());
+      startAnalysis(urlInput.trim(), includeLighthouse);
     }
   };
 
@@ -58,7 +59,8 @@ export const WebsiteAnalysis: React.FC = () => {
               border: '1px solid var(--color-border)',
               padding: '6px',
               borderRadius: 'var(--radius-lg)',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.5)'
+              boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+              marginBottom: '16px'
             }}
           >
             <input
@@ -82,6 +84,20 @@ export const WebsiteAnalysis: React.FC = () => {
               <ArrowRight size={14} />
             </button>
           </form>
+
+          {/* Optional lighthouse checkbox */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+            <input 
+              type="checkbox" 
+              id="includeLighthouse" 
+              checked={includeLighthouse} 
+              onChange={(e) => setIncludeLighthouse(e.target.checked)}
+              style={{ accentColor: 'var(--color-accent)', cursor: 'pointer' }}
+            />
+            <label htmlFor="includeLighthouse" style={{ cursor: 'pointer', userSelect: 'none' }}>
+              Include Google Lighthouse Metrics
+            </label>
+          </div>
         </div>
       ) : (
         <div style={{ maxWidth: '640px', width: '100%', display: 'flex', flexDirection: 'column', gap: '24px' }}>
