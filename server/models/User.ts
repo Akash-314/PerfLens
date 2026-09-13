@@ -1,56 +1,42 @@
-import mongoose, { Document, Model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-export interface IUser extends Document {
+export interface IUser {
+  _id: string;
+  id: string;
   email: string;
   password?: string;
   role: 'user' | 'admin';
-  createdAt: Date;
-  comparePassword(candidatePassword: string): Promise<boolean>;
+  createdAt?: Date;
+  created_at?: string;
 }
 
-const userSchema = new mongoose.Schema<IUser>({
-  email: {
-    type: String,
-    required: [true, 'Please provide an email address'],
-    unique: true,
-    lowercase: true,
-    trim: true,
-    index: true
-  },
-  password: {
-    type: String,
-    required: [true, 'Please provide a password'],
-    minlength: 6,
-    select: false
-  },
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+export interface UserRow {
+  id: string;
+  email: string;
+  password: string;
+  role: 'user' | 'admin';
+  created_at: string;
+}
 
-// Hash password before saving
-userSchema.pre<IUser>('save', async function(next) {
-  if (!this.isModified('password')) {
-    return next();
-  }
-  const salt = await bcrypt.genSalt(10);
-  if (this.password) {
-    this.password = await bcrypt.hash(this.password, salt);
-  }
-  next();
-});
-
-// Compare password input to hashed password in db
-userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  return await bcrypt.compare(candidatePassword, this.password || '');
+/**
+ * Compares a plain candidate password against a bcrypt hash.
+ */
+export const comparePassword = async (
+  candidatePassword: string,
+  hashedPassword: string
+): Promise<boolean> => {
+  return await bcrypt.compare(candidatePassword, hashedPassword);
 };
 
-const User: Model<IUser> = mongoose.model<IUser>('User', userSchema);
-export default User;
+/**
+ * Hashes a plain password using bcrypt.
+ */
+export const hashPassword = async (password: string): Promise<string> => {
+  const salt = await bcrypt.genSalt(10);
+  return await bcrypt.hash(password, salt);
+};
+
+export default {
+  comparePassword,
+  hashPassword,
+};

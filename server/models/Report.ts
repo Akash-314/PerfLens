@@ -1,9 +1,24 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
-
 export interface IMetricDetail {
-  score: number;
+  score: number | null;
   value: string;
-  rating: 'good' | 'needs-improvement' | 'poor';
+  rawValue?: number | null;
+  normalizedValueMs?: number | null;
+  unit?: string;
+  rating: 'good' | 'needs-improvement' | 'poor' | 'unrated';
+  source?: 'puppeteer' | 'lighthouse' | 'pagespeed' | 'crux' | 'custom';
+  mode?: 'lab' | 'field';
+  available?: boolean;
+  reason?: string;
+  unavailableReason?: string;
+  elementTag?: string | null;
+  selector?: string | null;
+  elementUrl?: string | null;
+  renderTimeMs?: number | null;
+  loadTimeMs?: number | null;
+  isFallback?: boolean;
+  shiftCount?: number | null;
+  largestShift?: number | null;
+  shifts?: any[];
 }
 
 export interface IRecommendation {
@@ -17,11 +32,14 @@ export interface IRecommendation {
   refUrl: string;
 }
 
-export interface IReport extends Document {
+export interface IReport {
+  _id?: string;
+  id?: string;
   url: string;
-  owner?: mongoose.Types.ObjectId;
+  owner?: string;
+  owner_id?: string;
   
-  // Legacy properties (retained for backward compatibility, declared as non-optional to satisfy PDF generator compilation)
+  // Legacy properties (retained for backward compatibility and PDF generator)
   scores: {
     overall: number;
     performance: number;
@@ -32,7 +50,8 @@ export interface IReport extends Document {
   vitals: {
     fcp: IMetricDetail;
     lcp: IMetricDetail;
-    fid: IMetricDetail;
+    fid?: IMetricDetail;
+    inp?: IMetricDetail;
     cls: IMetricDetail;
     ttfb: IMetricDetail;
     tbt: IMetricDetail;
@@ -49,6 +68,10 @@ export interface IReport extends Document {
     sizeKb: number;
     isUnused: boolean;
     isDuplicate: boolean;
+    transferSizeKb?: number;
+    compression?: 'gzip' | 'brotli' | 'none' | string;
+    hasSourceMap?: boolean;
+    url?: string;
   }>;
   images: Array<{
     src: string;
@@ -62,16 +85,42 @@ export interface IReport extends Document {
   recommendations: IRecommendation[];
   resources: Array<{
     name: string;
-    type: 'html' | 'js' | 'css' | 'image' | 'font' | 'other';
+    url?: string;
+    type: 'html' | 'js' | 'css' | 'image' | 'font' | 'xhr' | 'fetch' | 'document' | 'media' | 'other' | string;
     sizeKb: number;
-    timeMs: number;
+    transferSizeKb?: number;
+    statusCode?: number;
+    timeMs: number | null;
+    durationMs?: number | null;
+    startTimeMs?: number | null;
+    initiator?: string | null;
+    fromCache?: boolean;
+    timingBreakdown?: any;
     compression: string;
     cacheControl: string;
+    isThirdParty?: boolean;
+    isCompressed?: boolean;
   }>;
 
-  // Modern unified analysis properties (optional to support legacy document instances at runtime)
+  // Modern unified analysis properties
   metadata?: any;
   pagespeed?: any;
+  pageSpeed?: {
+    performance?: number;
+    accessibility?: number;
+    seo?: number;
+    bestPractices?: number;
+    metrics?: {
+      lcp?: string;
+      fcp?: string;
+      inp?: string;
+      tbt?: string;
+      cls?: string;
+      ttfb?: string;
+      speedIndex?: string;
+    };
+    cachedFrom?: Date | string;
+  };
   puppeteer?: any;
   image?: any;
   css?: any;
@@ -79,65 +128,23 @@ export interface IReport extends Document {
   seo?: any;
   accessibility?: any;
   recommendation?: any;
+  customAnalysis?: any;
+  analysisSources?: any;
+  provenance?: any;
+  scoreExplanation?: any;
+  performanceScoreDetails?: any;
+  summary?: any;
   overallHealthScore?: number;
   overallPerformanceGrade?: string;
   status: string;
   duration: number;
   
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
+  created_at?: string;
+  updated_at?: string;
 }
 
-const reportSchema = new Schema<IReport>({
-  url: {
-    type: String,
-    required: true,
-    trim: true,
-    index: true
-  },
-  owner: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    index: true
-  },
-  
-  // Legacy properties schema mapping
-  scores: { type: Schema.Types.Mixed, default: null },
-  vitals: { type: Schema.Types.Mixed, default: null },
-  breakdown: { type: Schema.Types.Mixed, default: null },
-  bundleAnalysis: { type: Schema.Types.Mixed, default: null },
-  images: { type: Schema.Types.Mixed, default: null },
-  recommendations: { type: Schema.Types.Mixed, default: null },
-  resources: { type: Schema.Types.Mixed, default: null },
-
-  // Modern unified properties schema mapping
-  metadata: { type: Schema.Types.Mixed, default: null },
-  pagespeed: { type: Schema.Types.Mixed, default: null },
-  puppeteer: { type: Schema.Types.Mixed, default: null },
-  image: { type: Schema.Types.Mixed, default: null },
-  css: { type: Schema.Types.Mixed, default: null },
-  js: { type: Schema.Types.Mixed, default: null },
-  seo: { type: Schema.Types.Mixed, default: null },
-  accessibility: { type: Schema.Types.Mixed, default: null },
-  recommendation: { type: Schema.Types.Mixed, default: null },
-  overallHealthScore: {
-    type: Number,
-    index: true
-  },
-  overallPerformanceGrade: {
-    type: String
-  },
-  status: {
-    type: String,
-    required: true
-  },
-  duration: {
-    type: Number,
-    required: true
-  }
-}, {
-  timestamps: true
-});
-
-const Report: Model<IReport> = mongoose.model<IReport>('Report', reportSchema);
-export default Report;
+export default {
+  // Model placeholder
+};

@@ -1,24 +1,25 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import { isSupabaseConfigured, checkSupabaseConnection } from './supabase.js';
 
 /**
- * Orchestrate database connection hook
+ * Orchestrate database connection verification for Supabase.
  */
 const connectDatabase = async (): Promise<void> => {
+  if (!isSupabaseConfigured()) {
+    console.warn('[Supabase Alert]: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not configured in .env.');
+    console.warn('[Supabase Alert]: Backend will run in ephemeral guest mode. Add Supabase keys to persist data.');
+    return;
+  }
+
   try {
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/perflens';
-    console.log(`Connecting to MongoDB at: ${mongoUri.replace(/:([^@]+)@/, ':****@')}`);
-
-    const conn = await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 5001,
-    });
-
-    console.log(`MongoDB Connected: ${conn.connection.host}/${conn.connection.name}`);
+    const isConnected = await checkSupabaseConnection();
+    if (isConnected) {
+      console.log('✅ Supabase PostgreSQL Database Connected successfully.');
+    } else {
+      console.warn('⚠️ Supabase reached but failed querying users table. Please ensure supabase_schema.sql has been executed.');
+    }
   } catch (error: any) {
-    console.error(`MongoDB Connection Error: ${error.message}`);
-    console.warn('Backend will run, but database operations may fail without MongoDB running.');
+    console.error(`Supabase Connection Error: ${error.message}`);
+    console.warn('Backend will run, but database operations may fail without Supabase active.');
   }
 };
 

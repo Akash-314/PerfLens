@@ -1,38 +1,24 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
-
-export interface IProject extends Document {
+export interface IProject {
+  _id?: string;
+  id?: string;
   name: string;
   websites: string[];
-  owner: mongoose.Types.ObjectId;
-  team: string[];
-  createdAt: Date;
+  owner?: string;
+  owner_id?: string;
+  team?: string[];
+  createdAt?: Date;
+  created_at?: string;
 }
 
-const projectSchema = new Schema<IProject>({
-  name: {
-    type: String,
-    required: [true, 'Please provide a workspace name'],
-    trim: true
-  },
-  websites: [{
-    type: String,
-    trim: true
-  }],
-  owner: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-    index: true
-  },
-  team: [{
-    type: String,
-    trim: true
-  }],
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+export interface ProjectRow {
+  id: string;
+  name: string;
+  websites: string[];
+  owner_id: string;
+  team: string[];
+  created_at: string;
+}
 
-const Project: Model<IProject> = mongoose.model<IProject>('Project', projectSchema);
-export default Project;
+export default {
+  // Model placeholder
+};

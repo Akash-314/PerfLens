@@ -12,16 +12,19 @@ export const validateEnv = (): void => {
     if (!process.env.JWT_SECRET) {
       missingVars.push('JWT_SECRET');
     }
-    if (!process.env.MONGODB_URI) {
-      missingVars.push('MONGODB_URI');
+    if (!process.env.SUPABASE_URL) {
+      missingVars.push('SUPABASE_URL');
+    }
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_ANON_KEY) {
+      missingVars.push('SUPABASE_SERVICE_ROLE_KEY');
     }
   } else {
     // Development/test environment checks (warn only)
     if (!process.env.JWT_SECRET) {
       console.warn('[Config Alert]: JWT_SECRET is not configured in .env. Falling back to development key.');
     }
-    if (!process.env.MONGODB_URI) {
-      console.warn('[Config Alert]: MONGODB_URI is not configured. Falling back to local instance.');
+    if (!process.env.SUPABASE_URL || (!process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_ANON_KEY)) {
+      console.warn('[Config Alert]: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not configured. Add them to .env for persistence.');
     }
   }
 

@@ -1,44 +1,18 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
-
-export interface ISavedComparison extends Document {
+export interface ISavedComparison {
+  _id?: string;
+  id?: string;
   url1: string;
   url2: string;
-  report1: mongoose.Types.ObjectId;
-  report2: mongoose.Types.ObjectId;
-  owner: mongoose.Types.ObjectId;
-  createdAt: Date;
+  report1?: string;
+  report2?: string;
+  report1_id?: string;
+  report2_id?: string;
+  owner?: string;
+  owner_id?: string;
+  createdAt?: Date;
+  created_at?: string;
 }
 
-const savedComparisonSchema = new Schema<ISavedComparison>({
-  url1: {
-    type: String,
-    required: true
-  },
-  url2: {
-    type: String,
-    required: true
-  },
-  report1: {
-    type: Schema.Types.ObjectId,
-    ref: 'Report',
-    required: true
-  },
-  report2: {
-    type: Schema.Types.ObjectId,
-    ref: 'Report',
-    required: true
-  },
-  owner: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-    index: true
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
-
-const SavedComparison: Model<ISavedComparison> = mongoose.model<ISavedComparison>('SavedComparison', savedComparisonSchema);
-export default SavedComparison;
+export default {
+  // Model placeholder
+};
