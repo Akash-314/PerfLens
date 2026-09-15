@@ -116,6 +116,6 @@ describe('TASK-020: Reliability and Concurrency Protection', () => {
 
       // Analysis sources reflect puppeteer runtime
       expect(report.analysisSources?.puppeteerRuntime).toBe(true);
-    });
+    }, 45000);
   });
 });

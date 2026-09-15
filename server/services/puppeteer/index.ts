@@ -151,7 +151,7 @@ export const analyzeWebsiteWithPuppeteer = async (url: string): Promise<Puppetee
       if (!largestResource || r.sizeKb > largestResource.sizeKb) {
         largestResource = { url: r.url, sizeKb: r.sizeKb };
       }
-      if (!slowestResource || r.durationMs > slowestResource.durationMs) {
+      if (r.durationMs !== null && (!slowestResource || r.durationMs > slowestResource.durationMs)) {
         slowestResource = { url: r.url, durationMs: r.durationMs };
       }
       if (r.compression !== 'none') {
