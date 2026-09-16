@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Heavy Performance Benchmark Target</title>
+  <style>
+    body { font-family: sans-serif; }
+    .block { height: 100px; margin: 10px; background: #eee; }
+  </style>
+</head>
+<body>
+  <h1>Heavy Asset Test</h1>
+  <div id="content"></div>
+  <script>
+    // Simulate long task main-thread work
+    const start = performance.now();
+    while (performance.now() - start < 80) {}
+    
+    // Simulate DOM generation
+    const cont = document.getElementById('content');
+    for (let i = 0; i < 50; i++) {
+      const d = document.createElement('div');
+      d.className = 'block';
+      d.textContent = 'Block ' + i;
+      cont.appendChild(d);
+    }
+  </script>
+</body>
+</html>

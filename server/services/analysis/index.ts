@@ -177,7 +177,14 @@ class ReportGenerator {
 
     let scoreExplanation: any = null;
 
-    if (pageSpeedTelemetry) {
+    const isPageSpeedSuccess = Boolean(
+      pageSpeedTelemetry &&
+      (pageSpeedTelemetry.status === undefined || pageSpeedTelemetry.status === 'SUCCESS') &&
+      typeof pageSpeedTelemetry.performance === 'number' &&
+      pageSpeedTelemetry.metrics
+    );
+
+    if (isPageSpeedSuccess) {
       scores = {
         overall: Math.round((pageSpeedTelemetry.performance + pageSpeedTelemetry.accessibility + pageSpeedTelemetry.seo + pageSpeedTelemetry.bestPractices) / 4),
         performance: pageSpeedTelemetry.performance,
@@ -277,13 +284,13 @@ class ReportGenerator {
           available: ttfbClass.isAvailable,
           reason: ttfbClass.unavailableReason,
           unavailableReason: ttfbClass.unavailableReason,
-          method: 'Lighthouse audit (server-response-time)',
+          method: 'Measured in lab (Google Lighthouse)',
           evidence: {
-            method: 'Lighthouse server-response-time audit',
+            method: 'Measured in lab (Google Lighthouse)',
             auditId: 'server-response-time',
             measuredValueMs: ttfbClass.normalizedValueMs,
-            source: 'Google PageSpeed / Lighthouse lab audit',
-            formula: 'Lighthouse server-response-time root document TTFB'
+            source: 'Google Lighthouse lab audit',
+            formula: 'Measured in lab'
           }
         },
         inp: {
@@ -434,7 +441,8 @@ class ReportGenerator {
         overallPerformanceScore: pageSpeedTelemetry.performance,
         source: 'lighthouse',
         method: 'Google Lighthouse Performance Audit',
-        formula: 'Performance Score = (Normalized Metric Score LCP × 0.25) + (Normalized Metric Score TBT × 0.30) + (Normalized Metric Score CLS × 0.25) + (Normalized Metric Score FCP × 0.10) + (Normalized Metric Score SI × 0.10)',
+        formula: 'Performance Score = (Normalized LCP Score × 25%) + (Normalized TBT Score × 30%) + (Normalized CLS Score × 25%) + (Normalized FCP Score × 10%) + (Normalized Speed Index Score × 10%)',
+        formulaDescription: 'Calculated from normalized metric scores (0–100) using the configured metric weights.',
         breakdown: [
           lhMetrics.lcp,
           lhMetrics.inp,
@@ -539,16 +547,16 @@ class ReportGenerator {
           available: ttfbClass.isAvailable,
           reason: ttfbClass.unavailableReason,
           unavailableReason: ttfbClass.unavailableReason,
-          method: 'Navigation Timing: responseStart - requestStart',
+          method: 'Measured in lab (Navigation Timing API)',
           evidence: {
-            method: 'PerformanceNavigationTiming API',
-            formula: 'TTFB = responseStart - requestStart',
+            method: 'Navigation Timing API',
+            formula: 'Measured in lab',
             requestStartMs: crawlData.performance?.navigationDiagnostics?.requestStart ?? crawlData.performance?.timings?.requestStartMs ?? null,
             responseStartMs: crawlData.performance?.navigationDiagnostics?.responseStart ?? crawlData.performance?.timings?.responseStartMs ?? null,
             measuredValueMs: ttfbClass.normalizedValueMs,
             navigationType: crawlData.performance?.navigationDiagnostics?.navigationType || 'navigate',
             fromCache: crawlData.performance?.navigationDiagnostics?.fromCache ?? false,
-            source: 'Navigation Timing API (responseStart - requestStart)'
+            source: 'Navigation Timing API'
           }
         },
         inp: {
@@ -608,13 +616,14 @@ class ReportGenerator {
       breakdown,
       reconciledImage.imagesList,
       domStats,
-      pageSpeedTelemetry,
+      isPageSpeedSuccess ? pageSpeedTelemetry : null,
       {
         image: reconciledImage,
         css: reconciledCss,
         js: reconciledJs,
         seo: seoAnalysis,
-        accessibility: accessibilityAnalysis
+        accessibility: accessibilityAnalysis,
+        targetUrl: url
       }
     );
     const recommendations = recommendationResult.recommendations;
@@ -660,7 +669,9 @@ class ReportGenerator {
     const analysisSources = {
       perfLensEngine: true,
       puppeteerRuntime: crawlData.success ?? true,
-      googleLighthouse: pageSpeedTelemetry !== null
+      googleLighthouse: isPageSpeedSuccess,
+      googleLighthouseStatus: pageSpeedTelemetry?.status || 'UNAVAILABLE',
+      googleLighthouseError: pageSpeedTelemetry?.error || null
     };
 
     return {
@@ -681,7 +692,8 @@ class ReportGenerator {
       // Modern structure extensions
       scoreExplanation,
       performanceScoreDetails: scoreExplanation,
-      pageSpeed: pageSpeedTelemetry,
+      pageSpeed: isPageSpeedSuccess ? pageSpeedTelemetry : null,
+      pageSpeedTelemetry,
       customAnalysis,
       analysisSources,
       seo: seoAnalysis,

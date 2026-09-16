@@ -75,6 +75,10 @@ export interface Recommendation {
   severity?: 'critical' | 'high' | 'medium' | 'low' | 'info';
   estimatedDifficulty?: 'easy' | 'medium' | 'hard';
   estimatedImplementationTime?: string;
+  standardFinding?: any;
+  aiFixPrompt?: string;
+  fixStrategy?: string;
+  validationSteps?: string[];
 }
 
 export interface ResourceItem {
@@ -154,6 +158,75 @@ export interface Report {
     ogTitle: string;
     ogDescription: string;
     ogImage: string;
+    rawTitle?: string | null;
+    rawMetaDescription?: string | null;
+    canonicalDetails?: {
+      status: string;
+      url: string | null;
+      matchesPageUrl: boolean;
+      error?: string;
+    };
+    viewport?: string | null;
+    viewportPassed?: boolean;
+    charset?: string | null;
+    charsetPassed?: boolean;
+    headingsHierarchy?: {
+      hasH1: boolean;
+      h1Count: number;
+      multipleH1: boolean;
+      isHierarchyValid: boolean;
+      skippedLevels: Array<{ from: string; to: string; text?: string }>;
+      h1: string[];
+      h2: string[];
+      h3: string[];
+    };
+    robotsMeta?: {
+      content: string | null;
+      noindex: boolean;
+      nofollow: boolean;
+      directives: string[];
+    };
+    robotsTxt?: {
+      status: string;
+      url?: string;
+      reachable: boolean;
+      snippet?: string;
+      error?: string;
+    };
+    sitemapXml?: {
+      status: string;
+      url?: string;
+      reachable: boolean;
+      error?: string;
+    };
+    structuredData?: {
+      presence: boolean;
+      itemCount: number;
+      validCount: number;
+      schemaTypes: string[];
+      syntaxErrors: Array<{ index: number; error: string; snippet?: string }>;
+    };
+    openGraph?: {
+      title: string | null;
+      description: string | null;
+      image: string | null;
+      url: string | null;
+      missingTags: string[];
+      coveragePercentage: number;
+    };
+    twitterCard?: {
+      card: string | null;
+      title: string | null;
+      description: string | null;
+      image: string | null;
+      missingTags: string[];
+      coveragePercentage: number;
+    };
+    detectedFramework?: {
+      name: string;
+      confidence: string;
+      evidence: string;
+    } | null;
   };
   pageSpeed?: {
     performance?: number;
@@ -432,7 +505,11 @@ const mapBackendReportToFrontend = (r: any): Report => {
       estimatedSavings: rec.estimatedSavings,
       measuredImprovement: rec.measuredImprovement ?? null,
       confidence: rec.confidence || 'high',
-      severity: rec.severity || (prio === 'high' ? 'high' : 'medium')
+      severity: rec.severity || (prio === 'high' ? 'high' : 'medium'),
+      standardFinding: rec.standardFinding || undefined,
+      aiFixPrompt: rec.aiFixPrompt || undefined,
+      fixStrategy: rec.fixStrategy || undefined,
+      validationSteps: rec.validationSteps || undefined
     };
   });
 
@@ -479,13 +556,22 @@ const mapBackendReportToFrontend = (r: any): Report => {
   const pageTitle = seoData.pageTitle || seoData.title;
   const metaDesc = seoData.metaDescription || seoData.description;
   const canonical = seoData.canonicalUrl || seoData.canonical;
+  const canonicalDetails = seoData.canonicalDetails || null;
   const hasSitemap = seoData.hasSitemapXml ?? (seoData.sitemap ? true : false);
   const ogTags = seoData.openGraphTags || {};
+  const openGraphData = seoData.openGraph || null;
+  const twitterData = seoData.twitterCard || null;
+  const headings = seoData.headingsHierarchy || null;
+  const robotsMeta = seoData.robotsMeta || null;
+  const robotsTxt = seoData.robotsTxtDetails || null;
+  const sitemapXml = seoData.sitemapXmlDetails || null;
+  const structuredData = seoData.structuredData || null;
+  const detectedFramework = seoData.detectedFramework || null;
 
   const titleTag = pageTitle ? `Verified (${pageTitle.length} chars)` : 'Missing';
   const metaDescription = metaDesc ? `Verified (${metaDesc.length} chars)` : 'Missing';
-  const canonicalTag = canonical ? 'Verified' : 'Missing';
-  const sitemap = hasSitemap ? 'Verified' : 'Missing or not referenced';
+  const canonicalTag = canonical ? (canonicalDetails?.status === 'valid' ? 'Verified (Valid Absolute)' : canonicalDetails?.status || 'Verified') : 'Missing';
+  const sitemap = sitemapXml?.status ? `Status: ${sitemapXml.status}` : (hasSitemap ? 'Verified' : 'Missing or not referenced');
 
   const seoChecks = {
     titleTag,
@@ -493,12 +579,77 @@ const mapBackendReportToFrontend = (r: any): Report => {
     metaDescription,
     descPassed: !!metaDesc,
     canonicalTag,
-    canonicalPassed: !!canonical,
+    canonicalPassed: !!canonical && (!canonicalDetails || canonicalDetails.status === 'valid'),
     sitemap,
-    sitemapPassed: Boolean(hasSitemap),
-    ogTitle: ogTags['og:title'] || seoData.ogTitle || pageTitle || '',
-    ogDescription: ogTags['og:description'] || seoData.ogDescription || metaDesc || '',
-    ogImage: ogTags['og:image'] || seoData.ogImage || ''
+    sitemapPassed: Boolean(hasSitemap) || sitemapXml?.status === 'exists',
+    ogTitle: openGraphData?.title || ogTags['og:title'] || seoData.ogTitle || pageTitle || '',
+    ogDescription: openGraphData?.description || ogTags['og:description'] || seoData.ogDescription || metaDesc || '',
+    ogImage: openGraphData?.image || ogTags['og:image'] || seoData.ogImage || '',
+    rawTitle: pageTitle || null,
+    rawMetaDescription: metaDesc || null,
+    canonicalDetails: canonicalDetails ? {
+      status: canonicalDetails.status,
+      url: canonicalDetails.url,
+      matchesPageUrl: canonicalDetails.matchesPageUrl,
+      error: canonicalDetails.error
+    } : undefined,
+    viewport: seoData.viewport || null,
+    viewportPassed: !!seoData.viewport,
+    charset: seoData.charset || null,
+    charsetPassed: !!seoData.charset,
+    headingsHierarchy: headings ? {
+      hasH1: headings.hasH1,
+      h1Count: headings.h1Count,
+      multipleH1: headings.multipleH1,
+      isHierarchyValid: headings.isHierarchyValid,
+      skippedLevels: headings.skippedLevels || [],
+      h1: headings.h1 || [],
+      h2: headings.h2 || [],
+      h3: headings.h3 || []
+    } : undefined,
+    robotsMeta: robotsMeta ? {
+      content: robotsMeta.content,
+      noindex: robotsMeta.noindex,
+      nofollow: robotsMeta.nofollow,
+      directives: robotsMeta.directives || []
+    } : undefined,
+    robotsTxt: robotsTxt ? {
+      status: robotsTxt.status,
+      url: robotsTxt.url,
+      reachable: robotsTxt.reachable,
+      snippet: robotsTxt.snippet,
+      error: robotsTxt.error
+    } : undefined,
+    sitemapXml: sitemapXml ? {
+      status: sitemapXml.status,
+      url: sitemapXml.url,
+      reachable: sitemapXml.reachable,
+      error: sitemapXml.error
+    } : undefined,
+    structuredData: structuredData ? {
+      presence: structuredData.presence,
+      itemCount: structuredData.itemCount,
+      validCount: structuredData.validCount,
+      schemaTypes: structuredData.schemaTypes || [],
+      syntaxErrors: structuredData.syntaxErrors || []
+    } : undefined,
+    openGraph: openGraphData ? {
+      title: openGraphData.title,
+      description: openGraphData.description,
+      image: openGraphData.image,
+      url: openGraphData.url,
+      missingTags: openGraphData.missingTags || [],
+      coveragePercentage: openGraphData.coveragePercentage || 0
+    } : undefined,
+    twitterCard: twitterData ? {
+      card: twitterData.card,
+      title: twitterData.title,
+      description: twitterData.description,
+      image: twitterData.image,
+      missingTags: twitterData.missingTags || [],
+      coveragePercentage: twitterData.coveragePercentage || 0
+    } : undefined,
+    detectedFramework: detectedFramework || undefined
   };
 
   return {

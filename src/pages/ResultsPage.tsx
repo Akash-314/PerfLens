@@ -9,13 +9,13 @@ import {
   Code2,
   AlertTriangle,
   HelpCircle,
-  ExternalLink,
-  ChevronDown,
   Download,
   Share2,
   Network,
-  Activity
+  Activity,
+  Layers
 } from 'lucide-react';
+import { HumanizedRecommendationCard } from '../components/HumanizedRecommendationCard';
 
 export const ResultsPage: React.FC = () => {
   const { currentReport, setCurrentTab, addToast } = useApp();
@@ -306,11 +306,7 @@ export const ResultsPage: React.FC = () => {
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span>Interaction to Next Paint (INP)</span>
-                        <strong style={{ fontFamily: 'var(--font-mono)' }}>{currentReport.pageSpeed.metrics?.inp || 'N/A'}</strong>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span>Total Blocking Time (TBT)</span>
-                        <strong style={{ fontFamily: 'var(--font-mono)' }}>{currentReport.pageSpeed.metrics?.tbt || 'N/A'}</strong>
+                        <strong style={{ fontFamily: 'var(--font-mono)' }}>{currentReport.pageSpeed.metrics?.inp || 'Not measured'}</strong>
                       </div>
                     </div>
                   ) : (
@@ -453,9 +449,11 @@ export const ResultsPage: React.FC = () => {
                     { name: 'Cumulative Layout Shift (CLS)', item: currentReport.vitals.cls, desc: 'Measures visual stability (0.1 threshold)' },
                     { 
                       name: 'Interaction to Next Paint (INP)', 
-                      item: currentReport.vitals.inp || (currentReport.pageSpeed?.metrics?.inp 
-                        ? { value: currentReport.pageSpeed.metrics.inp, rating: 'unrated' as const, source: 'crux', mode: 'field', score: null, available: true } 
-                        : { value: 'N/A (Lab)', rating: 'unrated' as const, source: 'puppeteer', mode: 'lab', score: null, available: false, reason: 'INP requires real user input events and is not available in non-interactive lab crawl' }), 
+                      item: (currentReport.vitals.inp?.available && currentReport.vitals.inp.value && currentReport.vitals.inp.value !== 'N/A')
+                        ? currentReport.vitals.inp
+                        : (currentReport.pageSpeed?.metrics?.inp 
+                          ? { value: currentReport.pageSpeed.metrics.inp, rating: 'unrated' as const, source: 'crux', mode: 'field', score: null, available: true } 
+                          : { value: 'Not measured', rating: 'unrated' as const, source: 'crux', mode: 'field', score: null, available: false, reason: 'Field metric (not measured in lab)' }), 
                       desc: 'Measures responsiveness to user input (200ms threshold)' 
                     }
                   ].map((vit, idx) => (
@@ -502,7 +500,7 @@ export const ResultsPage: React.FC = () => {
                         style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}
                         title={vit.item?.unavailableReason || vit.item?.reason || undefined}
                       >
-                        {vit.item?.value ?? 'N/A'}
+                        {vit.item?.available === false ? (vit.item?.value && vit.item.value !== 'N/A' && !vit.item.value.includes('N/A') ? vit.item.value : 'Not measured') : (vit.item?.value ?? 'Not measured')}
                       </p>
                       <span style={{ fontSize: '10px', color: 'var(--color-muted)' }} title={vit.item?.unavailableReason || vit.item?.reason || undefined}>
                         {vit.item?.available === false && (vit.item?.unavailableReason || vit.item?.reason)
@@ -589,7 +587,7 @@ export const ResultsPage: React.FC = () => {
                       <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Performance Score Explainability</h3>
                     </div>
                     <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>
-                      {(currentReport.scoreExplanation || currentReport.performanceScoreDetails).method}
+                      Calculated from normalized metric scores using configured metric weights
                     </span>
                   </div>
 
@@ -609,7 +607,7 @@ export const ResultsPage: React.FC = () => {
                         {((currentReport.scoreExplanation || currentReport.performanceScoreDetails).breakdown || []).map((row: any, idx: number) => (
                           <tr key={idx} style={{ borderBottom: '1px solid var(--color-border)' }}>
                             <td style={{ padding: '8px 12px', fontWeight: 500 }}>{row.metric}</td>
-                            <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)' }}>{row.raw}</td>
+                            <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)' }}>{row.raw != null && row.raw !== 'N/A' ? row.raw : '—'}</td>
                             <td style={{ padding: '8px 12px' }}>
                               <span
                                 style={{
@@ -634,9 +632,9 @@ export const ResultsPage: React.FC = () => {
                             <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)' }}>
                               {row.weightFormatted || (typeof row.weight === 'number' ? `${Math.round(row.weight * 100)}%` : '0%')}
                             </td>
-                            <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)' }}>{row.score ?? 'N/A'}</td>
+                            <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)' }}>{row.score ?? '—'}</td>
                             <td style={{ padding: '8px 12px', fontFamily: 'var(--font-mono)', fontWeight: 600, textAlign: 'right' }}>
-                              {row.contribution != null ? `+${row.contribution}` : (row.available === false ? 'N/A' : '0')}
+                              {row.contribution != null ? `+${row.contribution}` : (row.available === false ? 'Excluded' : '0')}
                             </td>
                           </tr>
                         ))}
@@ -962,60 +960,12 @@ export const ResultsPage: React.FC = () => {
                 <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Actionable Asset Code Fixes</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {currentReport.recommendations.filter(r => r.category === 'js' || r.category === 'css' || r.category === 'performance').map((rec) => (
-                    <div key={rec.id} className="expandable-card">
-                      <div className="expandable-card-header" onClick={() => toggleRec(rec.id)}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <span className={`metric-pill ${rec.priority === 'high' ? 'metric-score-red' : 'metric-score-orange'}`}>
-                            {rec.priority.toUpperCase()}
-                          </span>
-                          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>{rec.issue}</span>
-                        </div>
-                        <ChevronDown size={14} style={{ transform: expandedRecs[rec.id] ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
-                      </div>
-                      {expandedRecs[rec.id] && (
-                        <div className="expandable-card-body" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                          {rec.finding && (
-                            <div style={{ padding: '8px 12px', backgroundColor: 'rgba(59, 130, 246, 0.05)', border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: '6px', fontSize: '12px', color: 'var(--color-text-primary)' }}>
-                              <strong>Finding:</strong> {rec.finding.description}
-                            </div>
-                          )}
-
-                          <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', margin: 0 }}>
-                            <strong>Potential Impact:</strong> {rec.potentialImpact || rec.whyItMatters}
-                          </p>
-
-                          {rec.evidence && (
-                            <div style={{ padding: '8px 12px', backgroundColor: 'var(--color-surface-secondary)', border: '1px solid var(--color-border)', borderRadius: '6px', fontSize: '11.5px', fontFamily: 'monospace' }}>
-                              {Array.isArray(rec.evidence) ? (
-                                rec.evidence.map((ev: any, evIdx: number) => (
-                                  <div key={evIdx}>
-                                    • {ev.type}: {ev.resource || ev.selector || ''} {ev.duration ? `(${ev.duration}ms)` : ''} {ev.sizeKb ? `(${ev.sizeKb} KB)` : ''}
-                                  </div>
-                                ))
-                              ) : (
-                                <span>{String(rec.evidence)}</span>
-                              )}
-                            </div>
-                          )}
-
-                          <div style={{ padding: '12px', backgroundColor: 'var(--color-surface-secondary)', border: '1px solid var(--color-border)', borderRadius: '6px' }}>
-                            <code style={{ fontSize: '12px', color: 'var(--color-text-primary)', whiteSpace: 'pre-wrap', background: 'none', padding: 0 }}>
-                              {rec.suggestedFix}
-                            </code>
-                          </div>
-
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '11px', color: 'var(--color-muted)', alignItems: 'center' }}>
-                            <span>Estimate Type: <strong style={{ textTransform: 'uppercase', color: 'var(--color-primary)' }}>{(rec.estimateType || rec.estimatedSavings?.type || 'not_quantified').replace('_', ' ')}</strong></span>
-                            <span>Savings: <strong style={{ color: 'var(--color-success)' }}>{rec.estimatedSavings?.displayString || rec.estimatedImprovement || 'Not quantified'}</strong></span>
-                            <span>Confidence: <strong style={{ textTransform: 'uppercase' }}>{rec.confidence || 'HIGH'}</strong></span>
-                            <span>Difficulty: <strong>{rec.difficulty.toUpperCase()}</strong></span>
-                            <a href={rec.refUrl} target="_blank" rel="noopener noreferrer" style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
-                              <span>Docs</span> <ExternalLink size={10} />
-                            </a>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <HumanizedRecommendationCard
+                      key={rec.id}
+                      rec={rec}
+                      expanded={Boolean(expandedRecs[rec.id])}
+                      onToggle={() => toggleRec(rec.id)}
+                    />
                   ))}
                 </div>
               </div>
@@ -1191,42 +1141,333 @@ export const ResultsPage: React.FC = () => {
 
           {/* TAB 7: SEO & META */}
           {activeSubTab === 'seo' && (
-            <div className="flex-col">
-              {/* Meta information checks */}
-              <div className="grid-cols-2">
+            <div className="flex-col" style={{ gap: '20px' }}>
+              {/* Framework & Target Banner */}
+              {currentReport.seoChecks.detectedFramework && (
+                <div
+                  className="card"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '14px 18px',
+                    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                    border: '1px solid rgba(59, 130, 246, 0.25)',
+                    borderRadius: 'var(--radius-md)'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Layers size={18} style={{ color: 'var(--color-primary)' }} />
+                    <div>
+                      <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                        Verified Framework: {currentReport.seoChecks.detectedFramework.name}
+                      </span>
+                      <p style={{ fontSize: '11.5px', color: 'var(--color-text-secondary)', margin: '2px 0 0 0' }}>
+                        Evidence: {currentReport.seoChecks.detectedFramework.evidence}
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      color: 'var(--color-primary)',
+                      backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                      border: '1px solid rgba(59, 130, 246, 0.3)',
+                      borderRadius: '4px',
+                      padding: '3px 8px',
+                      fontWeight: 600
+                    }}
+                  >
+                    Framework-Aware AI Fixes Active
+                  </span>
+                </div>
+              )}
+
+              {/* Grid 1: Head Essentials & Crawlability */}
+              <div className="grid-cols-2" style={{ gap: '20px' }}>
+                {/* 1. Head Essentials */}
                 <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Meta & Tags Compliance</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', paddingBottom: '6px', borderBottom: '1px solid var(--color-border)' }}>
-                      <span style={{ color: 'var(--color-text-secondary)' }}>Title Tag</span>
-                      <span style={{ color: currentReport.seoChecks.titlePassed ? 'var(--color-success)' : 'var(--color-danger)', fontWeight: 500 }}>
-                        {currentReport.seoChecks.titleTag}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: 600, margin: 0 }}>Head Essentials & Meta Tags</h3>
+                    <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Rendered DOM Verification</span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {/* Document Title */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingBottom: '10px', borderBottom: '1px solid var(--color-border)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--color-text-primary)' }}>Document &lt;title&gt;</span>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            color: currentReport.seoChecks.titlePassed ? 'var(--color-success)' : 'var(--color-danger)'
+                          }}
+                        >
+                          {currentReport.seoChecks.titlePassed ? 'Present & Verified' : 'Missing'}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', fontFamily: 'monospace', backgroundColor: 'var(--color-surface-secondary)', padding: '6px 10px', borderRadius: '4px', wordBreak: 'break-word' }}>
+                        {currentReport.seoChecks.rawTitle || 'None detected in rendered DOM'}
+                      </div>
+                      <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>
+                        Length: {currentReport.seoChecks.rawTitle ? currentReport.seoChecks.rawTitle.length : 0} characters (Optimal: 30–60)
                       </span>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', paddingBottom: '6px', borderBottom: '1px solid var(--color-border)' }}>
-                      <span style={{ color: 'var(--color-text-secondary)' }}>Meta Description</span>
-                      <span style={{ color: currentReport.seoChecks.descPassed ? 'var(--color-success)' : 'var(--color-danger)', fontWeight: 500 }}>
-                        {currentReport.seoChecks.metaDescription}
+
+                    {/* Meta Description */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingBottom: '10px', borderBottom: '1px solid var(--color-border)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--color-text-primary)' }}>&lt;meta name="description"&gt;</span>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            color: currentReport.seoChecks.descPassed ? 'var(--color-success)' : 'var(--color-danger)'
+                          }}
+                        >
+                          {currentReport.seoChecks.descPassed ? 'Present & Verified' : 'Missing'}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', fontFamily: 'monospace', backgroundColor: 'var(--color-surface-secondary)', padding: '6px 10px', borderRadius: '4px', wordBreak: 'break-word' }}>
+                        {currentReport.seoChecks.rawMetaDescription || 'None detected in rendered DOM'}
+                      </div>
+                      <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>
+                        Length: {currentReport.seoChecks.rawMetaDescription ? currentReport.seoChecks.rawMetaDescription.length : 0} characters (Optimal: 70–160)
                       </span>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', paddingBottom: '6px', borderBottom: '1px solid var(--color-border)' }}>
-                      <span style={{ color: 'var(--color-text-secondary)' }}>Canonical Tag</span>
-                      <span style={{ color: currentReport.seoChecks.canonicalPassed ? 'var(--color-success)' : 'var(--color-danger)', fontWeight: 500 }}>
-                        {currentReport.seoChecks.canonicalTag}
-                      </span>
+
+                    {/* Canonical URL */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingBottom: '10px', borderBottom: '1px solid var(--color-border)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--color-text-primary)' }}>&lt;link rel="canonical"&gt;</span>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            color: currentReport.seoChecks.canonicalPassed ? 'var(--color-success)' : 'var(--color-warning)'
+                          }}
+                        >
+                          {currentReport.seoChecks.canonicalDetails?.status === 'valid'
+                            ? 'Valid Absolute URL'
+                            : (currentReport.seoChecks.canonicalDetails?.status || 'Missing')}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', fontFamily: 'monospace', backgroundColor: 'var(--color-surface-secondary)', padding: '6px 10px', borderRadius: '4px', wordBreak: 'break-all' }}>
+                        {currentReport.seoChecks.canonicalDetails?.url || 'None declared in head'}
+                      </div>
+                      {currentReport.seoChecks.canonicalDetails?.error && (
+                        <span style={{ fontSize: '11px', color: 'var(--color-danger)' }}>
+                          Issue: {currentReport.seoChecks.canonicalDetails.error}
+                        </span>
+                      )}
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', paddingBottom: '6px', borderBottom: '1px solid var(--color-border)' }}>
-                      <span style={{ color: 'var(--color-text-secondary)' }}>Sitemap.xml</span>
-                      <span style={{ color: currentReport.seoChecks.sitemapPassed ? 'var(--color-success)' : 'var(--color-warning)', fontWeight: 500 }}>
-                        {currentReport.seoChecks.sitemap}
-                      </span>
+
+                    {/* Viewport & Charset */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px' }}>
+                      <div style={{ flex: 1 }}>
+                        <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-muted)', textTransform: 'uppercase' }}>Viewport</span>
+                        <p style={{ fontSize: '12px', fontFamily: 'monospace', margin: '2px 0 0 0', color: currentReport.seoChecks.viewportPassed ? 'var(--color-text-primary)' : 'var(--color-danger)' }}>
+                          {currentReport.seoChecks.viewport || 'Missing'}
+                        </p>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-muted)', textTransform: 'uppercase' }}>Charset</span>
+                        <p style={{ fontSize: '12px', fontFamily: 'monospace', margin: '2px 0 0 0', color: currentReport.seoChecks.charsetPassed ? 'var(--color-text-primary)' : 'var(--color-danger)' }}>
+                          {currentReport.seoChecks.charset || 'Missing'}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* OpenGraph social card preview */}
+                {/* 2. Crawlability & Indexing (Robots, Sitemap) */}
+                <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: 600, margin: 0 }}>Crawlability & Search Indexing</h3>
+                    <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Network & Header Probes</span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {/* Robots Meta */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingBottom: '10px', borderBottom: '1px solid var(--color-border)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--color-text-primary)' }}>Robots Meta Tag</span>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            color: currentReport.seoChecks.robotsMeta?.noindex ? 'var(--color-danger)' : 'var(--color-success)'
+                          }}
+                        >
+                          {currentReport.seoChecks.robotsMeta?.noindex ? 'Indexing Blocked (noindex)' : 'Indexable'}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', fontFamily: 'monospace', backgroundColor: 'var(--color-surface-secondary)', padding: '6px 10px', borderRadius: '4px' }}>
+                        {currentReport.seoChecks.robotsMeta?.content || 'index, follow (default)'}
+                      </div>
+                    </div>
+
+                    {/* robots.txt Probe */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingBottom: '10px', borderBottom: '1px solid var(--color-border)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--color-text-primary)' }}>robots.txt</span>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            color: (currentReport.seoChecks.robotsTxt?.status === 'verified_exists' || currentReport.seoChecks.robotsTxt?.status === 'exists') ? 'var(--color-success)' : currentReport.seoChecks.robotsTxt?.status === 'missing' ? 'var(--color-warning)' : 'var(--color-danger)'
+                          }}
+                        >
+                          {currentReport.seoChecks.robotsTxt?.status || 'unverified'}
+                        </span>
+                      </div>
+                      {currentReport.seoChecks.robotsTxt?.snippet && (
+                        <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', fontFamily: 'monospace', backgroundColor: 'var(--color-surface-secondary)', padding: '6px 10px', borderRadius: '4px', whiteSpace: 'pre-wrap', maxHeight: '70px', overflowY: 'auto' }}>
+                          {currentReport.seoChecks.robotsTxt.snippet}
+                        </div>
+                      )}
+                      {currentReport.seoChecks.robotsTxt?.error && (
+                        <span style={{ fontSize: '11px', color: 'var(--color-danger)' }}>
+                          {currentReport.seoChecks.robotsTxt.error}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* sitemap.xml Probe */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--color-text-primary)' }}>sitemap.xml</span>
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            color: (currentReport.seoChecks.sitemapXml?.status === 'verified_exists' || currentReport.seoChecks.sitemapXml?.status === 'exists') ? 'var(--color-success)' : currentReport.seoChecks.sitemapXml?.status === 'missing' ? 'var(--color-warning)' : 'var(--color-danger)'
+                          }}
+                        >
+                          {currentReport.seoChecks.sitemapXml?.status || currentReport.seoChecks.sitemap}
+                        </span>
+                      </div>
+                      {currentReport.seoChecks.sitemapXml?.url && (
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', fontFamily: 'monospace', backgroundColor: 'var(--color-surface-secondary)', padding: '6px 10px', borderRadius: '4px', wordBreak: 'break-all' }}>
+                          {currentReport.seoChecks.sitemapXml.url}
+                        </div>
+                      )}
+                      {currentReport.seoChecks.sitemapXml?.error && (
+                        <span style={{ fontSize: '11px', color: 'var(--color-danger)' }}>
+                          {currentReport.seoChecks.sitemapXml.error}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Grid 2: Headings Hierarchy & Structured Data */}
+              <div className="grid-cols-2" style={{ gap: '20px' }}>
+                {/* 3. Headings Structure */}
+                <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: 600, margin: 0 }}>Heading Hierarchy & Outline</h3>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: currentReport.seoChecks.headingsHierarchy?.isHierarchyValid ? 'var(--color-success)' : 'var(--color-warning)'
+                      }}
+                    >
+                      {currentReport.seoChecks.headingsHierarchy?.isHierarchyValid ? 'Sequential Order' : 'Skipped Levels Detected'}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    <div style={{ padding: '10px 14px', backgroundColor: 'var(--color-surface-secondary)', borderRadius: '6px', textAlign: 'center', minWidth: '80px' }}>
+                      <div style={{ fontSize: '18px', fontWeight: 700, color: ((currentReport.seoChecks.headingsHierarchy?.h1Count ?? 0) >= 1) ? 'var(--color-success)' : 'var(--color-danger)' }}>
+                        {currentReport.seoChecks.headingsHierarchy?.h1Count ?? 0}
+                      </div>
+                      <span style={{ fontSize: '10px', color: 'var(--color-muted)', textTransform: 'uppercase' }}>H1 Headings</span>
+                    </div>
+
+                    <div style={{ flex: 1, fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                      {currentReport.seoChecks.headingsHierarchy?.h1 && currentReport.seoChecks.headingsHierarchy.h1.length > 0 ? (
+                        <div>
+                          <strong>Primary H1:</strong> "{currentReport.seoChecks.headingsHierarchy.h1[0]}"
+                        </div>
+                      ) : (
+                        <div style={{ color: 'var(--color-danger)' }}>
+                          No H1 element detected in rendered DOM structure.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {currentReport.seoChecks.headingsHierarchy?.skippedLevels && currentReport.seoChecks.headingsHierarchy.skippedLevels.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-warning)' }}>Skipped Hierarchy Jumps:</span>
+                      {currentReport.seoChecks.headingsHierarchy.skippedLevels.map((sk, idx) => (
+                        <div key={idx} style={{ fontSize: '11.5px', color: 'var(--color-text-secondary)', padding: '4px 8px', backgroundColor: 'rgba(234, 179, 8, 0.08)', borderRadius: '4px' }}>
+                          Skipped from &lt;{sk.from}&gt; directly to &lt;{sk.to}&gt; {sk.text ? `("${sk.text}")` : ''}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* 4. Structured Data / JSON-LD */}
+                <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: 600, margin: 0 }}>Structured Data (JSON-LD)</h3>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: (currentReport.seoChecks.structuredData?.validCount ?? 0) > 0 ? 'var(--color-success)' : 'var(--color-muted)'
+                      }}
+                    >
+                      {currentReport.seoChecks.structuredData?.validCount ?? 0} Schemas Validated
+                    </span>
+                  </div>
+
+                  {currentReport.seoChecks.structuredData?.schemaTypes && currentReport.seoChecks.structuredData.schemaTypes.length > 0 ? (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {currentReport.seoChecks.structuredData.schemaTypes.map((st, idx) => (
+                        <span key={idx} style={{ fontSize: '11px', padding: '3px 8px', backgroundColor: 'var(--color-surface-secondary)', border: '1px solid var(--color-border)', borderRadius: '4px', fontFamily: 'monospace' }}>
+                          @type: {st}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p style={{ fontSize: '12.5px', color: 'var(--color-muted)', margin: 0 }}>
+                      No JSON-LD structured data schemas declared on this page.
+                    </p>
+                  )}
+
+                  {currentReport.seoChecks.structuredData?.syntaxErrors && currentReport.seoChecks.structuredData.syntaxErrors.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-danger)' }}>Syntax Errors Detected:</span>
+                      {currentReport.seoChecks.structuredData.syntaxErrors.map((err, idx) => (
+                        <div key={idx} style={{ fontSize: '11.5px', color: 'var(--color-danger)', padding: '6px 8px', backgroundColor: 'rgba(239, 68, 68, 0.08)', borderRadius: '4px', fontFamily: 'monospace' }}>
+                          {err.error}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Grid 3: OpenGraph & Twitter Social Cards */}
+              <div className="grid-cols-2" style={{ gap: '20px' }}>
+                {/* OpenGraph Card Mockup */}
                 <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <h3 style={{ fontSize: '15px', fontWeight: 600 }}>OpenGraph Card Mockup</h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: 600, margin: 0 }}>OpenGraph Sharing Preview</h3>
+                    <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>
+                      {currentReport.seoChecks.openGraph?.coveragePercentage ?? 0}% Complete
+                    </span>
+                  </div>
+
                   <div style={{ border: '1px solid var(--color-border)', borderRadius: '6px', overflow: 'hidden' }}>
                     <div
                       style={{
@@ -1255,8 +1496,86 @@ export const ResultsPage: React.FC = () => {
                       </p>
                     </div>
                   </div>
+
+                  {currentReport.seoChecks.openGraph?.missingTags && currentReport.seoChecks.openGraph.missingTags.length > 0 && (
+                    <div style={{ fontSize: '11px', color: 'var(--color-muted)' }}>
+                      Missing tags: {currentReport.seoChecks.openGraph.missingTags.join(', ')}
+                    </div>
+                  )}
+                </div>
+
+                {/* Twitter Card Mockup */}
+                <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: 600, margin: 0 }}>Twitter Card Preview</h3>
+                    <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>
+                      {currentReport.seoChecks.twitterCard?.coveragePercentage ?? 0}% Complete
+                    </span>
+                  </div>
+
+                  <div style={{ border: '1px solid var(--color-border)', borderRadius: '6px', overflow: 'hidden' }}>
+                    <div
+                      style={{
+                        backgroundColor: 'var(--color-surface-secondary)',
+                        height: '110px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'var(--color-muted)',
+                        fontSize: '12px',
+                        borderBottom: '1px solid var(--color-border)',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundImage: currentReport.seoChecks.twitterCard?.image ? `url(${currentReport.seoChecks.twitterCard.image})` : (currentReport.seoChecks.ogImage ? `url(${currentReport.seoChecks.ogImage})` : 'none')
+                      }}
+                    >
+                      {!currentReport.seoChecks.twitterCard?.image && !currentReport.seoChecks.ogImage && '[No Twitter Card Image]'}
+                    </div>
+                    <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <span style={{ fontSize: '10px', color: 'var(--color-muted)', textTransform: 'uppercase' }}>
+                        Type: {currentReport.seoChecks.twitterCard?.card || 'summary'}
+                      </span>
+                      <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', margin: 0 }}>
+                        {currentReport.seoChecks.twitterCard?.title || currentReport.seoChecks.ogTitle || currentReport.url}
+                      </p>
+                      <p style={{ fontSize: '11px', color: 'var(--color-text-secondary)', margin: 0, lineClamp: 2 }}>
+                        {currentReport.seoChecks.twitterCard?.description || currentReport.seoChecks.ogDescription || 'No description available'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {currentReport.seoChecks.twitterCard?.missingTags && currentReport.seoChecks.twitterCard.missingTags.length > 0 && (
+                    <div style={{ fontSize: '11px', color: 'var(--color-muted)' }}>
+                      Missing tags: {currentReport.seoChecks.twitterCard.missingTags.join(', ')}
+                    </div>
+                  )}
                 </div>
               </div>
+
+              {/* Section 6: Actionable SEO Recommendations & AI Fix Prompts */}
+              {currentReport.recommendations.filter(r => r.category === 'seo').length > 0 && (
+                <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div>
+                      <h3 style={{ fontSize: '15px', fontWeight: 600, margin: 0 }}>Actionable SEO Recommendations & AI Fix Engine</h3>
+                      <p style={{ fontSize: '12px', color: 'var(--color-muted)', margin: '2px 0 0 0' }}>
+                        Evidence-verified audit findings with copy-ready AI coding prompts.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {currentReport.recommendations.filter(r => r.category === 'seo').map(rec => (
+                      <HumanizedRecommendationCard
+                        key={rec.id}
+                        rec={rec}
+                        expanded={Boolean(expandedRecs[rec.id])}
+                        onToggle={() => toggleRec(rec.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

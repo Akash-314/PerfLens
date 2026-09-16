@@ -3,7 +3,7 @@
   "version": "2.0",
   "status": "success",
   "duration": 0,
-  "createdAt": "2026-09-13T19:54:50.889Z",
+  "createdAt": "2026-09-15T20:28:26.147Z",
   "scores": {
     "overall": 93,
     "performance": 100,
@@ -15,7 +15,8 @@
       "overallPerformanceScore": 100,
       "source": "lighthouse",
       "method": "Google Lighthouse Performance Audit",
-      "formula": "Performance Score = (LCP * 0.25) + (TBT * 0.30) + (CLS * 0.25) + (FCP * 0.10) + (SI * 0.10)",
+      "formula": "Performance Score = (Normalized LCP Score × 25%) + (Normalized TBT Score × 30%) + (Normalized CLS Score × 25%) + (Normalized FCP Score × 10%) + (Normalized Speed Index Score × 10%)",
+      "formulaDescription": "Calculated from normalized metric scores (0–100) using the configured metric weights.",
       "breakdown": [
         {
           "name": "Largest Contentful Paint",
@@ -247,7 +248,7 @@
       "elementTag": "P",
       "selector": "P",
       "elementUrl": null,
-      "renderTimeMs": 248,
+      "renderTimeMs": 528,
       "loadTimeMs": null
     },
     "cls": {
@@ -282,33 +283,33 @@
       "tasks": [],
       "mainThreadWork": [
         {
-          "group": "Style & Layout",
-          "durationMs": 51
+          "group": "Other",
+          "durationMs": 22
         },
         {
-          "group": "Other",
-          "durationMs": 33
+          "group": "Style & Layout",
+          "durationMs": 4
         },
         {
           "group": "Script Evaluation",
-          "durationMs": 5
+          "durationMs": 4
         },
         {
           "group": "Rendering",
           "durationMs": 1
         },
         {
-          "group": "Parse HTML & CSS",
+          "group": "Garbage Collection",
           "durationMs": 1
         }
       ],
-      "topScriptsByExecution": [
-        {
-          "url": "https://example.com/",
-          "totalCpuMs": 58,
-          "scriptEvalMs": 2
-        }
-      ]
+      "topScriptsByExecution": []
+    },
+    "puppeteerTbtDetails": {
+      "longTaskCount": 0,
+      "totalBlockingTimeMs": 0,
+      "maxTaskDurationMs": 0,
+      "tasks": []
     },
     "ttfb": {
       "score": 100,
@@ -319,7 +320,15 @@
       "rating": "good",
       "source": "lighthouse",
       "mode": "lab",
-      "available": true
+      "available": true,
+      "method": "Measured in lab (Google Lighthouse)",
+      "evidence": {
+        "method": "Measured in lab (Google Lighthouse)",
+        "auditId": "server-response-time",
+        "measuredValueMs": 1,
+        "source": "Google Lighthouse lab audit",
+        "formula": "Measured in lab"
+      }
     },
     "inp": {
       "score": null,
@@ -378,89 +387,423 @@
       "findingId": "REC_SEO_META_DESC_001",
       "analyzer": "seo",
       "title": "Provide a meta description for search engine result snippets",
-      "description": "The meta description summarizes page content in search engine result pages, improving user click-through rates.",
+      "description": "The meta description summarizes page content in search engine result pages, directly influencing search user click-through rates.",
       "category": "seo",
       "severity": "medium",
       "confidence": "high",
       "estimateType": "not_quantified",
       "finding": {
-        "description": "No <meta name=\"description\"> tag was found in document <head>",
-        "metric": "SEO"
+        "description": "No meta description was found in the rendered document head.",
+        "metric": "SEO",
+        "value": 0,
+        "unit": "chars"
       },
-      "evidence": "No <meta name=\"description\"> element detected in document <head>",
+      "evidence": "No <meta name=\"description\"> detected in rendered DOM",
       "evidenceDetails": [
         {
-          "type": "missing-meta-tag",
+          "type": "meta-description",
           "selector": "meta[name=\"description\"]",
           "details": {
-            "found": 0
+            "observed": "No <meta name=\"description\"> detected in rendered DOM",
+            "length": 0,
+            "count": 0
           }
         }
       ],
-      "potentialImpact": "Search engine result snippet presentation and click-through rate (CTR).",
+      "potentialImpact": "Search engine result snippet representation and search user clarity.",
       "estimatedSavings": null,
       "measuredImprovement": null,
-      "suggestedFix": "Declare a <meta name=\"description\" content=\"...\"> tag (120-160 characters) in the page <head> section.",
+      "suggestedFix": "Add a page-specific meta description using the project's existing SEO configuration.",
       "estimatedDifficulty": "easy",
       "estimatedImplementationTime": "15 mins",
       "refUrl": "https://developers.google.com/search/docs/appearance/snippet",
+      "standardFinding": {
+        "id": "REC_SEO_META_DESC_001",
+        "category": "seo",
+        "rule": "meta-description",
+        "severity": "medium",
+        "status": "fail",
+        "confidence": "verified",
+        "url": "https://example.com",
+        "evidence": {
+          "url": "https://example.com",
+          "element": "meta[name=\"description\"]",
+          "selector": "meta[name=\"description\"]",
+          "observed": "No <meta name=\"description\"> detected in rendered DOM",
+          "expected": "A page-specific meta description (approximately 120–160 characters is a useful practical guideline)"
+        },
+        "explanation": {
+          "problem": "No meta description was found in the rendered document head.",
+          "whyItMatters": "Your page does not currently provide a description specifically written for search-result snippets. Search engines may generate their own snippet from the page content. Approximately 120–160 characters is a useful practical guideline.",
+          "observedEvidence": "Element: meta[name=\"description\"], Observed: No <meta name=\"description\"> detected in rendered DOM"
+        },
+        "impact": "Search engine result snippet representation and search user clarity.",
+        "recommendation": "Add a page-specific meta description using the project's existing SEO configuration.",
+        "fixStrategy": "Declare one page-specific <meta name=\"description\" content=\"...\"> tag in the document <head> using the project's existing metadata architecture.",
+        "validation": [
+          "Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.",
+          "Verify the content attribute provides an accurate, non-empty summary of the page.",
+          "Ensure the description is not duplicated across multiple pages."
+        ],
+        "validationSteps": [
+          "Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.",
+          "Verify the content attribute provides an accurate, non-empty summary of the page.",
+          "Ensure the description is not duplicated across multiple pages."
+        ],
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo meta description was found in the rendered document head.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[name=\"description\"], Observed: No <meta name=\"description\"> detected in rendered DOM\n\nTask:\nAdd a page-specific meta description using the project's existing SEO configuration.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.\n2. Verify the content attribute provides an accurate, non-empty summary of the page.\n3. Ensure the description is not duplicated across multiple pages.",
+        "frameworkAwareness": {
+          "detectedFramework": null,
+          "confidence": "none",
+          "evidenceSnippet": "No framework-specific signals detected"
+        }
+      },
+      "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo meta description was found in the rendered document head.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[name=\"description\"], Observed: No <meta name=\"description\"> detected in rendered DOM\n\nTask:\nAdd a page-specific meta description using the project's existing SEO configuration.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.\n2. Verify the content attribute provides an accurate, non-empty summary of the page.\n3. Ensure the description is not duplicated across multiple pages.",
+      "fixStrategy": "Declare one page-specific <meta name=\"description\" content=\"...\"> tag in the document <head> using the project's existing metadata architecture.",
+      "validationSteps": [
+        "Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.",
+        "Verify the content attribute provides an accurate, non-empty summary of the page.",
+        "Ensure the description is not duplicated across multiple pages."
+      ],
       "issue": "Provide a meta description for search engine result snippets",
-      "whyItMatters": "Search engine result snippet presentation and click-through rate (CTR).",
+      "whyItMatters": "Your page does not currently provide a description specifically written for search-result snippets. Search engines may generate their own snippet from the page content. Approximately 120–160 characters is a useful practical guideline.",
       "estimatedImprovement": "Not quantified",
-      "estimatedPerformanceGain": "None (CTR & search snippet presentation)",
+      "estimatedPerformanceGain": "None (Search snippet representation & user clarity)",
       "priority": "high",
       "sourceAnalyzer": "seo",
       "estimatedBandwidthSaving": 0,
       "selector": "meta[name=\"description\"]",
-      "actualValue": "Missing (<meta name=\"description\"> tag absent)",
-      "expectedValue": "A descriptive meta description tag between 120 and 160 characters",
+      "actualValue": "No <meta name=\"description\"> detected in rendered DOM",
+      "expectedValue": "A page-specific meta description (approx 120-160 chars)",
       "reason": "Search engines use the meta description as the primary snippet preview in search result cards.",
-      "suggestedFixSummary": "Declare a <meta name=\"description\" content=\"...\"> tag (120-160 characters) in the page <head> section.",
+      "suggestedFixSummary": "Add a page-specific meta description using the project's existing SEO configuration.",
       "difficulty": "easy"
     },
     {
       "id": "REC_SEO_CANONICAL",
       "findingId": "REC_SEO_CANONICAL_001",
       "analyzer": "seo",
-      "title": "Provide a canonical URL link tag",
-      "description": "Canonical link declarations notify search crawlers of preferred page targets, avoiding duplicate index penalties.",
+      "title": "Provide a valid canonical URL link tag",
+      "description": "Canonical link declarations notify search crawlers of preferred page targets, avoiding duplicate index penalties across URL variants.",
       "category": "seo",
       "severity": "medium",
       "confidence": "high",
       "estimateType": "not_quantified",
       "finding": {
-        "description": "No <link rel=\"canonical\"> element found in document <head>",
+        "description": "No <link rel=\"canonical\"> element was found in the rendered document head.",
         "metric": "SEO"
       },
-      "evidence": "No link element with rel=\"canonical\" found in <head>",
+      "evidence": "No <link rel=\"canonical\"> element was found in the rendered document head.",
       "evidenceDetails": [
         {
-          "type": "missing-link-tag",
+          "type": "canonical-link",
           "selector": "link[rel=\"canonical\"]",
           "details": {
-            "found": 0
+            "observed": "No <link rel=\"canonical\"> element was found in the rendered document head.",
+            "count": 0
           }
         }
       ],
       "potentialImpact": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
       "estimatedSavings": null,
       "measuredImprovement": null,
-      "suggestedFix": "Declare <link rel=\"canonical\" href=\"https://example.com/authoritative-path\"> in the <head> of every page.",
+      "suggestedFix": "Add the page's intended canonical URL using the project's existing SEO configuration. Verify the authoritative URL before deployment.",
       "estimatedDifficulty": "easy",
       "estimatedImplementationTime": "15 mins",
       "refUrl": "https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls",
-      "issue": "Provide a canonical URL link tag",
-      "whyItMatters": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
+      "standardFinding": {
+        "id": "REC_SEO_CANONICAL_001",
+        "category": "seo",
+        "rule": "canonical-url",
+        "severity": "medium",
+        "status": "fail",
+        "confidence": "verified",
+        "url": "https://example.com",
+        "evidence": {
+          "url": "https://example.com",
+          "element": "link[rel=\"canonical\"]",
+          "selector": "link[rel=\"canonical\"]",
+          "observed": "No <link rel=\"canonical\"> element was found in the rendered document head.",
+          "expected": "One intended <link rel=\"canonical\" href=\"...\"> declaration in <head>"
+        },
+        "explanation": {
+          "problem": "No <link rel=\"canonical\"> element was found in the rendered document head.",
+          "whyItMatters": "A canonical URL tells search engines which URL should be treated as the preferred version when equivalent URLs exist.",
+          "observedEvidence": "Element: link[rel=\"canonical\"], Observed: No <link rel=\"canonical\"> element was found in the rendered document head."
+        },
+        "impact": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
+        "recommendation": "Add the page's intended canonical URL using the project's existing SEO configuration. Verify the authoritative URL before deployment.",
+        "fixStrategy": "Add the page's intended canonical URL using the project's existing SEO configuration. Determine the authoritative URL from the project's actual routing and domain configuration. Verify the authoritative URL before deployment.",
+        "validation": [
+          "Inspect the rendered page <head> and confirm exactly one <link rel=\"canonical\"> exists.",
+          "Verify the href is an absolute URL and matches the authoritative URL for the page.",
+          "Confirm no duplicate or conflicting canonical links are present."
+        ],
+        "validationSteps": [
+          "Inspect the rendered page <head> and confirm exactly one <link rel=\"canonical\"> exists.",
+          "Verify the href is an absolute URL and matches the authoritative URL for the page.",
+          "Confirm no duplicate or conflicting canonical links are present."
+        ],
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo <link rel=\"canonical\"> element was found in the rendered document head.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: link[rel=\"canonical\"], Observed: No <link rel=\"canonical\"> element was found in the rendered document head.\n\nTask:\nAdd the page's intended canonical URL using the project's existing SEO configuration. Verify the authoritative URL before deployment.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm exactly one <link rel=\"canonical\"> exists.\n2. Verify the href is an absolute URL and matches the authoritative URL for the page.\n3. Confirm no duplicate or conflicting canonical links are present.",
+        "frameworkAwareness": {
+          "detectedFramework": null,
+          "confidence": "none",
+          "evidenceSnippet": "No framework-specific signals detected"
+        }
+      },
+      "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo canonical URL is declared on the affected page.\n\nEvidence:\nNo <link rel=\"canonical\"> element was found in the rendered document head.\n\nTask:\nAdd the page's intended canonical URL using the project's existing SEO/metadata architecture.\n\nImportant:\nDetermine the authoritative URL from the project's actual routing and domain configuration.\nDo not use a placeholder or guessed URL.\n\nConstraints:\n- Do not introduce a new SEO dependency.\n- Do not create duplicate canonical tags.\n- Do not modify unrelated UI or functionality.\n- Reuse the existing SEO/metadata architecture.\n\nValidation:\nRender the affected page and confirm exactly one valid canonical URL is present.",
+      "fixStrategy": "Add the page's intended canonical URL using the project's existing SEO configuration. Determine the authoritative URL from the project's actual routing and domain configuration. Verify the authoritative URL before deployment.",
+      "validationSteps": [
+        "Inspect the rendered page <head> and confirm exactly one <link rel=\"canonical\"> exists.",
+        "Verify the href is an absolute URL and matches the authoritative URL for the page.",
+        "Confirm no duplicate or conflicting canonical links are present."
+      ],
+      "issue": "Provide a valid canonical URL link tag",
+      "whyItMatters": "A canonical URL tells search engines which URL should be treated as the preferred version when equivalent URLs exist.",
       "estimatedImprovement": "Not quantified",
       "estimatedPerformanceGain": "None",
       "priority": "medium",
       "sourceAnalyzer": "seo",
       "estimatedBandwidthSaving": 0,
       "selector": "link[rel=\"canonical\"]",
-      "actualValue": "Missing (<link rel=\"canonical\"> absent)",
-      "expectedValue": "<link rel=\"canonical\" href=\"...\"> pointing to authoritative canonical URL",
+      "actualValue": "No <link rel=\"canonical\"> element was found in the rendered document head.",
+      "expectedValue": "One intended <link rel=\"canonical\" href=\"...\"> declaration in <head>",
       "reason": "Canonical link declarations prevent duplicate content indexing penalties across query-parameter variations.",
-      "suggestedFixSummary": "Declare <link rel=\"canonical\" href=\"https://example.com/authoritative-path\"> in the <head> of every page.",
+      "suggestedFixSummary": "Add the page's intended canonical URL using the project's existing SEO configuration. Verify the authoritative URL before deployment.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "REC_SEO_OPEN_GRAPH",
+      "findingId": "REC_SEO_OPEN_GRAPH_001",
+      "analyzer": "seo",
+      "title": "Provide essential Open Graph metadata for social sharing",
+      "description": "Open Graph tags control how your links look when shared on LinkedIn, Facebook, Slack, and messaging apps.",
+      "category": "seo",
+      "severity": "low",
+      "confidence": "high",
+      "estimateType": "not_quantified",
+      "finding": {
+        "description": "The page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.",
+        "metric": "SEO"
+      },
+      "evidence": "0 / 5 present (0%). Missing: og:title, og:description, og:image, og:url, og:type",
+      "evidenceDetails": [
+        {
+          "type": "open-graph",
+          "details": {
+            "title": null,
+            "description": null,
+            "image": null,
+            "url": null,
+            "type": null,
+            "siteName": null,
+            "missingTags": [
+              "og:title",
+              "og:description",
+              "og:image",
+              "og:url",
+              "og:type"
+            ],
+            "properties": [
+              {
+                "property": "og:title",
+                "present": false,
+                "value": null
+              },
+              {
+                "property": "og:description",
+                "present": false,
+                "value": null
+              },
+              {
+                "property": "og:image",
+                "present": false,
+                "value": null
+              },
+              {
+                "property": "og:url",
+                "present": false,
+                "value": null
+              },
+              {
+                "property": "og:type",
+                "present": false,
+                "value": null
+              }
+            ],
+            "presentCount": 0,
+            "totalCount": 5,
+            "coveragePercentage": 0
+          }
+        }
+      ],
+      "potentialImpact": "Social media preview card appearance and link click-through rate.",
+      "estimatedSavings": null,
+      "measuredImprovement": null,
+      "suggestedFix": "Add the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.",
+      "estimatedDifficulty": "easy",
+      "estimatedImplementationTime": "15 mins",
+      "refUrl": "https://ogp.me/",
+      "standardFinding": {
+        "id": "REC_SEO_OPEN_GRAPH_001",
+        "category": "seo",
+        "rule": "open-graph-tags",
+        "severity": "low",
+        "status": "fail",
+        "confidence": "verified",
+        "url": "https://example.com",
+        "evidence": {
+          "url": "https://example.com",
+          "element": "meta[property^=\"og:\"]",
+          "selector": "meta[property^=\"og:\"]",
+          "observed": "0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]",
+          "expected": "Full Open Graph tag suite (og:title, og:description, og:image, og:url, og:type)"
+        },
+        "explanation": {
+          "problem": "The page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.",
+          "whyItMatters": "When users share your page link on social platforms or messaging apps, missing Open Graph tags result in blank previews without an image, title, or description, significantly reducing engagement.",
+          "observedEvidence": "Element: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]"
+        },
+        "impact": "Social media preview card appearance and link click-through rate.",
+        "recommendation": "Add the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.",
+        "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, and <meta property=\"og:url\"> in the document <head>.",
+        "validation": [
+          "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+          "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
+          "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+        ],
+        "validationSteps": [
+          "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+          "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
+          "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+        ],
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector).",
+        "frameworkAwareness": {
+          "detectedFramework": null,
+          "confidence": "none",
+          "evidenceSnippet": "No framework-specific signals detected"
+        }
+      },
+      "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector).",
+      "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, and <meta property=\"og:url\"> in the document <head>.",
+      "validationSteps": [
+        "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+        "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
+        "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+      ],
+      "issue": "Provide essential Open Graph metadata for social sharing",
+      "whyItMatters": "When users share your page link on social platforms or messaging apps, missing Open Graph tags result in blank previews without an image, title, or description, significantly reducing engagement.",
+      "estimatedImprovement": "Not quantified",
+      "estimatedPerformanceGain": "None",
+      "priority": "low",
+      "sourceAnalyzer": "seo",
+      "estimatedBandwidthSaving": 0,
+      "selector": "meta[property^=\"og:\"]",
+      "actualValue": "0 / 5 present (0%)",
+      "expectedValue": "Complete OG tags (og:title, og:description, og:image, og:url, og:type)",
+      "reason": "Social platforms compile rich link preview cards from Open Graph metadata.",
+      "suggestedFixSummary": "Add the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "REC_SEO_TWITTER_CARD",
+      "findingId": "REC_SEO_TWITTER_CARD_001",
+      "analyzer": "seo",
+      "title": "Provide Twitter Card metadata for X / Twitter link previews",
+      "description": "Twitter card tags ensure shared links generate rich summary cards on X / Twitter.",
+      "category": "seo",
+      "severity": "low",
+      "confidence": "low",
+      "estimateType": "not_quantified",
+      "finding": {
+        "description": "The page is missing Twitter Card tags: twitter:card, twitter:title, twitter:description, twitter:image.",
+        "metric": "SEO"
+      },
+      "evidence": "Missing: twitter:card, twitter:title, twitter:description, twitter:image",
+      "evidenceDetails": [
+        {
+          "type": "twitter-card",
+          "details": {
+            "card": null,
+            "title": null,
+            "description": null,
+            "image": null,
+            "site": null,
+            "missingTags": [
+              "twitter:card",
+              "twitter:title",
+              "twitter:description",
+              "twitter:image"
+            ],
+            "coveragePercentage": 0
+          }
+        }
+      ],
+      "potentialImpact": "X / Twitter link preview appearance and engagement.",
+      "estimatedSavings": null,
+      "measuredImprovement": null,
+      "suggestedFix": "Add <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>.",
+      "estimatedDifficulty": "easy",
+      "estimatedImplementationTime": "15 mins",
+      "refUrl": "https://developer.x.com/en/docs/x-for-websites/cards/overview/abouts-cards",
+      "standardFinding": {
+        "id": "REC_SEO_TWITTER_CARD_001",
+        "category": "seo",
+        "rule": "twitter-card-tags",
+        "severity": "low",
+        "status": "fail",
+        "confidence": "verified",
+        "url": "https://example.com",
+        "evidence": {
+          "url": "https://example.com",
+          "element": "meta[name^=\"twitter:\"]",
+          "selector": "meta[name^=\"twitter:\"]",
+          "observed": "Missing tags: twitter:card, twitter:title, twitter:description, twitter:image (0% coverage)",
+          "expected": "Complete Twitter Card tag suite"
+        },
+        "explanation": {
+          "problem": "The page is missing Twitter Card tags: twitter:card, twitter:title, twitter:description, twitter:image.",
+          "whyItMatters": "Without twitter:card metadata, tweets linking to your website will render as plain text links instead of rich visual media preview cards.",
+          "observedEvidence": "Element: meta[name^=\"twitter:\"], Observed: Missing tags: twitter:card, twitter:title, twitter:description, twitter:image (0% coverage)"
+        },
+        "impact": "X / Twitter link preview appearance and engagement.",
+        "recommendation": "Add <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>.",
+        "fixStrategy": "Declare twitter:card, twitter:title, twitter:description, and twitter:image in document <head>.",
+        "validation": [
+          "Inspect the rendered page <head> and confirm twitter:card is declared.",
+          "Confirm twitter:title, twitter:description, and twitter:image are present.",
+          "Verify twitter:image is an absolute URL."
+        ],
+        "validationSteps": [
+          "Inspect the rendered page <head> and confirm twitter:card is declared.",
+          "Confirm twitter:title, twitter:description, and twitter:image are present.",
+          "Verify twitter:image is an absolute URL."
+        ],
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page is missing Twitter Card tags: twitter:card, twitter:title, twitter:description, twitter:image.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[name^=\"twitter:\"], Observed: Missing tags: twitter:card, twitter:title, twitter:description, twitter:image (0% coverage)\n\nTask:\nAdd <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm twitter:card is declared.\n2. Confirm twitter:title, twitter:description, and twitter:image are present.\n3. Verify twitter:image is an absolute URL.",
+        "frameworkAwareness": {
+          "detectedFramework": null,
+          "confidence": "none",
+          "evidenceSnippet": "No framework-specific signals detected"
+        }
+      },
+      "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page is missing Twitter Card tags: twitter:card, twitter:title, twitter:description, twitter:image.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[name^=\"twitter:\"], Observed: Missing tags: twitter:card, twitter:title, twitter:description, twitter:image (0% coverage)\n\nTask:\nAdd <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm twitter:card is declared.\n2. Confirm twitter:title, twitter:description, and twitter:image are present.\n3. Verify twitter:image is an absolute URL.",
+      "fixStrategy": "Declare twitter:card, twitter:title, twitter:description, and twitter:image in document <head>.",
+      "validationSteps": [
+        "Inspect the rendered page <head> and confirm twitter:card is declared.",
+        "Confirm twitter:title, twitter:description, and twitter:image are present.",
+        "Verify twitter:image is an absolute URL."
+      ],
+      "issue": "Provide Twitter Card metadata for X / Twitter link previews",
+      "whyItMatters": "Without twitter:card metadata, tweets linking to your website will render as plain text links instead of rich visual media preview cards.",
+      "estimatedImprovement": "Not quantified",
+      "estimatedPerformanceGain": "None",
+      "priority": "low",
+      "sourceAnalyzer": "seo",
+      "estimatedBandwidthSaving": 0,
+      "selector": "meta[name^=\"twitter:\"]",
+      "actualValue": "0% coverage",
+      "expectedValue": "Complete Twitter tags",
+      "reason": "X / Twitter reads twitter:card meta tags to display media preview cards.",
+      "suggestedFixSummary": "Add <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>.",
       "difficulty": "easy"
     }
   ],
@@ -472,19 +815,19 @@
       "sizeKb": 0.5,
       "transferSizeKb": 0.5,
       "statusCode": 200,
-      "timeMs": 219,
-      "durationMs": 219,
-      "startTimeMs": 62939975,
+      "timeMs": 498,
+      "durationMs": 498,
+      "startTimeMs": 12463828,
       "initiator": "other",
       "fromCache": false,
       "timingBreakdown": {
-        "dnsMs": 31,
-        "tcpMs": 91,
-        "tlsMs": 88,
-        "ttfbMs": 50,
+        "dnsMs": 190,
+        "tcpMs": 84,
+        "tlsMs": 81,
+        "ttfbMs": 53,
         "downloadMs": 0,
-        "startTimeMs": 62939975,
-        "durationMs": 219
+        "startTimeMs": 12463828,
+        "durationMs": 498
       },
       "compression": "brotli",
       "cacheControl": "no-cache, no-store",
@@ -492,13 +835,13 @@
       "isCompressed": true
     }
   ],
-  "owner": "8f101306-620e-4880-834b-a280b90d0914",
   "scoreExplanation": {
     "finalScore": 100,
     "overallPerformanceScore": 100,
     "source": "lighthouse",
     "method": "Google Lighthouse Performance Audit",
-    "formula": "Performance Score = (LCP * 0.25) + (TBT * 0.30) + (CLS * 0.25) + (FCP * 0.10) + (SI * 0.10)",
+    "formula": "Performance Score = (Normalized LCP Score × 25%) + (Normalized TBT Score × 30%) + (Normalized CLS Score × 25%) + (Normalized FCP Score × 10%) + (Normalized Speed Index Score × 10%)",
+    "formulaDescription": "Calculated from normalized metric scores (0–100) using the configured metric weights.",
     "breakdown": [
       {
         "name": "Largest Contentful Paint",
@@ -709,7 +1052,8 @@
     "overallPerformanceScore": 100,
     "source": "lighthouse",
     "method": "Google Lighthouse Performance Audit",
-    "formula": "Performance Score = (LCP * 0.25) + (TBT * 0.30) + (CLS * 0.25) + (FCP * 0.10) + (SI * 0.10)",
+    "formula": "Performance Score = (Normalized LCP Score × 25%) + (Normalized TBT Score × 30%) + (Normalized CLS Score × 25%) + (Normalized FCP Score × 10%) + (Normalized Speed Index Score × 10%)",
+    "formulaDescription": "Calculated from normalized metric scores (0–100) using the configured metric weights.",
     "breakdown": [
       {
         "name": "Largest Contentful Paint",
@@ -924,6 +1268,8 @@
       "lcp": "0.8 s",
       "fcp": "0.8 s",
       "inp": "N/A",
+      "inpSource": "unknown",
+      "inpMode": "lab",
       "tbt": "0 ms",
       "cls": "0",
       "ttfb": "1ms",
@@ -934,14 +1280,14 @@
         "id": "first-contentful-paint",
         "weight": 10,
         "score": 100,
-        "numericValue": 781,
+        "numericValue": 757,
         "displayValue": "0.8 s"
       },
       "largest-contentful-paint": {
         "id": "largest-contentful-paint",
         "weight": 25,
         "score": 100,
-        "numericValue": 781,
+        "numericValue": 757,
         "displayValue": "0.8 s"
       },
       "total-blocking-time": {
@@ -962,7 +1308,7 @@
         "id": "speed-index",
         "weight": 10,
         "score": 100,
-        "numericValue": 781,
+        "numericValue": 757,
         "displayValue": "0.8 s"
       }
     },
@@ -973,33 +1319,27 @@
       "tasks": [],
       "mainThreadWork": [
         {
-          "group": "Style & Layout",
-          "durationMs": 51
+          "group": "Other",
+          "durationMs": 22
         },
         {
-          "group": "Other",
-          "durationMs": 33
+          "group": "Style & Layout",
+          "durationMs": 4
         },
         {
           "group": "Script Evaluation",
-          "durationMs": 5
+          "durationMs": 4
         },
         {
           "group": "Rendering",
           "durationMs": 1
         },
         {
-          "group": "Parse HTML & CSS",
+          "group": "Garbage Collection",
           "durationMs": 1
         }
       ],
-      "topScriptsByExecution": [
-        {
-          "url": "https://example.com/",
-          "totalCpuMs": 58,
-          "scriptEvalMs": 2
-        }
-      ]
+      "topScriptsByExecution": []
     }
   },
   "customAnalysis": {
@@ -1020,7 +1360,7 @@
         {
           "name": "https://example.com/",
           "url": "https://example.com/",
-          "durationMs": 219
+          "durationMs": 498
         }
       ],
       "largestJs": "None",
@@ -1057,16 +1397,88 @@
   },
   "seo": {
     "summary": {
-      "seoScoreEstimate": 50,
+      "seoScoreEstimate": 60,
       "missingMetaDescription": true,
       "missingTitle": false,
       "missingCanonical": true,
       "missingViewport": false,
       "missingH1": false,
       "multipleH1": false,
+      "headingHierarchyValid": true,
       "openGraphCoverage": 0,
       "twitterCardCoverage": 0,
-      "structuredDataPresence": false
+      "structuredDataPresence": false,
+      "structuredDataValid": false,
+      "robotsTxtStatus": "missing",
+      "sitemapXmlStatus": "missing",
+      "sitemapStatus": "SITEMAP_NOT_FOUND",
+      "structuredDataStatus": "NOT_DETECTED",
+      "canonicalStatus": "MISSING",
+      "titleStatus": "VALID",
+      "metaDescriptionStatus": "MISSING",
+      "noindexDetected": false,
+      "scoreExplanation": {
+        "score": 60,
+        "maxScore": 100,
+        "breakdown": [
+          {
+            "name": "Document Title",
+            "score": 20,
+            "maxScore": 20,
+            "status": "PASS",
+            "explanation": "Title present (14 chars, within guideline)."
+          },
+          {
+            "name": "Meta Description",
+            "score": 0,
+            "maxScore": 20,
+            "status": "FAIL",
+            "explanation": "No <meta name=\"description\"> tag found in rendered document head."
+          },
+          {
+            "name": "Primary H1 Heading",
+            "score": 15,
+            "maxScore": 15,
+            "status": "PASS",
+            "explanation": "Primary <h1> element present in rendered DOM."
+          },
+          {
+            "name": "Mobile Viewport",
+            "score": 15,
+            "maxScore": 15,
+            "status": "PASS",
+            "explanation": "Mobile-responsive viewport meta tag declared."
+          },
+          {
+            "name": "Canonical Link",
+            "score": 0,
+            "maxScore": 10,
+            "status": "FAIL",
+            "explanation": "No valid absolute <link rel=\"canonical\"> found in rendered <head>."
+          },
+          {
+            "name": "Language Declaration",
+            "score": 10,
+            "maxScore": 10,
+            "status": "PASS",
+            "explanation": "HTML document lang attribute declared (\"en\")."
+          },
+          {
+            "name": "robots.txt Probe",
+            "score": 0,
+            "maxScore": 5,
+            "status": "FAIL",
+            "explanation": "robots.txt file missing or unreachable."
+          },
+          {
+            "name": "sitemap.xml Probe",
+            "score": 0,
+            "maxScore": 5,
+            "status": "FAIL",
+            "explanation": "sitemap.xml not found or returned invalid non-XML content."
+          }
+        ]
+      }
     },
     "seo": {
       "pageTitle": "Example Domain",
@@ -1091,7 +1503,27 @@
         "h3": [],
         "h4": [],
         "h5": [],
-        "h6": []
+        "h6": [],
+        "hasH1": true,
+        "h1Count": 1,
+        "multipleH1": false,
+        "isHierarchyValid": true,
+        "skippedLevels": []
+      },
+      "headingsHierarchy": {
+        "h1": [
+          "Example Domain"
+        ],
+        "h2": [],
+        "h3": [],
+        "h4": [],
+        "h5": [],
+        "h6": [],
+        "hasH1": true,
+        "h1Count": 1,
+        "multipleH1": false,
+        "isHierarchyValid": true,
+        "skippedLevels": []
       },
       "internalLinks": [],
       "externalLinks": [
@@ -1100,11 +1532,251 @@
       "brokenLinks": [],
       "hasRobotsTxt": false,
       "hasSitemapXml": false,
-      "structuredData": null,
+      "robotsTxtDetails": {
+        "status": "missing",
+        "statusCode": 404,
+        "sitemaps": [],
+        "disallowCount": 0,
+        "allowCount": 0,
+        "isMissing": true,
+        "isUnreachable": false,
+        "isInvalid": false
+      },
+      "sitemapXmlDetails": {
+        "status": "missing",
+        "sitemapStatus": "SITEMAP_NOT_FOUND",
+        "statusCode": 404,
+        "urlCount": 0,
+        "isSitemapIndex": false,
+        "url": "https://example.com/sitemap.xml",
+        "isMissing": true,
+        "isUnreachable": false,
+        "isInvalid": false
+      },
+      "canonicalDetails": {
+        "status": "missing",
+        "canonicalState": "MISSING",
+        "url": null,
+        "isAbsolute": false,
+        "matchesPageUrl": false,
+        "isMissing": true,
+        "count": 0
+      },
+      "structuredDataDetails": {
+        "status": "NOT_DETECTED",
+        "presence": false,
+        "itemCount": 0,
+        "validCount": 0,
+        "schemas": [],
+        "schemaTypes": [],
+        "syntaxErrors": [],
+        "humanMessage": "No JSON-LD structured data was detected on this rendered page."
+      },
+      "robotsMetaDetails": {
+        "content": null,
+        "noindex": false,
+        "nofollow": false,
+        "noarchive": false,
+        "nosnippet": false,
+        "directives": []
+      },
+      "robotsMeta": {
+        "content": null,
+        "noindex": false,
+        "nofollow": false,
+        "noarchive": false,
+        "nosnippet": false,
+        "directives": []
+      },
+      "hreflangs": [],
+      "socialCards": {
+        "openGraph": {
+          "title": null,
+          "description": null,
+          "image": null,
+          "url": null,
+          "type": null,
+          "siteName": null,
+          "missingTags": [
+            "og:title",
+            "og:description",
+            "og:image",
+            "og:url",
+            "og:type"
+          ],
+          "properties": [
+            {
+              "property": "og:title",
+              "present": false,
+              "value": null
+            },
+            {
+              "property": "og:description",
+              "present": false,
+              "value": null
+            },
+            {
+              "property": "og:image",
+              "present": false,
+              "value": null
+            },
+            {
+              "property": "og:url",
+              "present": false,
+              "value": null
+            },
+            {
+              "property": "og:type",
+              "present": false,
+              "value": null
+            }
+          ],
+          "presentCount": 0,
+          "totalCount": 5,
+          "coveragePercentage": 0
+        },
+        "twitter": {
+          "card": null,
+          "title": null,
+          "description": null,
+          "image": null,
+          "site": null,
+          "missingTags": [
+            "twitter:card",
+            "twitter:title",
+            "twitter:description",
+            "twitter:image"
+          ],
+          "coveragePercentage": 0
+        }
+      },
+      "openGraph": {
+        "title": null,
+        "description": null,
+        "image": null,
+        "url": null,
+        "type": null,
+        "siteName": null,
+        "missingTags": [
+          "og:title",
+          "og:description",
+          "og:image",
+          "og:url",
+          "og:type"
+        ],
+        "properties": [
+          {
+            "property": "og:title",
+            "present": false,
+            "value": null
+          },
+          {
+            "property": "og:description",
+            "present": false,
+            "value": null
+          },
+          {
+            "property": "og:image",
+            "present": false,
+            "value": null
+          },
+          {
+            "property": "og:url",
+            "present": false,
+            "value": null
+          },
+          {
+            "property": "og:type",
+            "present": false,
+            "value": null
+          }
+        ],
+        "presentCount": 0,
+        "totalCount": 5,
+        "coveragePercentage": 0
+      },
+      "twitterCard": {
+        "card": null,
+        "title": null,
+        "description": null,
+        "image": null,
+        "site": null,
+        "missingTags": [
+          "twitter:card",
+          "twitter:title",
+          "twitter:description",
+          "twitter:image"
+        ],
+        "coveragePercentage": 0
+      },
+      "detectedFramework": null,
+      "structuredData": [],
       "favicon": "/data:,",
       "ogTitle": "",
       "ogDescription": "",
-      "ogImage": ""
+      "ogImage": "",
+      "seoScoreExplanation": {
+        "score": 60,
+        "maxScore": 100,
+        "breakdown": [
+          {
+            "name": "Document Title",
+            "score": 20,
+            "maxScore": 20,
+            "status": "PASS",
+            "explanation": "Title present (14 chars, within guideline)."
+          },
+          {
+            "name": "Meta Description",
+            "score": 0,
+            "maxScore": 20,
+            "status": "FAIL",
+            "explanation": "No <meta name=\"description\"> tag found in rendered document head."
+          },
+          {
+            "name": "Primary H1 Heading",
+            "score": 15,
+            "maxScore": 15,
+            "status": "PASS",
+            "explanation": "Primary <h1> element present in rendered DOM."
+          },
+          {
+            "name": "Mobile Viewport",
+            "score": 15,
+            "maxScore": 15,
+            "status": "PASS",
+            "explanation": "Mobile-responsive viewport meta tag declared."
+          },
+          {
+            "name": "Canonical Link",
+            "score": 0,
+            "maxScore": 10,
+            "status": "FAIL",
+            "explanation": "No valid absolute <link rel=\"canonical\"> found in rendered <head>."
+          },
+          {
+            "name": "Language Declaration",
+            "score": 10,
+            "maxScore": 10,
+            "status": "PASS",
+            "explanation": "HTML document lang attribute declared (\"en\")."
+          },
+          {
+            "name": "robots.txt Probe",
+            "score": 0,
+            "maxScore": 5,
+            "status": "FAIL",
+            "explanation": "robots.txt file missing or unreachable."
+          },
+          {
+            "name": "sitemap.xml Probe",
+            "score": 0,
+            "maxScore": 5,
+            "status": "FAIL",
+            "explanation": "sitemap.xml not found or returned invalid non-XML content."
+          }
+        ]
+      }
     },
     "statistics": {
       "titleLength": 14,
@@ -1125,54 +1797,36 @@
     },
     "optimizationCandidates": [
       {
-        "url": "example.com",
+        "url": "https://example.com/",
         "type": "seo",
         "estimatedSizeReductionKb": 0,
-        "suggestion": "Meta description tag is missing. Meta descriptions represent the default summary snippet on search engine listings. [Evidence: Selector='none', Value='Missing', Source='']",
+        "suggestion": "No meta description was found in the rendered document head. Your page does not currently provide a description specifically written for search-result snippets. [Element: meta[name=\"description\"], Observed: \"No <meta name=\\\"description\\\"> found in rendered <head>\"]",
         "isIssue": true
       },
       {
-        "url": "example.com",
+        "url": "https://example.com/",
         "type": "seo",
         "estimatedSizeReductionKb": 0,
-        "suggestion": "Canonical URL link tag is missing. Canonical indicators eliminate duplicate indexing penalty risks. [Evidence: Selector='none', Value='Missing', Source='']",
+        "suggestion": "No canonical URL was found in the rendered document head. Canonical declarations tell search crawlers the preferred URL to index. [Element: link[rel=\"canonical\"], Observed: \"No <link rel=\\\"canonical\\\"> element was found in the rendered document head.\"]",
         "isIssue": true
-      },
-      {
-        "url": "example.com",
-        "type": "seo",
-        "estimatedSizeReductionKb": 0,
-        "suggestion": "Open Graph tags coverage is low (0%). Social media shares require OG metadata to compile rich listings. [Evidence: Selector='none', Value='Missing', Source='']",
-        "isIssue": false
-      },
-      {
-        "url": "example.com",
-        "type": "seo",
-        "estimatedSizeReductionKb": 0,
-        "suggestion": "JSON-LD Structured Data script missing. Providing Schema.org markup assists rich search snippet cards compiler. [Evidence: Selector='none', Value='Missing', Source='']",
-        "isIssue": false
       }
     ],
     "warnings": [
       {
         "code": "SEO_NO_DESCRIPTION",
-        "message": "Meta description tag is missing. Meta descriptions represent the default summary snippet on search engine listings.",
-        "severity": "warning"
+        "message": "No meta description was found in the rendered document head. Your page does not currently provide a description specifically written for search-result snippets.",
+        "severity": "warning",
+        "element": "meta[name=\"description\"]",
+        "observed": "No <meta name=\"description\"> found in rendered <head>",
+        "expected": "A page-specific meta description (approximately 120–160 characters is a useful practical guideline)"
       },
       {
         "code": "SEO_NO_CANONICAL",
-        "message": "Canonical URL link tag is missing. Canonical indicators eliminate duplicate indexing penalty risks.",
-        "severity": "warning"
-      },
-      {
-        "code": "SEO_NO_OG_TAGS",
-        "message": "Open Graph tags coverage is low (0%). Social media shares require OG metadata to compile rich listings.",
-        "severity": "info"
-      },
-      {
-        "code": "SEO_NO_STRUCTURED_DATA",
-        "message": "JSON-LD Structured Data script missing. Providing Schema.org markup assists rich search snippet cards compiler.",
-        "severity": "info"
+        "message": "No canonical URL was found in the rendered document head. Canonical declarations tell search crawlers the preferred URL to index.",
+        "severity": "warning",
+        "element": "link[rel=\"canonical\"]",
+        "observed": "No <link rel=\"canonical\"> element was found in the rendered document head.",
+        "expected": "One intended <link rel=\"canonical\" href=\"...\"> declaration in <head>"
       }
     ],
     "errors": [],
@@ -1180,63 +1834,51 @@
       "title": {
         "value": "Example Domain",
         "selector": "head > title",
-        "html": "<title>Example Domain</title>"
+        "count": 1
       },
       "description": {
         "value": "",
         "selector": "none",
-        "html": ""
+        "count": 0
       },
       "canonical": {
         "value": "",
         "selector": "none",
-        "html": ""
+        "count": 0
       },
       "keywords": {
         "value": "",
-        "selector": "none",
-        "html": ""
+        "selector": "none"
       },
       "charset": {
-        "value": "",
-        "selector": "none",
-        "html": ""
+        "value": "UTF-8",
+        "selector": "none"
       },
       "viewport": {
         "value": "width=device-width, initial-scale=1",
-        "selector": "meta[name=\"viewport\"]",
-        "html": "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+        "selector": "meta[name=\"viewport\"]"
       },
       "robots": {
         "value": "",
-        "selector": "none",
-        "html": ""
+        "selector": "none"
       },
       "og": {},
       "twitter": {},
-      "headings": {
-        "h1": [
-          "Example Domain"
-        ],
-        "h2": [],
-        "h3": [],
-        "h4": [],
-        "h5": [],
-        "h6": []
-      },
-      "internalLinks": [],
-      "externalLinks": [
-        "https://iana.org/domains/example"
-      ],
-      "languageAttribute": "en",
-      "jsonLd": [],
-      "headingsDetails": [
+      "headingsList": [
         {
           "tag": "h1",
           "text": "Example Domain",
           "html": "<h1>Example Domain</h1>"
         }
-      ]
+      ],
+      "internalLinks": [],
+      "externalLinks": [
+        "https://iana.org/domains/example"
+      ],
+      "hreflangs": [],
+      "languageAttribute": "en",
+      "jsonLd": [],
+      "frameworkSignal": null
     }
   },
   "accessibility": {
@@ -1321,16 +1963,16 @@
   },
   "recommendation": {
     "summary": {
-      "overallHealthScore": 85,
+      "overallHealthScore": 83,
       "overallPerformanceGrade": "B",
-      "totalIssues": 2,
+      "totalIssues": 4,
       "criticalIssues": 0,
       "highIssues": 1,
       "mediumIssues": 1,
-      "lowIssues": 0,
+      "lowIssues": 2,
       "potentialPerformanceImprovement": "No major transfer savings estimated",
       "potentialBandwidthReduction": 0,
-      "estimatedTimeToFixEverything": "30 mins"
+      "estimatedTimeToFixEverything": "1.0 hours"
     },
     "recommendations": [
       {
@@ -1338,89 +1980,423 @@
         "findingId": "REC_SEO_META_DESC_001",
         "analyzer": "seo",
         "title": "Provide a meta description for search engine result snippets",
-        "description": "The meta description summarizes page content in search engine result pages, improving user click-through rates.",
+        "description": "The meta description summarizes page content in search engine result pages, directly influencing search user click-through rates.",
         "category": "seo",
         "severity": "medium",
         "confidence": "high",
         "estimateType": "not_quantified",
         "finding": {
-          "description": "No <meta name=\"description\"> tag was found in document <head>",
-          "metric": "SEO"
+          "description": "No meta description was found in the rendered document head.",
+          "metric": "SEO",
+          "value": 0,
+          "unit": "chars"
         },
-        "evidence": "No <meta name=\"description\"> element detected in document <head>",
+        "evidence": "No <meta name=\"description\"> detected in rendered DOM",
         "evidenceDetails": [
           {
-            "type": "missing-meta-tag",
+            "type": "meta-description",
             "selector": "meta[name=\"description\"]",
             "details": {
-              "found": 0
+              "observed": "No <meta name=\"description\"> detected in rendered DOM",
+              "length": 0,
+              "count": 0
             }
           }
         ],
-        "potentialImpact": "Search engine result snippet presentation and click-through rate (CTR).",
+        "potentialImpact": "Search engine result snippet representation and search user clarity.",
         "estimatedSavings": null,
         "measuredImprovement": null,
-        "suggestedFix": "Declare a <meta name=\"description\" content=\"...\"> tag (120-160 characters) in the page <head> section.",
+        "suggestedFix": "Add a page-specific meta description using the project's existing SEO configuration.",
         "estimatedDifficulty": "easy",
         "estimatedImplementationTime": "15 mins",
         "refUrl": "https://developers.google.com/search/docs/appearance/snippet",
+        "standardFinding": {
+          "id": "REC_SEO_META_DESC_001",
+          "category": "seo",
+          "rule": "meta-description",
+          "severity": "medium",
+          "status": "fail",
+          "confidence": "verified",
+          "url": "https://example.com",
+          "evidence": {
+            "url": "https://example.com",
+            "element": "meta[name=\"description\"]",
+            "selector": "meta[name=\"description\"]",
+            "observed": "No <meta name=\"description\"> detected in rendered DOM",
+            "expected": "A page-specific meta description (approximately 120–160 characters is a useful practical guideline)"
+          },
+          "explanation": {
+            "problem": "No meta description was found in the rendered document head.",
+            "whyItMatters": "Your page does not currently provide a description specifically written for search-result snippets. Search engines may generate their own snippet from the page content. Approximately 120–160 characters is a useful practical guideline.",
+            "observedEvidence": "Element: meta[name=\"description\"], Observed: No <meta name=\"description\"> detected in rendered DOM"
+          },
+          "impact": "Search engine result snippet representation and search user clarity.",
+          "recommendation": "Add a page-specific meta description using the project's existing SEO configuration.",
+          "fixStrategy": "Declare one page-specific <meta name=\"description\" content=\"...\"> tag in the document <head> using the project's existing metadata architecture.",
+          "validation": [
+            "Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.",
+            "Verify the content attribute provides an accurate, non-empty summary of the page.",
+            "Ensure the description is not duplicated across multiple pages."
+          ],
+          "validationSteps": [
+            "Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.",
+            "Verify the content attribute provides an accurate, non-empty summary of the page.",
+            "Ensure the description is not duplicated across multiple pages."
+          ],
+          "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo meta description was found in the rendered document head.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[name=\"description\"], Observed: No <meta name=\"description\"> detected in rendered DOM\n\nTask:\nAdd a page-specific meta description using the project's existing SEO configuration.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.\n2. Verify the content attribute provides an accurate, non-empty summary of the page.\n3. Ensure the description is not duplicated across multiple pages.",
+          "frameworkAwareness": {
+            "detectedFramework": null,
+            "confidence": "none",
+            "evidenceSnippet": "No framework-specific signals detected"
+          }
+        },
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo meta description was found in the rendered document head.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[name=\"description\"], Observed: No <meta name=\"description\"> detected in rendered DOM\n\nTask:\nAdd a page-specific meta description using the project's existing SEO configuration.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.\n2. Verify the content attribute provides an accurate, non-empty summary of the page.\n3. Ensure the description is not duplicated across multiple pages.",
+        "fixStrategy": "Declare one page-specific <meta name=\"description\" content=\"...\"> tag in the document <head> using the project's existing metadata architecture.",
+        "validationSteps": [
+          "Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.",
+          "Verify the content attribute provides an accurate, non-empty summary of the page.",
+          "Ensure the description is not duplicated across multiple pages."
+        ],
         "issue": "Provide a meta description for search engine result snippets",
-        "whyItMatters": "Search engine result snippet presentation and click-through rate (CTR).",
+        "whyItMatters": "Your page does not currently provide a description specifically written for search-result snippets. Search engines may generate their own snippet from the page content. Approximately 120–160 characters is a useful practical guideline.",
         "estimatedImprovement": "Not quantified",
-        "estimatedPerformanceGain": "None (CTR & search snippet presentation)",
+        "estimatedPerformanceGain": "None (Search snippet representation & user clarity)",
         "priority": "high",
         "sourceAnalyzer": "seo",
         "estimatedBandwidthSaving": 0,
         "selector": "meta[name=\"description\"]",
-        "actualValue": "Missing (<meta name=\"description\"> tag absent)",
-        "expectedValue": "A descriptive meta description tag between 120 and 160 characters",
+        "actualValue": "No <meta name=\"description\"> detected in rendered DOM",
+        "expectedValue": "A page-specific meta description (approx 120-160 chars)",
         "reason": "Search engines use the meta description as the primary snippet preview in search result cards.",
-        "suggestedFixSummary": "Declare a <meta name=\"description\" content=\"...\"> tag (120-160 characters) in the page <head> section.",
+        "suggestedFixSummary": "Add a page-specific meta description using the project's existing SEO configuration.",
         "difficulty": "easy"
       },
       {
         "id": "REC_SEO_CANONICAL",
         "findingId": "REC_SEO_CANONICAL_001",
         "analyzer": "seo",
-        "title": "Provide a canonical URL link tag",
-        "description": "Canonical link declarations notify search crawlers of preferred page targets, avoiding duplicate index penalties.",
+        "title": "Provide a valid canonical URL link tag",
+        "description": "Canonical link declarations notify search crawlers of preferred page targets, avoiding duplicate index penalties across URL variants.",
         "category": "seo",
         "severity": "medium",
         "confidence": "high",
         "estimateType": "not_quantified",
         "finding": {
-          "description": "No <link rel=\"canonical\"> element found in document <head>",
+          "description": "No <link rel=\"canonical\"> element was found in the rendered document head.",
           "metric": "SEO"
         },
-        "evidence": "No link element with rel=\"canonical\" found in <head>",
+        "evidence": "No <link rel=\"canonical\"> element was found in the rendered document head.",
         "evidenceDetails": [
           {
-            "type": "missing-link-tag",
+            "type": "canonical-link",
             "selector": "link[rel=\"canonical\"]",
             "details": {
-              "found": 0
+              "observed": "No <link rel=\"canonical\"> element was found in the rendered document head.",
+              "count": 0
             }
           }
         ],
         "potentialImpact": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
         "estimatedSavings": null,
         "measuredImprovement": null,
-        "suggestedFix": "Declare <link rel=\"canonical\" href=\"https://example.com/authoritative-path\"> in the <head> of every page.",
+        "suggestedFix": "Add the page's intended canonical URL using the project's existing SEO configuration. Verify the authoritative URL before deployment.",
         "estimatedDifficulty": "easy",
         "estimatedImplementationTime": "15 mins",
         "refUrl": "https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls",
-        "issue": "Provide a canonical URL link tag",
-        "whyItMatters": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
+        "standardFinding": {
+          "id": "REC_SEO_CANONICAL_001",
+          "category": "seo",
+          "rule": "canonical-url",
+          "severity": "medium",
+          "status": "fail",
+          "confidence": "verified",
+          "url": "https://example.com",
+          "evidence": {
+            "url": "https://example.com",
+            "element": "link[rel=\"canonical\"]",
+            "selector": "link[rel=\"canonical\"]",
+            "observed": "No <link rel=\"canonical\"> element was found in the rendered document head.",
+            "expected": "One intended <link rel=\"canonical\" href=\"...\"> declaration in <head>"
+          },
+          "explanation": {
+            "problem": "No <link rel=\"canonical\"> element was found in the rendered document head.",
+            "whyItMatters": "A canonical URL tells search engines which URL should be treated as the preferred version when equivalent URLs exist.",
+            "observedEvidence": "Element: link[rel=\"canonical\"], Observed: No <link rel=\"canonical\"> element was found in the rendered document head."
+          },
+          "impact": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
+          "recommendation": "Add the page's intended canonical URL using the project's existing SEO configuration. Verify the authoritative URL before deployment.",
+          "fixStrategy": "Add the page's intended canonical URL using the project's existing SEO configuration. Determine the authoritative URL from the project's actual routing and domain configuration. Verify the authoritative URL before deployment.",
+          "validation": [
+            "Inspect the rendered page <head> and confirm exactly one <link rel=\"canonical\"> exists.",
+            "Verify the href is an absolute URL and matches the authoritative URL for the page.",
+            "Confirm no duplicate or conflicting canonical links are present."
+          ],
+          "validationSteps": [
+            "Inspect the rendered page <head> and confirm exactly one <link rel=\"canonical\"> exists.",
+            "Verify the href is an absolute URL and matches the authoritative URL for the page.",
+            "Confirm no duplicate or conflicting canonical links are present."
+          ],
+          "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo <link rel=\"canonical\"> element was found in the rendered document head.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: link[rel=\"canonical\"], Observed: No <link rel=\"canonical\"> element was found in the rendered document head.\n\nTask:\nAdd the page's intended canonical URL using the project's existing SEO configuration. Verify the authoritative URL before deployment.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm exactly one <link rel=\"canonical\"> exists.\n2. Verify the href is an absolute URL and matches the authoritative URL for the page.\n3. Confirm no duplicate or conflicting canonical links are present.",
+          "frameworkAwareness": {
+            "detectedFramework": null,
+            "confidence": "none",
+            "evidenceSnippet": "No framework-specific signals detected"
+          }
+        },
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo canonical URL is declared on the affected page.\n\nEvidence:\nNo <link rel=\"canonical\"> element was found in the rendered document head.\n\nTask:\nAdd the page's intended canonical URL using the project's existing SEO/metadata architecture.\n\nImportant:\nDetermine the authoritative URL from the project's actual routing and domain configuration.\nDo not use a placeholder or guessed URL.\n\nConstraints:\n- Do not introduce a new SEO dependency.\n- Do not create duplicate canonical tags.\n- Do not modify unrelated UI or functionality.\n- Reuse the existing SEO/metadata architecture.\n\nValidation:\nRender the affected page and confirm exactly one valid canonical URL is present.",
+        "fixStrategy": "Add the page's intended canonical URL using the project's existing SEO configuration. Determine the authoritative URL from the project's actual routing and domain configuration. Verify the authoritative URL before deployment.",
+        "validationSteps": [
+          "Inspect the rendered page <head> and confirm exactly one <link rel=\"canonical\"> exists.",
+          "Verify the href is an absolute URL and matches the authoritative URL for the page.",
+          "Confirm no duplicate or conflicting canonical links are present."
+        ],
+        "issue": "Provide a valid canonical URL link tag",
+        "whyItMatters": "A canonical URL tells search engines which URL should be treated as the preferred version when equivalent URLs exist.",
         "estimatedImprovement": "Not quantified",
         "estimatedPerformanceGain": "None",
         "priority": "medium",
         "sourceAnalyzer": "seo",
         "estimatedBandwidthSaving": 0,
         "selector": "link[rel=\"canonical\"]",
-        "actualValue": "Missing (<link rel=\"canonical\"> absent)",
-        "expectedValue": "<link rel=\"canonical\" href=\"...\"> pointing to authoritative canonical URL",
+        "actualValue": "No <link rel=\"canonical\"> element was found in the rendered document head.",
+        "expectedValue": "One intended <link rel=\"canonical\" href=\"...\"> declaration in <head>",
         "reason": "Canonical link declarations prevent duplicate content indexing penalties across query-parameter variations.",
-        "suggestedFixSummary": "Declare <link rel=\"canonical\" href=\"https://example.com/authoritative-path\"> in the <head> of every page.",
+        "suggestedFixSummary": "Add the page's intended canonical URL using the project's existing SEO configuration. Verify the authoritative URL before deployment.",
+        "difficulty": "easy"
+      },
+      {
+        "id": "REC_SEO_OPEN_GRAPH",
+        "findingId": "REC_SEO_OPEN_GRAPH_001",
+        "analyzer": "seo",
+        "title": "Provide essential Open Graph metadata for social sharing",
+        "description": "Open Graph tags control how your links look when shared on LinkedIn, Facebook, Slack, and messaging apps.",
+        "category": "seo",
+        "severity": "low",
+        "confidence": "high",
+        "estimateType": "not_quantified",
+        "finding": {
+          "description": "The page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.",
+          "metric": "SEO"
+        },
+        "evidence": "0 / 5 present (0%). Missing: og:title, og:description, og:image, og:url, og:type",
+        "evidenceDetails": [
+          {
+            "type": "open-graph",
+            "details": {
+              "title": null,
+              "description": null,
+              "image": null,
+              "url": null,
+              "type": null,
+              "siteName": null,
+              "missingTags": [
+                "og:title",
+                "og:description",
+                "og:image",
+                "og:url",
+                "og:type"
+              ],
+              "properties": [
+                {
+                  "property": "og:title",
+                  "present": false,
+                  "value": null
+                },
+                {
+                  "property": "og:description",
+                  "present": false,
+                  "value": null
+                },
+                {
+                  "property": "og:image",
+                  "present": false,
+                  "value": null
+                },
+                {
+                  "property": "og:url",
+                  "present": false,
+                  "value": null
+                },
+                {
+                  "property": "og:type",
+                  "present": false,
+                  "value": null
+                }
+              ],
+              "presentCount": 0,
+              "totalCount": 5,
+              "coveragePercentage": 0
+            }
+          }
+        ],
+        "potentialImpact": "Social media preview card appearance and link click-through rate.",
+        "estimatedSavings": null,
+        "measuredImprovement": null,
+        "suggestedFix": "Add the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.",
+        "estimatedDifficulty": "easy",
+        "estimatedImplementationTime": "15 mins",
+        "refUrl": "https://ogp.me/",
+        "standardFinding": {
+          "id": "REC_SEO_OPEN_GRAPH_001",
+          "category": "seo",
+          "rule": "open-graph-tags",
+          "severity": "low",
+          "status": "fail",
+          "confidence": "verified",
+          "url": "https://example.com",
+          "evidence": {
+            "url": "https://example.com",
+            "element": "meta[property^=\"og:\"]",
+            "selector": "meta[property^=\"og:\"]",
+            "observed": "0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]",
+            "expected": "Full Open Graph tag suite (og:title, og:description, og:image, og:url, og:type)"
+          },
+          "explanation": {
+            "problem": "The page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.",
+            "whyItMatters": "When users share your page link on social platforms or messaging apps, missing Open Graph tags result in blank previews without an image, title, or description, significantly reducing engagement.",
+            "observedEvidence": "Element: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]"
+          },
+          "impact": "Social media preview card appearance and link click-through rate.",
+          "recommendation": "Add the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.",
+          "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, and <meta property=\"og:url\"> in the document <head>.",
+          "validation": [
+            "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+            "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
+            "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+          ],
+          "validationSteps": [
+            "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+            "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
+            "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+          ],
+          "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector).",
+          "frameworkAwareness": {
+            "detectedFramework": null,
+            "confidence": "none",
+            "evidenceSnippet": "No framework-specific signals detected"
+          }
+        },
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector).",
+        "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, and <meta property=\"og:url\"> in the document <head>.",
+        "validationSteps": [
+          "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+          "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
+          "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+        ],
+        "issue": "Provide essential Open Graph metadata for social sharing",
+        "whyItMatters": "When users share your page link on social platforms or messaging apps, missing Open Graph tags result in blank previews without an image, title, or description, significantly reducing engagement.",
+        "estimatedImprovement": "Not quantified",
+        "estimatedPerformanceGain": "None",
+        "priority": "low",
+        "sourceAnalyzer": "seo",
+        "estimatedBandwidthSaving": 0,
+        "selector": "meta[property^=\"og:\"]",
+        "actualValue": "0 / 5 present (0%)",
+        "expectedValue": "Complete OG tags (og:title, og:description, og:image, og:url, og:type)",
+        "reason": "Social platforms compile rich link preview cards from Open Graph metadata.",
+        "suggestedFixSummary": "Add the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.",
+        "difficulty": "easy"
+      },
+      {
+        "id": "REC_SEO_TWITTER_CARD",
+        "findingId": "REC_SEO_TWITTER_CARD_001",
+        "analyzer": "seo",
+        "title": "Provide Twitter Card metadata for X / Twitter link previews",
+        "description": "Twitter card tags ensure shared links generate rich summary cards on X / Twitter.",
+        "category": "seo",
+        "severity": "low",
+        "confidence": "low",
+        "estimateType": "not_quantified",
+        "finding": {
+          "description": "The page is missing Twitter Card tags: twitter:card, twitter:title, twitter:description, twitter:image.",
+          "metric": "SEO"
+        },
+        "evidence": "Missing: twitter:card, twitter:title, twitter:description, twitter:image",
+        "evidenceDetails": [
+          {
+            "type": "twitter-card",
+            "details": {
+              "card": null,
+              "title": null,
+              "description": null,
+              "image": null,
+              "site": null,
+              "missingTags": [
+                "twitter:card",
+                "twitter:title",
+                "twitter:description",
+                "twitter:image"
+              ],
+              "coveragePercentage": 0
+            }
+          }
+        ],
+        "potentialImpact": "X / Twitter link preview appearance and engagement.",
+        "estimatedSavings": null,
+        "measuredImprovement": null,
+        "suggestedFix": "Add <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>.",
+        "estimatedDifficulty": "easy",
+        "estimatedImplementationTime": "15 mins",
+        "refUrl": "https://developer.x.com/en/docs/x-for-websites/cards/overview/abouts-cards",
+        "standardFinding": {
+          "id": "REC_SEO_TWITTER_CARD_001",
+          "category": "seo",
+          "rule": "twitter-card-tags",
+          "severity": "low",
+          "status": "fail",
+          "confidence": "verified",
+          "url": "https://example.com",
+          "evidence": {
+            "url": "https://example.com",
+            "element": "meta[name^=\"twitter:\"]",
+            "selector": "meta[name^=\"twitter:\"]",
+            "observed": "Missing tags: twitter:card, twitter:title, twitter:description, twitter:image (0% coverage)",
+            "expected": "Complete Twitter Card tag suite"
+          },
+          "explanation": {
+            "problem": "The page is missing Twitter Card tags: twitter:card, twitter:title, twitter:description, twitter:image.",
+            "whyItMatters": "Without twitter:card metadata, tweets linking to your website will render as plain text links instead of rich visual media preview cards.",
+            "observedEvidence": "Element: meta[name^=\"twitter:\"], Observed: Missing tags: twitter:card, twitter:title, twitter:description, twitter:image (0% coverage)"
+          },
+          "impact": "X / Twitter link preview appearance and engagement.",
+          "recommendation": "Add <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>.",
+          "fixStrategy": "Declare twitter:card, twitter:title, twitter:description, and twitter:image in document <head>.",
+          "validation": [
+            "Inspect the rendered page <head> and confirm twitter:card is declared.",
+            "Confirm twitter:title, twitter:description, and twitter:image are present.",
+            "Verify twitter:image is an absolute URL."
+          ],
+          "validationSteps": [
+            "Inspect the rendered page <head> and confirm twitter:card is declared.",
+            "Confirm twitter:title, twitter:description, and twitter:image are present.",
+            "Verify twitter:image is an absolute URL."
+          ],
+          "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page is missing Twitter Card tags: twitter:card, twitter:title, twitter:description, twitter:image.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[name^=\"twitter:\"], Observed: Missing tags: twitter:card, twitter:title, twitter:description, twitter:image (0% coverage)\n\nTask:\nAdd <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm twitter:card is declared.\n2. Confirm twitter:title, twitter:description, and twitter:image are present.\n3. Verify twitter:image is an absolute URL.",
+          "frameworkAwareness": {
+            "detectedFramework": null,
+            "confidence": "none",
+            "evidenceSnippet": "No framework-specific signals detected"
+          }
+        },
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page is missing Twitter Card tags: twitter:card, twitter:title, twitter:description, twitter:image.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[name^=\"twitter:\"], Observed: Missing tags: twitter:card, twitter:title, twitter:description, twitter:image (0% coverage)\n\nTask:\nAdd <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm twitter:card is declared.\n2. Confirm twitter:title, twitter:description, and twitter:image are present.\n3. Verify twitter:image is an absolute URL.",
+        "fixStrategy": "Declare twitter:card, twitter:title, twitter:description, and twitter:image in document <head>.",
+        "validationSteps": [
+          "Inspect the rendered page <head> and confirm twitter:card is declared.",
+          "Confirm twitter:title, twitter:description, and twitter:image are present.",
+          "Verify twitter:image is an absolute URL."
+        ],
+        "issue": "Provide Twitter Card metadata for X / Twitter link previews",
+        "whyItMatters": "Without twitter:card metadata, tweets linking to your website will render as plain text links instead of rich visual media preview cards.",
+        "estimatedImprovement": "Not quantified",
+        "estimatedPerformanceGain": "None",
+        "priority": "low",
+        "sourceAnalyzer": "seo",
+        "estimatedBandwidthSaving": 0,
+        "selector": "meta[name^=\"twitter:\"]",
+        "actualValue": "0% coverage",
+        "expectedValue": "Complete Twitter tags",
+        "reason": "X / Twitter reads twitter:card meta tags to display media preview cards.",
+        "suggestedFixSummary": "Add <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>.",
         "difficulty": "easy"
       }
     ],
@@ -1430,116 +2406,449 @@
         "findingId": "REC_SEO_META_DESC_001",
         "analyzer": "seo",
         "title": "Provide a meta description for search engine result snippets",
-        "description": "The meta description summarizes page content in search engine result pages, improving user click-through rates.",
+        "description": "The meta description summarizes page content in search engine result pages, directly influencing search user click-through rates.",
         "category": "seo",
         "severity": "medium",
         "confidence": "high",
         "estimateType": "not_quantified",
         "finding": {
-          "description": "No <meta name=\"description\"> tag was found in document <head>",
-          "metric": "SEO"
+          "description": "No meta description was found in the rendered document head.",
+          "metric": "SEO",
+          "value": 0,
+          "unit": "chars"
         },
-        "evidence": "No <meta name=\"description\"> element detected in document <head>",
+        "evidence": "No <meta name=\"description\"> detected in rendered DOM",
         "evidenceDetails": [
           {
-            "type": "missing-meta-tag",
+            "type": "meta-description",
             "selector": "meta[name=\"description\"]",
             "details": {
-              "found": 0
+              "observed": "No <meta name=\"description\"> detected in rendered DOM",
+              "length": 0,
+              "count": 0
             }
           }
         ],
-        "potentialImpact": "Search engine result snippet presentation and click-through rate (CTR).",
+        "potentialImpact": "Search engine result snippet representation and search user clarity.",
         "estimatedSavings": null,
         "measuredImprovement": null,
-        "suggestedFix": "Declare a <meta name=\"description\" content=\"...\"> tag (120-160 characters) in the page <head> section.",
+        "suggestedFix": "Add a page-specific meta description using the project's existing SEO configuration.",
         "estimatedDifficulty": "easy",
         "estimatedImplementationTime": "15 mins",
         "refUrl": "https://developers.google.com/search/docs/appearance/snippet",
+        "standardFinding": {
+          "id": "REC_SEO_META_DESC_001",
+          "category": "seo",
+          "rule": "meta-description",
+          "severity": "medium",
+          "status": "fail",
+          "confidence": "verified",
+          "url": "https://example.com",
+          "evidence": {
+            "url": "https://example.com",
+            "element": "meta[name=\"description\"]",
+            "selector": "meta[name=\"description\"]",
+            "observed": "No <meta name=\"description\"> detected in rendered DOM",
+            "expected": "A page-specific meta description (approximately 120–160 characters is a useful practical guideline)"
+          },
+          "explanation": {
+            "problem": "No meta description was found in the rendered document head.",
+            "whyItMatters": "Your page does not currently provide a description specifically written for search-result snippets. Search engines may generate their own snippet from the page content. Approximately 120–160 characters is a useful practical guideline.",
+            "observedEvidence": "Element: meta[name=\"description\"], Observed: No <meta name=\"description\"> detected in rendered DOM"
+          },
+          "impact": "Search engine result snippet representation and search user clarity.",
+          "recommendation": "Add a page-specific meta description using the project's existing SEO configuration.",
+          "fixStrategy": "Declare one page-specific <meta name=\"description\" content=\"...\"> tag in the document <head> using the project's existing metadata architecture.",
+          "validation": [
+            "Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.",
+            "Verify the content attribute provides an accurate, non-empty summary of the page.",
+            "Ensure the description is not duplicated across multiple pages."
+          ],
+          "validationSteps": [
+            "Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.",
+            "Verify the content attribute provides an accurate, non-empty summary of the page.",
+            "Ensure the description is not duplicated across multiple pages."
+          ],
+          "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo meta description was found in the rendered document head.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[name=\"description\"], Observed: No <meta name=\"description\"> detected in rendered DOM\n\nTask:\nAdd a page-specific meta description using the project's existing SEO configuration.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.\n2. Verify the content attribute provides an accurate, non-empty summary of the page.\n3. Ensure the description is not duplicated across multiple pages.",
+          "frameworkAwareness": {
+            "detectedFramework": null,
+            "confidence": "none",
+            "evidenceSnippet": "No framework-specific signals detected"
+          }
+        },
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo meta description was found in the rendered document head.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[name=\"description\"], Observed: No <meta name=\"description\"> detected in rendered DOM\n\nTask:\nAdd a page-specific meta description using the project's existing SEO configuration.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.\n2. Verify the content attribute provides an accurate, non-empty summary of the page.\n3. Ensure the description is not duplicated across multiple pages.",
+        "fixStrategy": "Declare one page-specific <meta name=\"description\" content=\"...\"> tag in the document <head> using the project's existing metadata architecture.",
+        "validationSteps": [
+          "Inspect the rendered page <head> and confirm exactly one <meta name=\"description\"> exists.",
+          "Verify the content attribute provides an accurate, non-empty summary of the page.",
+          "Ensure the description is not duplicated across multiple pages."
+        ],
         "issue": "Provide a meta description for search engine result snippets",
-        "whyItMatters": "Search engine result snippet presentation and click-through rate (CTR).",
+        "whyItMatters": "Your page does not currently provide a description specifically written for search-result snippets. Search engines may generate their own snippet from the page content. Approximately 120–160 characters is a useful practical guideline.",
         "estimatedImprovement": "Not quantified",
-        "estimatedPerformanceGain": "None (CTR & search snippet presentation)",
+        "estimatedPerformanceGain": "None (Search snippet representation & user clarity)",
         "priority": "high",
         "sourceAnalyzer": "seo",
         "estimatedBandwidthSaving": 0,
         "selector": "meta[name=\"description\"]",
-        "actualValue": "Missing (<meta name=\"description\"> tag absent)",
-        "expectedValue": "A descriptive meta description tag between 120 and 160 characters",
+        "actualValue": "No <meta name=\"description\"> detected in rendered DOM",
+        "expectedValue": "A page-specific meta description (approx 120-160 chars)",
         "reason": "Search engines use the meta description as the primary snippet preview in search result cards."
       },
       {
         "id": "REC_SEO_CANONICAL",
         "findingId": "REC_SEO_CANONICAL_001",
         "analyzer": "seo",
-        "title": "Provide a canonical URL link tag",
-        "description": "Canonical link declarations notify search crawlers of preferred page targets, avoiding duplicate index penalties.",
+        "title": "Provide a valid canonical URL link tag",
+        "description": "Canonical link declarations notify search crawlers of preferred page targets, avoiding duplicate index penalties across URL variants.",
         "category": "seo",
         "severity": "medium",
         "confidence": "high",
         "estimateType": "not_quantified",
         "finding": {
-          "description": "No <link rel=\"canonical\"> element found in document <head>",
+          "description": "No <link rel=\"canonical\"> element was found in the rendered document head.",
           "metric": "SEO"
         },
-        "evidence": "No link element with rel=\"canonical\" found in <head>",
+        "evidence": "No <link rel=\"canonical\"> element was found in the rendered document head.",
         "evidenceDetails": [
           {
-            "type": "missing-link-tag",
+            "type": "canonical-link",
             "selector": "link[rel=\"canonical\"]",
             "details": {
-              "found": 0
+              "observed": "No <link rel=\"canonical\"> element was found in the rendered document head.",
+              "count": 0
             }
           }
         ],
         "potentialImpact": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
         "estimatedSavings": null,
         "measuredImprovement": null,
-        "suggestedFix": "Declare <link rel=\"canonical\" href=\"https://example.com/authoritative-path\"> in the <head> of every page.",
+        "suggestedFix": "Add the page's intended canonical URL using the project's existing SEO configuration. Verify the authoritative URL before deployment.",
         "estimatedDifficulty": "easy",
         "estimatedImplementationTime": "15 mins",
         "refUrl": "https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls",
-        "issue": "Provide a canonical URL link tag",
-        "whyItMatters": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
+        "standardFinding": {
+          "id": "REC_SEO_CANONICAL_001",
+          "category": "seo",
+          "rule": "canonical-url",
+          "severity": "medium",
+          "status": "fail",
+          "confidence": "verified",
+          "url": "https://example.com",
+          "evidence": {
+            "url": "https://example.com",
+            "element": "link[rel=\"canonical\"]",
+            "selector": "link[rel=\"canonical\"]",
+            "observed": "No <link rel=\"canonical\"> element was found in the rendered document head.",
+            "expected": "One intended <link rel=\"canonical\" href=\"...\"> declaration in <head>"
+          },
+          "explanation": {
+            "problem": "No <link rel=\"canonical\"> element was found in the rendered document head.",
+            "whyItMatters": "A canonical URL tells search engines which URL should be treated as the preferred version when equivalent URLs exist.",
+            "observedEvidence": "Element: link[rel=\"canonical\"], Observed: No <link rel=\"canonical\"> element was found in the rendered document head."
+          },
+          "impact": "Consolidates duplicate URL indexing signals and avoids search ranking fragmentation.",
+          "recommendation": "Add the page's intended canonical URL using the project's existing SEO configuration. Verify the authoritative URL before deployment.",
+          "fixStrategy": "Add the page's intended canonical URL using the project's existing SEO configuration. Determine the authoritative URL from the project's actual routing and domain configuration. Verify the authoritative URL before deployment.",
+          "validation": [
+            "Inspect the rendered page <head> and confirm exactly one <link rel=\"canonical\"> exists.",
+            "Verify the href is an absolute URL and matches the authoritative URL for the page.",
+            "Confirm no duplicate or conflicting canonical links are present."
+          ],
+          "validationSteps": [
+            "Inspect the rendered page <head> and confirm exactly one <link rel=\"canonical\"> exists.",
+            "Verify the href is an absolute URL and matches the authoritative URL for the page.",
+            "Confirm no duplicate or conflicting canonical links are present."
+          ],
+          "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo <link rel=\"canonical\"> element was found in the rendered document head.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: link[rel=\"canonical\"], Observed: No <link rel=\"canonical\"> element was found in the rendered document head.\n\nTask:\nAdd the page's intended canonical URL using the project's existing SEO configuration. Verify the authoritative URL before deployment.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm exactly one <link rel=\"canonical\"> exists.\n2. Verify the href is an absolute URL and matches the authoritative URL for the page.\n3. Confirm no duplicate or conflicting canonical links are present.",
+          "frameworkAwareness": {
+            "detectedFramework": null,
+            "confidence": "none",
+            "evidenceSnippet": "No framework-specific signals detected"
+          }
+        },
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo canonical URL is declared on the affected page.\n\nEvidence:\nNo <link rel=\"canonical\"> element was found in the rendered document head.\n\nTask:\nAdd the page's intended canonical URL using the project's existing SEO/metadata architecture.\n\nImportant:\nDetermine the authoritative URL from the project's actual routing and domain configuration.\nDo not use a placeholder or guessed URL.\n\nConstraints:\n- Do not introduce a new SEO dependency.\n- Do not create duplicate canonical tags.\n- Do not modify unrelated UI or functionality.\n- Reuse the existing SEO/metadata architecture.\n\nValidation:\nRender the affected page and confirm exactly one valid canonical URL is present.",
+        "fixStrategy": "Add the page's intended canonical URL using the project's existing SEO configuration. Determine the authoritative URL from the project's actual routing and domain configuration. Verify the authoritative URL before deployment.",
+        "validationSteps": [
+          "Inspect the rendered page <head> and confirm exactly one <link rel=\"canonical\"> exists.",
+          "Verify the href is an absolute URL and matches the authoritative URL for the page.",
+          "Confirm no duplicate or conflicting canonical links are present."
+        ],
+        "issue": "Provide a valid canonical URL link tag",
+        "whyItMatters": "A canonical URL tells search engines which URL should be treated as the preferred version when equivalent URLs exist.",
         "estimatedImprovement": "Not quantified",
         "estimatedPerformanceGain": "None",
         "priority": "medium",
         "sourceAnalyzer": "seo",
         "estimatedBandwidthSaving": 0,
         "selector": "link[rel=\"canonical\"]",
-        "actualValue": "Missing (<link rel=\"canonical\"> absent)",
-        "expectedValue": "<link rel=\"canonical\" href=\"...\"> pointing to authoritative canonical URL",
+        "actualValue": "No <link rel=\"canonical\"> element was found in the rendered document head.",
+        "expectedValue": "One intended <link rel=\"canonical\" href=\"...\"> declaration in <head>",
         "reason": "Canonical link declarations prevent duplicate content indexing penalties across query-parameter variations."
       }
     ],
     "highImpact": [],
     "mediumImpact": [],
-    "longTerm": [],
+    "longTerm": [
+      {
+        "id": "REC_SEO_OPEN_GRAPH",
+        "findingId": "REC_SEO_OPEN_GRAPH_001",
+        "analyzer": "seo",
+        "title": "Provide essential Open Graph metadata for social sharing",
+        "description": "Open Graph tags control how your links look when shared on LinkedIn, Facebook, Slack, and messaging apps.",
+        "category": "seo",
+        "severity": "low",
+        "confidence": "high",
+        "estimateType": "not_quantified",
+        "finding": {
+          "description": "The page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.",
+          "metric": "SEO"
+        },
+        "evidence": "0 / 5 present (0%). Missing: og:title, og:description, og:image, og:url, og:type",
+        "evidenceDetails": [
+          {
+            "type": "open-graph",
+            "details": {
+              "title": null,
+              "description": null,
+              "image": null,
+              "url": null,
+              "type": null,
+              "siteName": null,
+              "missingTags": [
+                "og:title",
+                "og:description",
+                "og:image",
+                "og:url",
+                "og:type"
+              ],
+              "properties": [
+                {
+                  "property": "og:title",
+                  "present": false,
+                  "value": null
+                },
+                {
+                  "property": "og:description",
+                  "present": false,
+                  "value": null
+                },
+                {
+                  "property": "og:image",
+                  "present": false,
+                  "value": null
+                },
+                {
+                  "property": "og:url",
+                  "present": false,
+                  "value": null
+                },
+                {
+                  "property": "og:type",
+                  "present": false,
+                  "value": null
+                }
+              ],
+              "presentCount": 0,
+              "totalCount": 5,
+              "coveragePercentage": 0
+            }
+          }
+        ],
+        "potentialImpact": "Social media preview card appearance and link click-through rate.",
+        "estimatedSavings": null,
+        "measuredImprovement": null,
+        "suggestedFix": "Add the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.",
+        "estimatedDifficulty": "easy",
+        "estimatedImplementationTime": "15 mins",
+        "refUrl": "https://ogp.me/",
+        "standardFinding": {
+          "id": "REC_SEO_OPEN_GRAPH_001",
+          "category": "seo",
+          "rule": "open-graph-tags",
+          "severity": "low",
+          "status": "fail",
+          "confidence": "verified",
+          "url": "https://example.com",
+          "evidence": {
+            "url": "https://example.com",
+            "element": "meta[property^=\"og:\"]",
+            "selector": "meta[property^=\"og:\"]",
+            "observed": "0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]",
+            "expected": "Full Open Graph tag suite (og:title, og:description, og:image, og:url, og:type)"
+          },
+          "explanation": {
+            "problem": "The page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.",
+            "whyItMatters": "When users share your page link on social platforms or messaging apps, missing Open Graph tags result in blank previews without an image, title, or description, significantly reducing engagement.",
+            "observedEvidence": "Element: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]"
+          },
+          "impact": "Social media preview card appearance and link click-through rate.",
+          "recommendation": "Add the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.",
+          "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, and <meta property=\"og:url\"> in the document <head>.",
+          "validation": [
+            "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+            "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
+            "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+          ],
+          "validationSteps": [
+            "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+            "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
+            "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+          ],
+          "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector).",
+          "frameworkAwareness": {
+            "detectedFramework": null,
+            "confidence": "none",
+            "evidenceSnippet": "No framework-specific signals detected"
+          }
+        },
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector).",
+        "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, and <meta property=\"og:url\"> in the document <head>.",
+        "validationSteps": [
+          "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+          "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
+          "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+        ],
+        "issue": "Provide essential Open Graph metadata for social sharing",
+        "whyItMatters": "When users share your page link on social platforms or messaging apps, missing Open Graph tags result in blank previews without an image, title, or description, significantly reducing engagement.",
+        "estimatedImprovement": "Not quantified",
+        "estimatedPerformanceGain": "None",
+        "priority": "low",
+        "sourceAnalyzer": "seo",
+        "estimatedBandwidthSaving": 0,
+        "selector": "meta[property^=\"og:\"]",
+        "actualValue": "0 / 5 present (0%)",
+        "expectedValue": "Complete OG tags (og:title, og:description, og:image, og:url, og:type)",
+        "reason": "Social platforms compile rich link preview cards from Open Graph metadata."
+      },
+      {
+        "id": "REC_SEO_TWITTER_CARD",
+        "findingId": "REC_SEO_TWITTER_CARD_001",
+        "analyzer": "seo",
+        "title": "Provide Twitter Card metadata for X / Twitter link previews",
+        "description": "Twitter card tags ensure shared links generate rich summary cards on X / Twitter.",
+        "category": "seo",
+        "severity": "low",
+        "confidence": "low",
+        "estimateType": "not_quantified",
+        "finding": {
+          "description": "The page is missing Twitter Card tags: twitter:card, twitter:title, twitter:description, twitter:image.",
+          "metric": "SEO"
+        },
+        "evidence": "Missing: twitter:card, twitter:title, twitter:description, twitter:image",
+        "evidenceDetails": [
+          {
+            "type": "twitter-card",
+            "details": {
+              "card": null,
+              "title": null,
+              "description": null,
+              "image": null,
+              "site": null,
+              "missingTags": [
+                "twitter:card",
+                "twitter:title",
+                "twitter:description",
+                "twitter:image"
+              ],
+              "coveragePercentage": 0
+            }
+          }
+        ],
+        "potentialImpact": "X / Twitter link preview appearance and engagement.",
+        "estimatedSavings": null,
+        "measuredImprovement": null,
+        "suggestedFix": "Add <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>.",
+        "estimatedDifficulty": "easy",
+        "estimatedImplementationTime": "15 mins",
+        "refUrl": "https://developer.x.com/en/docs/x-for-websites/cards/overview/abouts-cards",
+        "standardFinding": {
+          "id": "REC_SEO_TWITTER_CARD_001",
+          "category": "seo",
+          "rule": "twitter-card-tags",
+          "severity": "low",
+          "status": "fail",
+          "confidence": "verified",
+          "url": "https://example.com",
+          "evidence": {
+            "url": "https://example.com",
+            "element": "meta[name^=\"twitter:\"]",
+            "selector": "meta[name^=\"twitter:\"]",
+            "observed": "Missing tags: twitter:card, twitter:title, twitter:description, twitter:image (0% coverage)",
+            "expected": "Complete Twitter Card tag suite"
+          },
+          "explanation": {
+            "problem": "The page is missing Twitter Card tags: twitter:card, twitter:title, twitter:description, twitter:image.",
+            "whyItMatters": "Without twitter:card metadata, tweets linking to your website will render as plain text links instead of rich visual media preview cards.",
+            "observedEvidence": "Element: meta[name^=\"twitter:\"], Observed: Missing tags: twitter:card, twitter:title, twitter:description, twitter:image (0% coverage)"
+          },
+          "impact": "X / Twitter link preview appearance and engagement.",
+          "recommendation": "Add <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>.",
+          "fixStrategy": "Declare twitter:card, twitter:title, twitter:description, and twitter:image in document <head>.",
+          "validation": [
+            "Inspect the rendered page <head> and confirm twitter:card is declared.",
+            "Confirm twitter:title, twitter:description, and twitter:image are present.",
+            "Verify twitter:image is an absolute URL."
+          ],
+          "validationSteps": [
+            "Inspect the rendered page <head> and confirm twitter:card is declared.",
+            "Confirm twitter:title, twitter:description, and twitter:image are present.",
+            "Verify twitter:image is an absolute URL."
+          ],
+          "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page is missing Twitter Card tags: twitter:card, twitter:title, twitter:description, twitter:image.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[name^=\"twitter:\"], Observed: Missing tags: twitter:card, twitter:title, twitter:description, twitter:image (0% coverage)\n\nTask:\nAdd <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm twitter:card is declared.\n2. Confirm twitter:title, twitter:description, and twitter:image are present.\n3. Verify twitter:image is an absolute URL.",
+          "frameworkAwareness": {
+            "detectedFramework": null,
+            "confidence": "none",
+            "evidenceSnippet": "No framework-specific signals detected"
+          }
+        },
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page is missing Twitter Card tags: twitter:card, twitter:title, twitter:description, twitter:image.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[name^=\"twitter:\"], Observed: Missing tags: twitter:card, twitter:title, twitter:description, twitter:image (0% coverage)\n\nTask:\nAdd <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and confirm twitter:card is declared.\n2. Confirm twitter:title, twitter:description, and twitter:image are present.\n3. Verify twitter:image is an absolute URL.",
+        "fixStrategy": "Declare twitter:card, twitter:title, twitter:description, and twitter:image in document <head>.",
+        "validationSteps": [
+          "Inspect the rendered page <head> and confirm twitter:card is declared.",
+          "Confirm twitter:title, twitter:description, and twitter:image are present.",
+          "Verify twitter:image is an absolute URL."
+        ],
+        "issue": "Provide Twitter Card metadata for X / Twitter link previews",
+        "whyItMatters": "Without twitter:card metadata, tweets linking to your website will render as plain text links instead of rich visual media preview cards.",
+        "estimatedImprovement": "Not quantified",
+        "estimatedPerformanceGain": "None",
+        "priority": "low",
+        "sourceAnalyzer": "seo",
+        "estimatedBandwidthSaving": 0,
+        "selector": "meta[name^=\"twitter:\"]",
+        "actualValue": "0% coverage",
+        "expectedValue": "Complete Twitter tags",
+        "reason": "X / Twitter reads twitter:card meta tags to display media preview cards."
+      }
+    ],
     "roadmap": [
-      "Step 1 [SEO]: Provide a meta description for search engine result snippets (EASY | Est Time: 15 mins) - Declare a <meta name=\"description\" content=\"...\"> tag (120-160 characters) in the page <head> section.",
-      "Step 2 [SEO]: Provide a canonical URL link tag (EASY | Est Time: 15 mins) - Declare <link rel=\"canonical\" href=\"https://example.com/authoritative-path\"> in the <head> of every page."
+      "Step 1 [SEO]: Provide a meta description for search engine result snippets (EASY | Est Time: 15 mins) - Add a page-specific meta description using the project's existing SEO configuration.",
+      "Step 2 [SEO]: Provide a valid canonical URL link tag (EASY | Est Time: 15 mins) - Add the page's intended canonical URL using the project's existing SEO configuration. Verify the authoritative URL before deployment.",
+      "Step 3 [SEO]: Provide essential Open Graph metadata for social sharing (EASY | Est Time: 15 mins) - Add the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.",
+      "Step 4 [SEO]: Provide Twitter Card metadata for X / Twitter link previews (EASY | Est Time: 15 mins) - Add <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>."
     ]
   },
   "summary": {
-    "overallHealthScore": 85,
+    "overallHealthScore": 83,
     "overallPerformanceGrade": "B",
-    "totalIssues": 2,
+    "totalIssues": 4,
     "criticalIssues": 0,
     "highIssues": 1,
     "mediumIssues": 1,
-    "lowIssues": 0,
+    "lowIssues": 2,
     "potentialPerformanceImprovement": "No major transfer savings estimated",
     "potentialBandwidthReduction": 0,
-    "estimatedTimeToFixEverything": "30 mins"
+    "estimatedTimeToFixEverything": "1.0 hours"
   },
-  "overallHealthScore": 85,
+  "overallHealthScore": 83,
   "overallPerformanceGrade": "B",
   "validationData": {
     "browserVersion": "Chrome/148.0.7778.97",
     "debugLogs": {
       "imageAnalyzer": {
-        "started": "2026-09-13T19:54:38.451Z",
-        "finished": "2026-09-13T19:54:38.453Z",
+        "started": "2026-09-15T20:28:18.594Z",
+        "finished": "2026-09-15T20:28:18.596Z",
         "executionTimeMs": 2,
         "errors": [
           "No images found on page."
@@ -1549,9 +2858,9 @@
         "confidence": "Low"
       },
       "cssAnalyzer": {
-        "started": "2026-09-13T19:54:38.453Z",
-        "finished": "2026-09-13T19:54:38.454Z",
-        "executionTimeMs": 1,
+        "started": "2026-09-15T20:28:18.596Z",
+        "finished": "2026-09-15T20:28:18.596Z",
+        "executionTimeMs": 0,
         "errors": [
           "Stylesheet elements detected in DOM but network resource timing was unavailable."
         ],
@@ -1560,8 +2869,8 @@
         "confidence": "High"
       },
       "jsAnalyzer": {
-        "started": "2026-09-13T19:54:38.454Z",
-        "finished": "2026-09-13T19:54:38.455Z",
+        "started": "2026-09-15T20:28:18.596Z",
+        "finished": "2026-09-15T20:28:18.597Z",
         "executionTimeMs": 1,
         "errors": [
           "No JavaScript resources found."
@@ -1571,23 +2880,21 @@
         "confidence": "Medium"
       },
       "seoAnalyzer": {
-        "started": "2026-09-13T19:54:38.455Z",
-        "finished": "2026-09-13T19:54:38.458Z",
-        "executionTimeMs": 3,
+        "started": "2026-09-15T20:28:18.597Z",
+        "finished": "2026-09-15T20:28:18.714Z",
+        "executionTimeMs": 117,
         "errors": [],
         "warnings": [
-          "Meta description tag is missing. Meta descriptions represent the default summary snippet on search engine listings.",
-          "Canonical URL link tag is missing. Canonical indicators eliminate duplicate indexing penalty risks.",
-          "Open Graph tags coverage is low (0%). Social media shares require OG metadata to compile rich listings.",
-          "JSON-LD Structured Data script missing. Providing Schema.org markup assists rich search snippet cards compiler."
+          "No meta description was found in the rendered document head. Your page does not currently provide a description specifically written for search-result snippets.",
+          "No canonical URL was found in the rendered document head. Canonical declarations tell search crawlers the preferred URL to index."
         ],
         "fallbackUsed": "NO",
         "confidence": "High"
       },
       "accessibilityAnalyzer": {
-        "started": "2026-09-13T19:54:38.458Z",
-        "finished": "2026-09-13T19:54:38.461Z",
-        "executionTimeMs": 3,
+        "started": "2026-09-15T20:28:18.714Z",
+        "finished": "2026-09-15T20:28:18.715Z",
+        "executionTimeMs": 1,
         "errors": [],
         "warnings": [
           "Skip navigation link was not detected. Skip links allow keyboard users to bypass layout header items."
@@ -1597,8 +2904,8 @@
       }
     },
     "screenshots": {
-      "fullPagePath": "C:\\Users\\itsak\\OneDrive\\Desktop\\Projects\\Perflens\\server\\temp\\screenshot_full_1789329278364.png",
-      "viewportPath": "C:\\Users\\itsak\\OneDrive\\Desktop\\Projects\\Perflens\\server\\temp\\screenshot_viewport_1789329278364.png"
+      "fullPagePath": "C:\\Users\\itsak\\OneDrive\\Desktop\\Projects\\Perflens\\server\\temp\\screenshot_full_1789504098513.png",
+      "viewportPath": "C:\\Users\\itsak\\OneDrive\\Desktop\\Projects\\Perflens\\server\\temp\\screenshot_viewport_1789504098513.png"
     },
     "resources": [
       {
@@ -1609,20 +2916,20 @@
         "contentType": "text/html",
         "transferSizeKb": 0.5,
         "cacheControl": "no-cache, no-store",
-        "durationMs": 219,
+        "durationMs": 498,
         "compression": "brotli",
         "httpVersion": "HTTP/1.1",
         "fromCache": false,
         "initiator": "other",
-        "startTimeMs": 62939975,
+        "startTimeMs": 12463828,
         "timingBreakdown": {
-          "dnsMs": 31,
-          "tcpMs": 91,
-          "tlsMs": 88,
-          "ttfbMs": 50,
+          "dnsMs": 190,
+          "tcpMs": 84,
+          "tlsMs": 81,
+          "ttfbMs": 53,
           "downloadMs": 0,
-          "startTimeMs": 62939975,
-          "durationMs": 219
+          "startTimeMs": 12463828,
+          "durationMs": 498
         }
       }
     ],
@@ -1732,16 +3039,88 @@
     },
     "seoAnalysis": {
       "summary": {
-        "seoScoreEstimate": 50,
+        "seoScoreEstimate": 60,
         "missingMetaDescription": true,
         "missingTitle": false,
         "missingCanonical": true,
         "missingViewport": false,
         "missingH1": false,
         "multipleH1": false,
+        "headingHierarchyValid": true,
         "openGraphCoverage": 0,
         "twitterCardCoverage": 0,
-        "structuredDataPresence": false
+        "structuredDataPresence": false,
+        "structuredDataValid": false,
+        "robotsTxtStatus": "missing",
+        "sitemapXmlStatus": "missing",
+        "sitemapStatus": "SITEMAP_NOT_FOUND",
+        "structuredDataStatus": "NOT_DETECTED",
+        "canonicalStatus": "MISSING",
+        "titleStatus": "VALID",
+        "metaDescriptionStatus": "MISSING",
+        "noindexDetected": false,
+        "scoreExplanation": {
+          "score": 60,
+          "maxScore": 100,
+          "breakdown": [
+            {
+              "name": "Document Title",
+              "score": 20,
+              "maxScore": 20,
+              "status": "PASS",
+              "explanation": "Title present (14 chars, within guideline)."
+            },
+            {
+              "name": "Meta Description",
+              "score": 0,
+              "maxScore": 20,
+              "status": "FAIL",
+              "explanation": "No <meta name=\"description\"> tag found in rendered document head."
+            },
+            {
+              "name": "Primary H1 Heading",
+              "score": 15,
+              "maxScore": 15,
+              "status": "PASS",
+              "explanation": "Primary <h1> element present in rendered DOM."
+            },
+            {
+              "name": "Mobile Viewport",
+              "score": 15,
+              "maxScore": 15,
+              "status": "PASS",
+              "explanation": "Mobile-responsive viewport meta tag declared."
+            },
+            {
+              "name": "Canonical Link",
+              "score": 0,
+              "maxScore": 10,
+              "status": "FAIL",
+              "explanation": "No valid absolute <link rel=\"canonical\"> found in rendered <head>."
+            },
+            {
+              "name": "Language Declaration",
+              "score": 10,
+              "maxScore": 10,
+              "status": "PASS",
+              "explanation": "HTML document lang attribute declared (\"en\")."
+            },
+            {
+              "name": "robots.txt Probe",
+              "score": 0,
+              "maxScore": 5,
+              "status": "FAIL",
+              "explanation": "robots.txt file missing or unreachable."
+            },
+            {
+              "name": "sitemap.xml Probe",
+              "score": 0,
+              "maxScore": 5,
+              "status": "FAIL",
+              "explanation": "sitemap.xml not found or returned invalid non-XML content."
+            }
+          ]
+        }
       },
       "seo": {
         "pageTitle": "Example Domain",
@@ -1766,7 +3145,27 @@
           "h3": [],
           "h4": [],
           "h5": [],
-          "h6": []
+          "h6": [],
+          "hasH1": true,
+          "h1Count": 1,
+          "multipleH1": false,
+          "isHierarchyValid": true,
+          "skippedLevels": []
+        },
+        "headingsHierarchy": {
+          "h1": [
+            "Example Domain"
+          ],
+          "h2": [],
+          "h3": [],
+          "h4": [],
+          "h5": [],
+          "h6": [],
+          "hasH1": true,
+          "h1Count": 1,
+          "multipleH1": false,
+          "isHierarchyValid": true,
+          "skippedLevels": []
         },
         "internalLinks": [],
         "externalLinks": [
@@ -1775,11 +3174,251 @@
         "brokenLinks": [],
         "hasRobotsTxt": false,
         "hasSitemapXml": false,
-        "structuredData": null,
+        "robotsTxtDetails": {
+          "status": "missing",
+          "statusCode": 404,
+          "sitemaps": [],
+          "disallowCount": 0,
+          "allowCount": 0,
+          "isMissing": true,
+          "isUnreachable": false,
+          "isInvalid": false
+        },
+        "sitemapXmlDetails": {
+          "status": "missing",
+          "sitemapStatus": "SITEMAP_NOT_FOUND",
+          "statusCode": 404,
+          "urlCount": 0,
+          "isSitemapIndex": false,
+          "url": "https://example.com/sitemap.xml",
+          "isMissing": true,
+          "isUnreachable": false,
+          "isInvalid": false
+        },
+        "canonicalDetails": {
+          "status": "missing",
+          "canonicalState": "MISSING",
+          "url": null,
+          "isAbsolute": false,
+          "matchesPageUrl": false,
+          "isMissing": true,
+          "count": 0
+        },
+        "structuredDataDetails": {
+          "status": "NOT_DETECTED",
+          "presence": false,
+          "itemCount": 0,
+          "validCount": 0,
+          "schemas": [],
+          "schemaTypes": [],
+          "syntaxErrors": [],
+          "humanMessage": "No JSON-LD structured data was detected on this rendered page."
+        },
+        "robotsMetaDetails": {
+          "content": null,
+          "noindex": false,
+          "nofollow": false,
+          "noarchive": false,
+          "nosnippet": false,
+          "directives": []
+        },
+        "robotsMeta": {
+          "content": null,
+          "noindex": false,
+          "nofollow": false,
+          "noarchive": false,
+          "nosnippet": false,
+          "directives": []
+        },
+        "hreflangs": [],
+        "socialCards": {
+          "openGraph": {
+            "title": null,
+            "description": null,
+            "image": null,
+            "url": null,
+            "type": null,
+            "siteName": null,
+            "missingTags": [
+              "og:title",
+              "og:description",
+              "og:image",
+              "og:url",
+              "og:type"
+            ],
+            "properties": [
+              {
+                "property": "og:title",
+                "present": false,
+                "value": null
+              },
+              {
+                "property": "og:description",
+                "present": false,
+                "value": null
+              },
+              {
+                "property": "og:image",
+                "present": false,
+                "value": null
+              },
+              {
+                "property": "og:url",
+                "present": false,
+                "value": null
+              },
+              {
+                "property": "og:type",
+                "present": false,
+                "value": null
+              }
+            ],
+            "presentCount": 0,
+            "totalCount": 5,
+            "coveragePercentage": 0
+          },
+          "twitter": {
+            "card": null,
+            "title": null,
+            "description": null,
+            "image": null,
+            "site": null,
+            "missingTags": [
+              "twitter:card",
+              "twitter:title",
+              "twitter:description",
+              "twitter:image"
+            ],
+            "coveragePercentage": 0
+          }
+        },
+        "openGraph": {
+          "title": null,
+          "description": null,
+          "image": null,
+          "url": null,
+          "type": null,
+          "siteName": null,
+          "missingTags": [
+            "og:title",
+            "og:description",
+            "og:image",
+            "og:url",
+            "og:type"
+          ],
+          "properties": [
+            {
+              "property": "og:title",
+              "present": false,
+              "value": null
+            },
+            {
+              "property": "og:description",
+              "present": false,
+              "value": null
+            },
+            {
+              "property": "og:image",
+              "present": false,
+              "value": null
+            },
+            {
+              "property": "og:url",
+              "present": false,
+              "value": null
+            },
+            {
+              "property": "og:type",
+              "present": false,
+              "value": null
+            }
+          ],
+          "presentCount": 0,
+          "totalCount": 5,
+          "coveragePercentage": 0
+        },
+        "twitterCard": {
+          "card": null,
+          "title": null,
+          "description": null,
+          "image": null,
+          "site": null,
+          "missingTags": [
+            "twitter:card",
+            "twitter:title",
+            "twitter:description",
+            "twitter:image"
+          ],
+          "coveragePercentage": 0
+        },
+        "detectedFramework": null,
+        "structuredData": [],
         "favicon": "/data:,",
         "ogTitle": "",
         "ogDescription": "",
-        "ogImage": ""
+        "ogImage": "",
+        "seoScoreExplanation": {
+          "score": 60,
+          "maxScore": 100,
+          "breakdown": [
+            {
+              "name": "Document Title",
+              "score": 20,
+              "maxScore": 20,
+              "status": "PASS",
+              "explanation": "Title present (14 chars, within guideline)."
+            },
+            {
+              "name": "Meta Description",
+              "score": 0,
+              "maxScore": 20,
+              "status": "FAIL",
+              "explanation": "No <meta name=\"description\"> tag found in rendered document head."
+            },
+            {
+              "name": "Primary H1 Heading",
+              "score": 15,
+              "maxScore": 15,
+              "status": "PASS",
+              "explanation": "Primary <h1> element present in rendered DOM."
+            },
+            {
+              "name": "Mobile Viewport",
+              "score": 15,
+              "maxScore": 15,
+              "status": "PASS",
+              "explanation": "Mobile-responsive viewport meta tag declared."
+            },
+            {
+              "name": "Canonical Link",
+              "score": 0,
+              "maxScore": 10,
+              "status": "FAIL",
+              "explanation": "No valid absolute <link rel=\"canonical\"> found in rendered <head>."
+            },
+            {
+              "name": "Language Declaration",
+              "score": 10,
+              "maxScore": 10,
+              "status": "PASS",
+              "explanation": "HTML document lang attribute declared (\"en\")."
+            },
+            {
+              "name": "robots.txt Probe",
+              "score": 0,
+              "maxScore": 5,
+              "status": "FAIL",
+              "explanation": "robots.txt file missing or unreachable."
+            },
+            {
+              "name": "sitemap.xml Probe",
+              "score": 0,
+              "maxScore": 5,
+              "status": "FAIL",
+              "explanation": "sitemap.xml not found or returned invalid non-XML content."
+            }
+          ]
+        }
       },
       "statistics": {
         "titleLength": 14,
@@ -1800,54 +3439,36 @@
       },
       "optimizationCandidates": [
         {
-          "url": "example.com",
+          "url": "https://example.com/",
           "type": "seo",
           "estimatedSizeReductionKb": 0,
-          "suggestion": "Meta description tag is missing. Meta descriptions represent the default summary snippet on search engine listings. [Evidence: Selector='none', Value='Missing', Source='']",
+          "suggestion": "No meta description was found in the rendered document head. Your page does not currently provide a description specifically written for search-result snippets. [Element: meta[name=\"description\"], Observed: \"No <meta name=\\\"description\\\"> found in rendered <head>\"]",
           "isIssue": true
         },
         {
-          "url": "example.com",
+          "url": "https://example.com/",
           "type": "seo",
           "estimatedSizeReductionKb": 0,
-          "suggestion": "Canonical URL link tag is missing. Canonical indicators eliminate duplicate indexing penalty risks. [Evidence: Selector='none', Value='Missing', Source='']",
+          "suggestion": "No canonical URL was found in the rendered document head. Canonical declarations tell search crawlers the preferred URL to index. [Element: link[rel=\"canonical\"], Observed: \"No <link rel=\\\"canonical\\\"> element was found in the rendered document head.\"]",
           "isIssue": true
-        },
-        {
-          "url": "example.com",
-          "type": "seo",
-          "estimatedSizeReductionKb": 0,
-          "suggestion": "Open Graph tags coverage is low (0%). Social media shares require OG metadata to compile rich listings. [Evidence: Selector='none', Value='Missing', Source='']",
-          "isIssue": false
-        },
-        {
-          "url": "example.com",
-          "type": "seo",
-          "estimatedSizeReductionKb": 0,
-          "suggestion": "JSON-LD Structured Data script missing. Providing Schema.org markup assists rich search snippet cards compiler. [Evidence: Selector='none', Value='Missing', Source='']",
-          "isIssue": false
         }
       ],
       "warnings": [
         {
           "code": "SEO_NO_DESCRIPTION",
-          "message": "Meta description tag is missing. Meta descriptions represent the default summary snippet on search engine listings.",
-          "severity": "warning"
+          "message": "No meta description was found in the rendered document head. Your page does not currently provide a description specifically written for search-result snippets.",
+          "severity": "warning",
+          "element": "meta[name=\"description\"]",
+          "observed": "No <meta name=\"description\"> found in rendered <head>",
+          "expected": "A page-specific meta description (approximately 120–160 characters is a useful practical guideline)"
         },
         {
           "code": "SEO_NO_CANONICAL",
-          "message": "Canonical URL link tag is missing. Canonical indicators eliminate duplicate indexing penalty risks.",
-          "severity": "warning"
-        },
-        {
-          "code": "SEO_NO_OG_TAGS",
-          "message": "Open Graph tags coverage is low (0%). Social media shares require OG metadata to compile rich listings.",
-          "severity": "info"
-        },
-        {
-          "code": "SEO_NO_STRUCTURED_DATA",
-          "message": "JSON-LD Structured Data script missing. Providing Schema.org markup assists rich search snippet cards compiler.",
-          "severity": "info"
+          "message": "No canonical URL was found in the rendered document head. Canonical declarations tell search crawlers the preferred URL to index.",
+          "severity": "warning",
+          "element": "link[rel=\"canonical\"]",
+          "observed": "No <link rel=\"canonical\"> element was found in the rendered document head.",
+          "expected": "One intended <link rel=\"canonical\" href=\"...\"> declaration in <head>"
         }
       ],
       "errors": [],
@@ -1855,63 +3476,51 @@
         "title": {
           "value": "Example Domain",
           "selector": "head > title",
-          "html": "<title>Example Domain</title>"
+          "count": 1
         },
         "description": {
           "value": "",
           "selector": "none",
-          "html": ""
+          "count": 0
         },
         "canonical": {
           "value": "",
           "selector": "none",
-          "html": ""
+          "count": 0
         },
         "keywords": {
           "value": "",
-          "selector": "none",
-          "html": ""
+          "selector": "none"
         },
         "charset": {
-          "value": "",
-          "selector": "none",
-          "html": ""
+          "value": "UTF-8",
+          "selector": "none"
         },
         "viewport": {
           "value": "width=device-width, initial-scale=1",
-          "selector": "meta[name=\"viewport\"]",
-          "html": "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+          "selector": "meta[name=\"viewport\"]"
         },
         "robots": {
           "value": "",
-          "selector": "none",
-          "html": ""
+          "selector": "none"
         },
         "og": {},
         "twitter": {},
-        "headings": {
-          "h1": [
-            "Example Domain"
-          ],
-          "h2": [],
-          "h3": [],
-          "h4": [],
-          "h5": [],
-          "h6": []
-        },
-        "internalLinks": [],
-        "externalLinks": [
-          "https://iana.org/domains/example"
-        ],
-        "languageAttribute": "en",
-        "jsonLd": [],
-        "headingsDetails": [
+        "headingsList": [
           {
             "tag": "h1",
             "text": "Example Domain",
             "html": "<h1>Example Domain</h1>"
           }
-        ]
+        ],
+        "internalLinks": [],
+        "externalLinks": [
+          "https://iana.org/domains/example"
+        ],
+        "hreflangs": [],
+        "languageAttribute": "en",
+        "jsonLd": [],
+        "frameworkSignal": null
       }
     },
     "accessibilityAnalysis": {
@@ -2003,6 +3612,8 @@
         "lcp": "0.8 s",
         "fcp": "0.8 s",
         "inp": "N/A",
+        "inpSource": "unknown",
+        "inpMode": "lab",
         "tbt": "0 ms",
         "cls": "0",
         "ttfb": "1ms",
@@ -2013,14 +3624,14 @@
           "id": "first-contentful-paint",
           "weight": 10,
           "score": 100,
-          "numericValue": 781,
+          "numericValue": 757,
           "displayValue": "0.8 s"
         },
         "largest-contentful-paint": {
           "id": "largest-contentful-paint",
           "weight": 25,
           "score": 100,
-          "numericValue": 781,
+          "numericValue": 757,
           "displayValue": "0.8 s"
         },
         "total-blocking-time": {
@@ -2041,7 +3652,7 @@
           "id": "speed-index",
           "weight": 10,
           "score": 100,
-          "numericValue": 781,
+          "numericValue": 757,
           "displayValue": "0.8 s"
         }
       },
@@ -2052,33 +3663,27 @@
         "tasks": [],
         "mainThreadWork": [
           {
-            "group": "Style & Layout",
-            "durationMs": 51
+            "group": "Other",
+            "durationMs": 22
           },
           {
-            "group": "Other",
-            "durationMs": 33
+            "group": "Style & Layout",
+            "durationMs": 4
           },
           {
             "group": "Script Evaluation",
-            "durationMs": 5
+            "durationMs": 4
           },
           {
             "group": "Rendering",
             "durationMs": 1
           },
           {
-            "group": "Parse HTML & CSS",
+            "group": "Garbage Collection",
             "durationMs": 1
           }
         ],
-        "topScriptsByExecution": [
-          {
-            "url": "https://example.com/",
-            "totalCpuMs": 58,
-            "scriptEvalMs": 2
-          }
-        ]
+        "topScriptsByExecution": []
       }
     },
     "networkAnalysis": {
@@ -2090,19 +3695,19 @@
           "sizeKb": 0.5,
           "transferSizeKb": 0.5,
           "statusCode": 200,
-          "timeMs": 219,
-          "durationMs": 219,
-          "startTimeMs": 62939975,
+          "timeMs": 498,
+          "durationMs": 498,
+          "startTimeMs": 12463828,
           "initiator": "other",
           "fromCache": false,
           "timingBreakdown": {
-            "dnsMs": 31,
-            "tcpMs": 91,
-            "tlsMs": 88,
-            "ttfbMs": 50,
+            "dnsMs": 190,
+            "tcpMs": 84,
+            "tlsMs": 81,
+            "ttfbMs": 53,
             "downloadMs": 0,
-            "startTimeMs": 62939975,
-            "durationMs": 219
+            "startTimeMs": 12463828,
+            "durationMs": 498
           },
           "compression": "brotli",
           "cacheControl": "no-cache, no-store",

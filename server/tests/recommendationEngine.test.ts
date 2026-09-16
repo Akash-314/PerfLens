@@ -924,7 +924,7 @@ describe('PerfLens Recommendation Engine & Estimated Improvement Overhaul (30. T
         unminifiedScripts: [
           { url: 'https://example.com/b.js', isMinified: false, fileSizeKb: 50 }
         ]
-      },
+      } as any,
       seo: null,
       accessibility: null
     });

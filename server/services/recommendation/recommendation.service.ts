@@ -12,6 +12,8 @@ import {
 import { rules, createTransferSavings, createTransferGainString } from './rules.js';
 import { calculateHealthScore, getPerformanceGrade, formatTimeEstimate } from './helpers.js';
 
+import { detectFramework } from './frameworkDetector.js';
+
 export interface SubAnalyzerOutputs {
   pagespeed: PageSpeedScanResult | null;
   image: ImageAnalysisResult | null;
@@ -20,6 +22,7 @@ export interface SubAnalyzerOutputs {
   seo: SEOAnalysisResult | null;
   accessibility: AccessibilityAnalysisResult | null;
   vitals?: any;
+  targetUrl?: string;
 }
 
 /**
@@ -34,6 +37,15 @@ export const generateRecommendations = (
 ): RecommendationEngineResult => {
   const rawRecommendations: Recommendation[] = [];
 
+  // Detect project framework from verified signals across all analyzers
+  const frameworkInfo = detectFramework({
+    seo: inputs.seo,
+    js: inputs.js,
+    resources: (inputs.pagespeed as any)?.resources
+  });
+
+  const targetUrl = inputs.targetUrl || inputs.seo?.seo?.canonicalUrl || inputs.pagespeed?.url || inputs.seo?.validationEvidence?.url || 'target page';
+
   // 1. Evaluate all rules
   rules.forEach(rule => {
     try {
@@ -44,7 +56,9 @@ export const generateRecommendations = (
         js: inputs.js,
         seo: inputs.seo,
         accessibility: inputs.accessibility,
-        vitals: inputs.vitals || inputs.pagespeed?.vitals
+        vitals: inputs.vitals || inputs.pagespeed?.vitals,
+        frameworkInfo,
+        targetUrl
       });
       if (recommendation) {
         rawRecommendations.push(recommendation);
@@ -62,6 +76,20 @@ export const generateRecommendations = (
   rawRecommendations.forEach(rec => {
     if (seenIds.has(rec.id)) {
       const existing = seenIds.get(rec.id)!;
+      // Preserve standardFinding and aiFixPrompt
+      if (rec.standardFinding && !existing.standardFinding) {
+        existing.standardFinding = rec.standardFinding;
+      }
+      if (rec.aiFixPrompt && !existing.aiFixPrompt) {
+        existing.aiFixPrompt = rec.aiFixPrompt;
+      }
+      if (rec.fixStrategy && !existing.fixStrategy) {
+        existing.fixStrategy = rec.fixStrategy;
+      }
+      if (rec.validationSteps && (!existing.validationSteps || existing.validationSteps.length === 0)) {
+        existing.validationSteps = rec.validationSteps;
+      }
+
       // Merge structured evidenceDetails
       if (Array.isArray(rec.evidenceDetails)) {
         existing.evidenceDetails = [...(existing.evidenceDetails || []), ...rec.evidenceDetails];

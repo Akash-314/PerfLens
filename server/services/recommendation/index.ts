@@ -66,7 +66,8 @@ class LegacyRecommendationEngine {
       js: jsResult,
       seo: seoResult,
       accessibility: a11yResult,
-      vitals: vitals || pageSpeed?.vitals
+      vitals: vitals || pageSpeed?.vitals,
+      targetUrl: actualAnalyzers.targetUrl || actualAnalyzers.url
     });
 
     // Return complete evidence-based recommendation objects with backward-compatible aliases
@@ -88,10 +89,13 @@ class LegacyRecommendationEngine {
       suggestedFix: rec.suggestedFix,
       estimatedDifficulty: rec.estimatedDifficulty,
       estimatedImplementationTime: rec.estimatedImplementationTime,
-      refUrl: rec.refUrl || 'https://web.dev/',
+      standardFinding: rec.standardFinding,
+      aiFixPrompt: rec.aiFixPrompt,
+      fixStrategy: rec.fixStrategy,
+      validationSteps: rec.validationSteps || [],
       // Backward-compatibility aliases for legacy UI/consumers
       issue: rec.title || rec.issue,
-      whyItMatters: rec.potentialImpact || rec.description || rec.whyItMatters,
+      whyItMatters: rec.whyItMatters || rec.potentialImpact || rec.description,
       suggestedFixSummary: rec.suggestedFix,
       estimatedImprovement: rec.estimatedSavings?.displayString || rec.estimatedImprovement || 'Not quantified',
       difficulty: rec.estimatedDifficulty,

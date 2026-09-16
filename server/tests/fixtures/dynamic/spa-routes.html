@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPA Router Root</title>
+</head>
+<body>
+  <nav>
+    <a href="#/">Home</a>
+    <a href="#/about">About</a>
+    <a href="#/products">Products</a>
+    <a href="#/contact">Contact</a>
+  </nav>
+  <main id="view">
+    <h1>Welcome Home</h1>
+  </main>
+  <script>
+    function updateRoute() {
+      const hash = window.location.hash || '#/';
+      const view = document.getElementById('view');
+      if (hash === '#/about') {
+        document.title = "About Us - SPA";
+        view.innerHTML = "<h1>About Our Company</h1>";
+      } else if (hash === '#/products') {
+        document.title = "Products Catalog - SPA";
+        view.innerHTML = "<h1>Our Products</h1>";
+      } else if (hash === '#/contact') {
+        document.title = "Contact Us - SPA";
+        view.innerHTML = "<h1>Get In Touch</h1>";
+      } else {
+        document.title = "SPA Router Root";
+        view.innerHTML = "<h1>Welcome Home</h1>";
+      }
+    }
+    window.addEventListener('hashchange', updateRoute);
+    updateRoute();
+  </script>
+</body>
+</html>

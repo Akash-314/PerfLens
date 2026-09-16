@@ -21,21 +21,96 @@ export interface IMetricDetail {
   shifts?: any[];
 }
 
+export interface ITbtTask {
+  scriptUrl?: string | null;
+  duration?: number;
+  startTime?: number;
+  blockingDuration?: number;
+  containerType?: string | null;
+  attributionAvailable?: boolean;
+}
+
+export interface ITbtMainThreadWork {
+  group?: string;
+  durationMs?: number;
+}
+
+export interface ITbtTopScript {
+  url?: string;
+  totalCpuMs?: number;
+  scriptEvalMs?: number;
+}
+
+export interface ITbtDetails {
+  totalBlockingTimeMs?: number;
+  longTaskCount: number;
+  maxTaskDurationMs: number;
+  tasks?: ITbtTask[];
+  mainThreadWork?: ITbtMainThreadWork[];
+  topScriptsByExecution?: ITbtTopScript[];
+  [key: string]: any;
+}
+
+export interface IStandardFindingExplanation {
+  problem: string;
+  whyItMatters: string;
+  observedEvidence: string;
+}
+
+export interface IStandardFinding {
+  id?: string;
+  category: 'seo' | 'performance' | 'accessibility' | 'best-practices';
+  rule: string;
+  severity: 'critical' | 'high' | 'medium' | 'low' | 'info';
+  status: 'pass' | 'fail' | 'warning' | 'info';
+  confidence: 'verified' | 'unable-to-verify' | 'high-confidence' | 'medium-confidence';
+  url: string;
+  evidence: {
+    url?: string;
+    element?: string;
+    selector?: string;
+    observed?: any;
+    expected?: any;
+    snippet?: string;
+    details?: Record<string, any>;
+  };
+  observedValue?: string | number | null;
+  expectedCondition?: string;
+  explanation: string | IStandardFindingExplanation;
+  impact: string;
+  recommendation: string;
+  fixStrategy: string;
+  validation: string[];
+  validationSteps?: string[];
+  aiFixPrompt?: string;
+  frameworkAwareness?: {
+    detectedFramework: string | null;
+    confidence: 'verified' | 'inferred' | 'none';
+    evidenceSnippet?: string;
+  };
+}
+
 export interface IRecommendation {
   category: string;
   issue: string;
   whyItMatters: string;
   suggestedFix: string;
   estimatedImprovement: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  priority: 'high' | 'medium' | 'low';
-  refUrl: string;
+  difficulty?: 'easy' | 'medium' | 'hard' | string;
+  priority?: 'high' | 'medium' | 'low' | string;
+  refUrl?: string;
+  standardFinding?: IStandardFinding;
+  aiFixPrompt?: string;
+  fixStrategy?: string;
+  validationSteps?: string[];
+  [key: string]: any;
 }
 
 export interface IReport {
   _id?: string;
   id?: string;
   url: string;
+  version?: string;
   owner?: string;
   owner_id?: string;
   
@@ -55,6 +130,9 @@ export interface IReport {
     cls: IMetricDetail;
     ttfb: IMetricDetail;
     tbt: IMetricDetail;
+    tbtDetails?: ITbtDetails | null;
+    puppeteerTbtDetails?: ITbtDetails | null;
+    [key: string]: any;
   };
   breakdown: {
     images: { sizeKb: number; count: number };

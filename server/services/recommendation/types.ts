@@ -31,13 +31,50 @@ export interface EstimatedSavings {
   displayString: string; // e.g. "89 KB transfer reduction (~0.45s on Fast 3G)" or "Not quantified"
 }
 
+export interface IStandardFinding {
+  id?: string;
+  category: 'seo' | 'performance' | 'accessibility' | 'best-practices';
+  rule: string;
+  severity: 'critical' | 'high' | 'medium' | 'low' | 'info';
+  status: 'pass' | 'fail' | 'warning' | 'info';
+  confidence: 'verified' | 'unable-to-verify' | 'high-confidence' | 'medium-confidence';
+  url: string;
+  evidence: {
+    url?: string;
+    element?: string;
+    selector?: string;
+    observed?: any;
+    expected?: any;
+    snippet?: string;
+    details?: Record<string, any>;
+  };
+  observedValue?: string | number | null;
+  expectedCondition?: string;
+  explanation: string | {
+    problem: string;
+    whyItMatters: string;
+    observedEvidence: string;
+  };
+  impact: string;
+  recommendation: string;
+  fixStrategy: string;
+  validation: string[];
+  validationSteps?: string[];
+  aiFixPrompt?: string;
+  frameworkAwareness?: {
+    detectedFramework: string | null;
+    confidence: 'verified' | 'inferred' | 'none';
+    evidenceSnippet?: string;
+  };
+}
+
 export interface Recommendation {
   id: string; // Unique rule identifier (e.g. REC_PERF_TBT_LONG_TASKS)
   title: string;
   description: string;
   category: 'performance' | 'seo' | 'accessibility' | 'best-practices';
-  severity: 'high' | 'medium' | 'low' | 'info';
-  confidence: 'high' | 'medium' | 'low';
+  severity: 'critical' | 'high' | 'medium' | 'low' | 'info';
+  confidence: 'verified' | 'unable-to-verify' | 'high' | 'medium' | 'low';
   estimateType: EstimateType;
 
   // Core Evidence-Based Architecture
@@ -52,6 +89,12 @@ export interface Recommendation {
   estimatedDifficulty: 'easy' | 'medium' | 'hard';
   estimatedImplementationTime: string; // e.g. "30 mins", "2 hours"
   refUrl: string;
+
+  // Standard Finding & AI Fix Engine integration
+  standardFinding?: IStandardFinding;
+  aiFixPrompt?: string;
+  fixStrategy?: string;
+  validationSteps?: string[];
 
   // Backward-compatibility and UI/PDF presentation fields
   issue: string; // alias for title

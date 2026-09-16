@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Initial HTML lacks title, meta description, canonical, OG, and JSON-LD -->
+</head>
+<body>
+  <div id="root">Loading application...</div>
+  <script>
+    // Client-side JavaScript injects SEO metadata dynamically after mounting
+    setTimeout(() => {
+      document.title = "Rendered Dynamic SPA Page Title";
+      
+      const metaDesc = document.createElement('meta');
+      metaDesc.name = "description";
+      metaDesc.content = "Dynamically injected client-side meta description for rendered DOM validation.";
+      document.head.appendChild(metaDesc);
+
+      const canonical = document.createElement('link');
+      canonical.rel = "canonical";
+      canonical.href = "https://example.com/spa-rendered-route";
+      document.head.appendChild(canonical);
+
+      const ogTitle = document.createElement('meta');
+      ogTitle.setAttribute('property', 'og:title');
+      ogTitle.content = "Rendered OG Title";
+      document.head.appendChild(ogTitle);
+
+      const ogDesc = document.createElement('meta');
+      ogDesc.setAttribute('property', 'og:description');
+      ogDesc.content = "Rendered OG Description";
+      document.head.appendChild(ogDesc);
+
+      const ogType = document.createElement('meta');
+      ogType.setAttribute('property', 'og:type');
+      ogType.content = "website";
+      document.head.appendChild(ogType);
+
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.text = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "SinglePageApplication",
+        "name": "Dynamic SPA"
+      });
+      document.head.appendChild(script);
+
+      const root = document.getElementById('root');
+      root.innerHTML = "<h1>Rendered Dynamic SPA Heading</h1><p>Content successfully mounted.</p>";
+    }, 50);
+  </script>
+</body>
+</html>
