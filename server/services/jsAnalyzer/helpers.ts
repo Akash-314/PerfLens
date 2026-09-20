@@ -7,14 +7,17 @@
 export const isScriptMinified = (url: string, codeText?: string): boolean => {
   // If actual source code is available from coverage/CDP, inspect line characteristics
   if (codeText && codeText.length > 100) {
-    const lines = codeText.split('\n');
-    const avgLineLength = codeText.length / Math.max(1, lines.length);
+    let lineCount = 1;
+    for (let i = 0; i < codeText.length; i++) {
+      if (codeText.charCodeAt(i) === 10) lineCount++;
+    }
+    const avgLineLength = codeText.length / lineCount;
     // Minified scripts typically have very long lines (> 200 chars on average) or <= 3 total lines
-    if (avgLineLength > 200 || lines.length <= 3) {
+    if (avgLineLength > 200 || lineCount <= 3) {
       return true;
     }
     // Formatted, unminified scripts have multiple lines and short average length (< 80 chars)
-    if (lines.length > 10 && avgLineLength < 80) {
+    if (lineCount > 10 && avgLineLength < 80) {
       return false;
     }
   }

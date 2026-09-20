@@ -1,0 +1,27 @@
+{
+  "missingKnownFacts": {
+    "title": "Title Present",
+    "whatIsHappening": "Explanation of event",
+    "whyItMatters": "Consequence for user",
+    "evidenceExplanation": "Link to evidence",
+    "unknowns": ["Item unknown"],
+    "confidence": "medium"
+  },
+  "missingWhyItMatters": {
+    "title": "Title Present",
+    "whatIsHappening": "Explanation of event",
+    "evidenceExplanation": "Link to evidence",
+    "knownFacts": ["Observed fact"],
+    "unknowns": ["Item unknown"],
+    "confidence": "high"
+  },
+  "emptyUnknownsArray": {
+    "title": "Title Present",
+    "whatIsHappening": "Explanation of event",
+    "whyItMatters": "Why it matters",
+    "evidenceExplanation": "Link to evidence",
+    "knownFacts": ["Observed fact"],
+    "unknowns": [],
+    "confidence": "low"
+  }
+}

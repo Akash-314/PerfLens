@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -19,14 +19,13 @@ import {
   fetchAndVerifySitemapXml
 } from '../services/seoAnalyzer/seoAnalyzer.service.js';
 import {
-  getPageSpeedTelemetry,
   classifyGoogleError,
   isPubliclyReachableUrl
 } from '../services/pagespeed.service.js';
 import { generateRecommendations } from '../services/recommendation/recommendation.service.js';
 import { rules } from '../services/recommendation/rules.js';
 import pdfService from '../services/report/index.js';
-import { classifyMetric, METRIC_DEFINITIONS } from '../config/performanceThresholds.js';
+import { classifyMetric } from '../config/performanceThresholds.js';
 import { isScriptMinified } from '../services/jsAnalyzer/helpers.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -55,8 +54,8 @@ describe('PERFLENS — Adversarial Website QA & Regression Test Matrix', () => {
       });
 
       it('FAILURE when title is missing in rendered DOM', () => {
-        const title = null;
-        expect(!title || title.trim().length === 0).toBe(true);
+        const title: string | null = null;
+        expect(!title || (title as any).trim().length === 0).toBe(true);
       });
 
       it('GUIDELINE_WARNING when title is too short (<10 chars) but present — NOT a hard failure', () => {
@@ -79,8 +78,8 @@ describe('PERFLENS — Adversarial Website QA & Regression Test Matrix', () => {
       });
 
       it('FAILURE when meta description is completely missing', () => {
-        const desc = null;
-        expect(!desc || desc.trim().length === 0).toBe(true);
+        const desc: string | null = null;
+        expect(!desc || (desc as any).trim().length === 0).toBe(true);
       });
 
       it('GUIDELINE_WARNING for short meta description (<50 chars) — never classify as missing', () => {
@@ -159,7 +158,7 @@ describe('PERFLENS — Adversarial Website QA & Regression Test Matrix', () => {
             }
           },
           targetUrl: 'https://mysite.com/blog/article-1'
-        });
+        } as any);
 
         const serialized = JSON.stringify(recResult);
         expect(serialized.includes('authoritative-path')).toBe(false);
@@ -860,12 +859,7 @@ describe('PERFLENS — Adversarial Website QA & Regression Test Matrix', () => {
           viewport: 'width=device-width',
           language: 'en',
           hasRobotsTxt: true,
-          hasSitemapXml: true,
-          isHierarchyValid: true,
-          openGraphPresent: 5,
-          openGraphTotal: 5,
-          structuredDataPresent: true,
-          structuredDataValid: true
+          hasSitemapXml: true
         });
 
         const canonical = validateCanonicalUrl(t.url, t.url, 1);

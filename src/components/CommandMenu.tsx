@@ -30,7 +30,7 @@ export const CommandMenu: React.FC = () => {
     { type: 'action', label: 'Start New Performance Audit', icon: Globe, action: () => setCurrentTab('analyze'), shortcut: '↵' },
     { type: 'action', label: 'Compare Two Websites Side-by-Side', icon: GitCompare, action: () => setCurrentTab('comparisons'), shortcut: '↵' },
     { type: 'action', label: 'Open Optimization Recommendations', icon: Sparkles, action: () => setCurrentTab('recommendations'), shortcut: '↵' },
-    { type: 'action', label: 'Configure Scanning Settings', icon: Settings, action: () => setCurrentTab('settings'), shortcut: '↵' }
+    { type: 'action', label: 'Configure Profile & Settings', icon: Settings, action: () => setCurrentTab('settings'), shortcut: '↵' }
   ];
 
   // Map reports to command items

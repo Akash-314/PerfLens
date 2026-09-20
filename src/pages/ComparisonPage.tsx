@@ -5,12 +5,14 @@ import { GitCompare, CheckCircle2 } from 'lucide-react';
 
 export const ComparisonPage: React.FC = () => {
   const { runComparison, comparedReports } = useApp();
-  const [url1, setUrl1] = useState('vercel.com');
-  const [url2, setUrl2] = useState('github.com');
+  const [url1, setUrl1] = useState('');
+  const [url2, setUrl2] = useState('');
 
   const handleCompare = (e: React.FormEvent) => {
     e.preventDefault();
-    runComparison(url1, url2);
+    if (url1.trim() && url2.trim()) {
+      runComparison(url1.trim(), url2.trim());
+    }
   };
 
   const getVitalsDiff = () => {

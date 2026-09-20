@@ -19,7 +19,6 @@ import {
   validateJsonLdScripts,
   parseRobotsDirectives,
   validateSocialCards,
-  calculateSeoScore,
   getSeoScoreExplanation
 } from './helpers.js';
 
@@ -362,15 +361,25 @@ export const analyzeSEO = async (
 
         // OG & Twitter Tags
         const og: Record<string, string> = {};
-        document.querySelectorAll('meta[property^="og:"]').forEach(el => {
-          const prop = el.getAttribute('property');
-          if (prop) og[prop] = el.getAttribute('content') || '';
+        document.querySelectorAll('meta[property^="og:" i], meta[name^="og:" i]').forEach(el => {
+          const rawProp = el.getAttribute('property') || el.getAttribute('name');
+          if (rawProp) {
+            const prop = rawProp.toLowerCase();
+            if (prop.startsWith('og:')) {
+              og[prop] = el.getAttribute('content') || '';
+            }
+          }
         });
 
         const twitter: Record<string, string> = {};
-        document.querySelectorAll('meta[name^="twitter:"]').forEach(el => {
-          const name = el.getAttribute('name');
-          if (name) twitter[name] = el.getAttribute('content') || '';
+        document.querySelectorAll('meta[name^="twitter:" i], meta[property^="twitter:" i]').forEach(el => {
+          const rawName = el.getAttribute('name') || el.getAttribute('property');
+          if (rawName) {
+            const name = rawName.toLowerCase();
+            if (name.startsWith('twitter:')) {
+              twitter[name] = el.getAttribute('content') || '';
+            }
+          }
         });
 
         // Headings sequence in DOM order

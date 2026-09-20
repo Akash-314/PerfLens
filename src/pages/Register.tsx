@@ -174,7 +174,9 @@ export const Register: React.FC = () => {
               </span>
               <input
                 id="name"
+                name="name"
                 type="text"
+                autoComplete="name"
                 ref={nameRef}
                 placeholder="John Doe"
                 value={name}
@@ -218,7 +220,9 @@ export const Register: React.FC = () => {
               </span>
               <input
                 id="email"
+                name="email"
                 type="email"
+                autoComplete="email"
                 placeholder="developer@perflens.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -261,7 +265,9 @@ export const Register: React.FC = () => {
               </span>
               <input
                 id="password"
+                name="password"
                 type="password"
+                autoComplete="new-password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -323,7 +329,9 @@ export const Register: React.FC = () => {
               </span>
               <input
                 id="confirmPassword"
+                name="confirmPassword"
                 type="password"
+                autoComplete="new-password"
                 placeholder="••••••••"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}

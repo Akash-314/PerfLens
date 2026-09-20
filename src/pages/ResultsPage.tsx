@@ -13,9 +13,71 @@ import {
   Share2,
   Network,
   Activity,
-  Layers
+  Layers,
+  Sparkles,
+  ArrowRight
 } from 'lucide-react';
 import { HumanizedRecommendationCard } from '../components/HumanizedRecommendationCard';
+
+// SVG circular Gauge component
+const CircularGauge: React.FC<{ score: number; label: string }> = ({ score, label }) => {
+  const size = 90;
+  const strokeWidth = 6;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const strokeDashoffset = circumference - (score / 100) * circumference;
+  const color = score >= 90 ? 'var(--color-success)' : score >= 70 ? 'var(--color-warning)' : 'var(--color-danger)';
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+      <div style={{ position: 'relative', width: size, height: size }}>
+        <svg style={{ transform: 'rotate(-90deg)', width: size, height: size }}>
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="transparent"
+            stroke="var(--color-border)"
+            strokeWidth={strokeWidth}
+          />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="transparent"
+            stroke={color}
+            strokeWidth={strokeWidth}
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            style={{ transition: 'stroke-dashoffset 0.8s ease-in-out' }}
+          />
+        </svg>
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: size,
+            height: size,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '18px',
+            fontWeight: 700,
+            color: 'var(--color-text-primary)'
+          }}
+        >
+          {score}
+        </div>
+      </div>
+      <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--color-text-secondary)', textAlign: 'center' }}>
+        {label}
+      </span>
+    </div>
+  );
+};
 
 export const ResultsPage: React.FC = () => {
   const { currentReport, setCurrentTab, addToast } = useApp();
@@ -45,66 +107,6 @@ export const ResultsPage: React.FC = () => {
     { name: 'Fonts', value: currentReport.breakdown.fonts.sizeKb, color: '#EC4899' },
     { name: 'Third Party', value: currentReport.breakdown.thirdParty.sizeKb, color: '#EF4444' }
   ];
-
-  // SVG circular Gauge component
-  const CircularGauge: React.FC<{ score: number; label: string }> = ({ score, label }) => {
-    const size = 90;
-    const strokeWidth = 6;
-    const radius = (size - strokeWidth) / 2;
-    const circumference = radius * 2 * Math.PI;
-    const strokeDashoffset = circumference - (score / 100) * circumference;
-    const color = score >= 90 ? 'var(--color-success)' : score >= 70 ? 'var(--color-warning)' : 'var(--color-danger)';
-
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-        <div style={{ position: 'relative', width: size, height: size }}>
-          <svg style={{ transform: 'rotate(-90deg)', width: size, height: size }}>
-            <circle
-              cx={size / 2}
-              cy={size / 2}
-              r={radius}
-              fill="transparent"
-              stroke="var(--color-border)"
-              strokeWidth={strokeWidth}
-            />
-            <circle
-              cx={size / 2}
-              cy={size / 2}
-              r={radius}
-              fill="transparent"
-              stroke={color}
-              strokeWidth={strokeWidth}
-              strokeDasharray={circumference}
-              strokeDashoffset={strokeDashoffset}
-              strokeLinecap="round"
-              style={{ transition: 'stroke-dashoffset 0.8s ease-in-out' }}
-            />
-          </svg>
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: size,
-              height: size,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '18px',
-              fontWeight: 700,
-              color: 'var(--color-text-primary)'
-            }}
-          >
-            {score}
-          </div>
-        </div>
-        <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--color-text-secondary)', textAlign: 'center' }}>
-          {label}
-        </span>
-      </div>
-    );
-  };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -199,7 +201,23 @@ export const ResultsPage: React.FC = () => {
             Diagnostics executed on {currentReport.timestamp} (Simulated Googlebot mobile crawler)
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setActiveSubTab('recommendations')}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: activeSubTab === 'recommendations' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(168, 85, 247, 0.1)',
+              color: '#c084fc',
+              border: '1px solid rgba(168, 85, 247, 0.35)',
+              fontWeight: 600
+            }}
+          >
+            <Sparkles size={14} style={{ color: '#c084fc' }} />
+            <span>✦ AI Recommendations ({currentReport.recommendations?.length || 0})</span>
+          </button>
           <button className="btn btn-secondary" onClick={handleCopyLink}>
             <Share2 size={13} />
             <span>Share</span>
@@ -227,6 +245,7 @@ export const ResultsPage: React.FC = () => {
         >
           {[
             { id: 'overview', label: 'Overview', icon: Zap },
+            { id: 'recommendations', label: 'AI Recommendations', icon: Sparkles, badge: currentReport.recommendations?.length },
             { id: 'bundles', label: 'Bundle Analyzer', icon: Code2 },
             { id: 'images', label: 'Image Optimization', icon: ImageIcon },
             { id: 'css-js', label: 'CSS / JS Audits', icon: Code2 },
@@ -256,6 +275,21 @@ export const ResultsPage: React.FC = () => {
               >
                 <Icon size={14} style={{ color: activeSubTab === tab.id ? 'var(--color-accent)' : 'inherit' }} />
                 <span>{tab.label}</span>
+                {tab.badge !== undefined && tab.badge > 0 && (
+                  <span
+                    style={{
+                      marginLeft: 'auto',
+                      fontSize: '10px',
+                      padding: '1px 6px',
+                      borderRadius: '10px',
+                      backgroundColor: activeSubTab === tab.id ? '#a855f7' : 'rgba(168, 85, 247, 0.15)',
+                      color: activeSubTab === tab.id ? '#ffffff' : '#c084fc',
+                      fontWeight: 700
+                    }}
+                  >
+                    {tab.badge}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -282,6 +316,82 @@ export const ResultsPage: React.FC = () => {
                 <CircularGauge score={currentReport.scores.seo} label="SEO & Tags" />
                 <CircularGauge score={currentReport.scores.bestPractices} label="Best Practices" />
               </div>
+
+              {/* ✦ AI Recommendations & Explanations Spotlight (Top of Overview) */}
+              {currentReport.recommendations && currentReport.recommendations.length > 0 && (
+                <div
+                  className="card"
+                  style={{
+                    border: '1px solid rgba(168, 85, 247, 0.35)',
+                    backgroundColor: 'rgba(168, 85, 247, 0.03)',
+                    padding: '20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '16px'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '8px',
+                          backgroundColor: 'rgba(168, 85, 247, 0.15)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0
+                        }}
+                      >
+                        <Sparkles size={18} style={{ color: '#a855f7' }} />
+                      </div>
+                      <div>
+                        <h3 style={{ fontSize: '15px', fontWeight: 700, margin: 0, color: 'var(--color-text-primary)' }}>
+                          ✦ AI Recommendations & Verified Explanations
+                        </h3>
+                        <p style={{ fontSize: '12px', color: 'var(--color-muted)', margin: 0, marginTop: '2px' }}>
+                          Verified engine findings translated into actionable developer explanations with copyable AI Fix Prompts.
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setActiveSubTab('recommendations')}
+                      className="btn btn-sm"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        padding: '6px 14px',
+                        backgroundColor: 'rgba(168, 85, 247, 0.12)',
+                        color: '#c084fc',
+                        border: '1px solid rgba(168, 85, 247, 0.3)',
+                        borderRadius: 'var(--radius-sm)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <span>View All {currentReport.recommendations.length} Recommendations</span>
+                      <ArrowRight size={13} />
+                    </button>
+                  </div>
+
+                  {/* Render top 3 prioritized recommendations */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {currentReport.recommendations.slice(0, 3).map((rec) => (
+                      <HumanizedRecommendationCard
+                        key={rec.id}
+                        rec={{ ...rec, sourceUrl: currentReport.url, scanTimestamp: currentReport.timestamp }}
+                        expanded={expandedRecs[rec.id] !== undefined ? expandedRecs[rec.id] : false}
+                        onToggle={() => toggleRec(rec.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Step 7: Core Web Vitals & Telemetry Verification sources */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }} className="grid-cols-2">
@@ -1574,6 +1684,53 @@ export const ResultsPage: React.FC = () => {
                       />
                     ))}
                   </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB: AI RECOMMENDATIONS */}
+          {activeSubTab === 'recommendations' && (
+            <div className="flex-col" style={{ gap: '16px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '12px',
+                  marginBottom: '4px'
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Sparkles size={20} style={{ color: '#a855f7' }} />
+                    <h2 style={{ fontSize: '18px', fontWeight: 700, margin: 0 }}>
+                      AI Recommendations & Verified Explanations
+                    </h2>
+                  </div>
+                  <p style={{ fontSize: '12.5px', color: 'var(--color-muted)', margin: '4px 0 0 0' }}>
+                    Every finding is verified by the deterministic engine. Click <strong>[ ✦ AI Explain ]</strong> to generate grounded developer explanations.
+                  </p>
+                </div>
+              </div>
+
+              {currentReport.recommendations && currentReport.recommendations.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {currentReport.recommendations.map((rec) => (
+                    <HumanizedRecommendationCard
+                      key={rec.id}
+                      rec={{ ...rec, sourceUrl: currentReport.url, scanTimestamp: currentReport.timestamp }}
+                      expanded={expandedRecs[rec.id] !== undefined ? expandedRecs[rec.id] : true}
+                      onToggle={() => toggleRec(rec.id)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="card" style={{ textAlign: 'center', padding: '48px 24px' }}>
+                  <p style={{ color: 'var(--color-muted)', margin: 0 }}>
+                    No actionable recommendations for {currentReport.url}. All audited metrics passed within target thresholds!
+                  </p>
                 </div>
               )}
             </div>

@@ -185,11 +185,16 @@ class ReportGenerator {
     );
 
     if (isPageSpeedSuccess) {
+      // Establish single source of truth for SEO score: PerfLens deterministic seoAnalysis is authoritative
+      const authoritativeSeoScore = typeof seoAnalysis?.summary?.seoScoreEstimate === 'number'
+        ? seoAnalysis.summary.seoScoreEstimate
+        : pageSpeedTelemetry.seo;
+
       scores = {
-        overall: Math.round((pageSpeedTelemetry.performance + pageSpeedTelemetry.accessibility + pageSpeedTelemetry.seo + pageSpeedTelemetry.bestPractices) / 4),
+        overall: Math.round((pageSpeedTelemetry.performance + pageSpeedTelemetry.accessibility + authoritativeSeoScore + pageSpeedTelemetry.bestPractices) / 4),
         performance: pageSpeedTelemetry.performance,
         accessibility: pageSpeedTelemetry.accessibility,
-        seo: pageSpeedTelemetry.seo,
+        seo: authoritativeSeoScore,
         bestPractices: pageSpeedTelemetry.bestPractices
       };
 

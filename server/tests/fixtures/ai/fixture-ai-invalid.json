@@ -1,0 +1,16 @@
+{
+  "invalidRawJson": "This is raw text without valid JSON structure { missing_quotes: true",
+  "invalidSchema": {
+    "hello": "world",
+    "status": 200
+  },
+  "invalidTypes": {
+    "title": 12345,
+    "whatIsHappening": ["should", "be", "string"],
+    "whyItMatters": null,
+    "evidenceExplanation": {},
+    "knownFacts": "not an array",
+    "unknowns": [123, 456],
+    "confidence": "super-high"
+  }
+}

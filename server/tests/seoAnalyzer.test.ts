@@ -10,6 +10,7 @@ import {
   getSeoScoreExplanation
 } from '../services/seoAnalyzer/helpers.js';
 import { fetchAndVerifySitemapXml } from '../services/seoAnalyzer/seoAnalyzer.service.js';
+import { rules } from '../services/recommendation/rules.js';
 
 describe('PERFLEX SEO Analyzer & Evidence Engine', () => {
   describe('validateHeadingHierarchy', () => {
@@ -470,6 +471,135 @@ describe('PERFLEX SEO Analyzer & Evidence Engine', () => {
         expect(descItem?.status).toBe('GUIDELINE_WARNING');
         expect(descItem?.score).toBe(14); // Partial credit awarded, not 0
       });
+    });
+  });
+
+  describe('Section 20 & 19 Regression: Report Consistency & Open Graph Accuracy', () => {
+    // Test A & E: Exact Amazon-type deterministic fixture derived from actual scoring configuration
+    it('Test A & E: Exact Amazon-type deterministic breakdown equals derived score (79/100) and matches across summary/details', () => {
+      const amazonParams = {
+        title: 'Online Shopping site in India: Shop Online for Mobiles, Books, Watches, Shoes and More - Amazon.in', // 98 chars -> GUIDELINE_WARNING (14/20)
+        metaDescription: 'Amazon.in: Online Shopping India - Buy mobiles, laptops, cameras, books, watches, apparel, shoes and e-Gift Cards. Free Shipping & Cash on Delivery Available.', // 158 chars -> VALID (20/20)
+        canonicalValid: true, // PRESENT_VALID (10/10)
+        hasH1: false, // 0/15
+        viewport: 'width=device-width, initial-scale=1.0', // 15/15
+        language: 'en-in', // 10/10
+        hasRobotsTxt: true, // 5/5
+        hasSitemapXml: false,
+        sitemapStatus: 'SITEMAP_UNABLE_TO_VERIFY' as const, // Neutral (5/5)
+        sitemapUnableToVerify: true,
+        noindex: false
+      };
+
+      const explanation = getSeoScoreExplanation(amazonParams);
+      const calculatedScore = calculateSeoScore(amazonParams);
+
+      // Verify that summary score equals detailed score
+      expect(calculatedScore).toBe(explanation.score);
+
+      // Verify mathematical derivation of each component
+      const breakdownMap = new Map(explanation.breakdown.map(b => [b.name, b.score]));
+      expect(breakdownMap.get('Document Title')).toBe(14);
+      expect(breakdownMap.get('Meta Description')).toBe(20);
+      expect(breakdownMap.get('Primary H1 Heading')).toBe(0);
+      expect(breakdownMap.get('Mobile Viewport')).toBe(15);
+      expect(breakdownMap.get('Canonical Link')).toBe(10);
+      expect(breakdownMap.get('Language Declaration')).toBe(10);
+      expect(breakdownMap.get('robots.txt Probe')).toBe(5);
+      expect(breakdownMap.get('sitemap.xml Probe')).toBe(5);
+
+      const sum = explanation.breakdown.reduce((acc, item) => acc + item.score, 0);
+      expect(sum).toBe(79);
+      expect(explanation.score).toBe(79);
+      expect(calculatedScore).toBe(79);
+    });
+
+    // Test B: Open Graph consistency
+    it('Test B: Open Graph consistency — 2/5 present (title & description), missing = [og:image, og:url, og:type], recommendation does not claim title is missing', () => {
+      const ogEvidence = {
+        'og:title': 'Amazon.in: Online Shopping',
+        'og:description': 'Shop Online'
+      };
+      const socialCards = validateSocialCards(ogEvidence, {});
+
+      expect(socialCards.openGraph.presentCount).toBe(2);
+      expect(socialCards.openGraph.totalCount).toBe(5);
+      expect(socialCards.openGraph.coveragePercentage).toBe(40);
+      expect(socialCards.openGraph.missingTags).toEqual(['og:image', 'og:url', 'og:type']);
+
+      const ogRule = rules.find(r => r.id === 'REC_SEO_OPEN_GRAPH');
+      expect(ogRule).toBeDefined();
+
+      const rec = ogRule?.evaluate({
+        targetUrl: 'https://www.amazon.in',
+        seo: {
+          seo: {
+            socialCards
+          }
+        }
+      });
+
+      expect(rec).toBeDefined();
+      // Must NOT claim og:title is missing
+      expect(rec?.finding.description).not.toContain('og:title');
+      expect(rec?.evidence).not.toContain('og:title');
+      expect(rec?.suggestedFix).not.toContain('og:title');
+      expect(rec?.standardFinding?.fixStrategy).not.toContain('og:title');
+      expect(rec?.standardFinding?.validationSteps.join(' ')).not.toContain('og:title');
+
+      // Must address exactly the 3 missing properties
+      expect(rec?.finding.description).toContain('og:image');
+      expect(rec?.finding.description).toContain('og:url');
+      expect(rec?.finding.description).toContain('og:type');
+
+      // Fix strategy declares only missing tags and includes og:type
+      expect(rec?.standardFinding?.fixStrategy).toBe(
+        'Declare <meta property="og:image">, <meta property="og:url">, and <meta property="og:type"> in the document <head> using the site\'s intended metadata configuration.'
+      );
+    });
+
+    // Test C: No recommendation for present metadata
+    it('Test C: No recommendation for present metadata — if a property is present, no recommendation may claim it is missing', () => {
+      // 4 of 5 present, only og:image missing
+      const ogEvidence = {
+        'og:title': 'My Title',
+        'og:description': 'My Description',
+        'og:url': 'https://example.com',
+        'og:type': 'website'
+      };
+      // Coverage is 80%, which is >= 60% threshold, so REC_SEO_OPEN_GRAPH returns null
+      const socialCardsFull = validateSocialCards(ogEvidence, {});
+      expect(socialCardsFull.openGraph.coveragePercentage).toBe(80);
+      expect(socialCardsFull.openGraph.missingTags).toEqual(['og:image']);
+
+      const ogRule = rules.find(r => r.id === 'REC_SEO_OPEN_GRAPH');
+      const rec = ogRule?.evaluate({
+        targetUrl: 'https://example.com',
+        seo: {
+          seo: {
+            socialCards: socialCardsFull
+          }
+        }
+      });
+      expect(rec).toBeNull();
+
+      // Incomplete case with 1 present: og:type present, others missing
+      const ogEvidencePartial = {
+        'og:type': 'website'
+      };
+      const socialCardsPartial = validateSocialCards(ogEvidencePartial, {});
+      const recPartial = ogRule?.evaluate({
+        targetUrl: 'https://example.com',
+        seo: {
+          seo: {
+            socialCards: socialCardsPartial
+          }
+        }
+      });
+      expect(recPartial).toBeDefined();
+      expect(recPartial?.finding.description).not.toContain('og:type');
+      expect(recPartial?.suggestedFix).not.toContain('og:type');
+      expect(recPartial?.standardFinding?.fixStrategy).not.toContain('og:type');
     });
   });
 });

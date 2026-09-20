@@ -1,19 +1,12 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Search, Bell, User, AlertCircle, Play } from 'lucide-react';
+import { Search, User, Play } from 'lucide-react';
 import { getUserNameFromEmail } from '../services/auth/auth.helpers';
 
 export const TopNav: React.FC = () => {
-  const { setGlobalSearchOpen, startAnalysis, currentTab, user, logout, setCurrentTab } = useApp();
+  const { setGlobalSearchOpen, startAnalysis, currentTab, user, logout, setCurrentTab, setProfileTab } = useApp();
   const [quickUrl, setQuickUrl] = useState('');
-  const [showNotif, setShowNotif] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
-
-  const notifications = [
-    { id: 1, text: 'Audit of github.com completed with score 88.', time: '2h ago', read: false },
-    { id: 2, text: 'Vercel deployment check passed (96/100).', time: '1d ago', read: true },
-    { id: 3, text: 'New recommendations available for stripe.com', time: '2d ago', read: true }
-  ];
 
   const handleQuickAnalyze = (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,92 +57,12 @@ export const TopNav: React.FC = () => {
       </div>
 
       <div className="top-nav-right">
-        {/* Notification Bell */}
-        <div style={{ position: 'relative' }}>
-          <button
-            className="sidebar-toggle-btn"
-            style={{ position: 'relative' }}
-            onClick={() => {
-              setShowNotif(!showNotif);
-              setShowProfile(false);
-            }}
-          >
-            <Bell size={16} />
-            <span
-              style={{
-                position: 'absolute',
-                top: '2px',
-                right: '2px',
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
-                backgroundColor: 'var(--color-danger)'
-              }}
-            />
-          </button>
-
-          {showNotif && (
-            <div
-              style={{
-                position: 'absolute',
-                top: '40px',
-                right: 0,
-                width: '280px',
-                backgroundColor: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '8px',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                zIndex: 100
-              }}
-            >
-              <div
-                style={{
-                  padding: '8px',
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  color: 'var(--color-muted)',
-                  borderBottom: '1px solid var(--color-border)'
-                }}
-              >
-                Notifications
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
-                {notifications.map((n) => (
-                  <div
-                    key={n.id}
-                    style={{
-                      padding: '8px',
-                      borderRadius: 'var(--radius-sm)',
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                      backgroundColor: n.read ? 'transparent' : 'rgba(59, 130, 246, 0.05)',
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: '8px'
-                    }}
-                  >
-                    <AlertCircle size={14} style={{ color: 'var(--color-accent)', marginTop: '2px' }} />
-                    <div style={{ flex: 1 }}>
-                      <p style={{ color: 'var(--color-text-primary)', margin: 0, fontSize: '12px' }}>{n.text}</p>
-                      <span style={{ fontSize: '10px', color: 'var(--color-muted)' }}>{n.time}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
         {/* Profile Dropdown */}
         <div style={{ position: 'relative' }}>
           <button
             className="sidebar-toggle-btn"
-            onClick={() => {
-              setShowProfile(!showProfile);
-              setShowNotif(false);
-            }}
+            onClick={() => setShowProfile(!showProfile)}
+            aria-label="User profile"
           >
             <User size={16} />
           </button>
@@ -194,21 +107,34 @@ export const TopNav: React.FC = () => {
                   className="command-item"
                   style={{ padding: '6px 8px', fontSize: '12px', cursor: 'pointer' }}
                   onClick={() => {
+                    setProfileTab('account');
                     setCurrentTab('settings');
                     setShowProfile(false);
                   }}
                 >
-                  Account Settings
+                  Account Profile
+                </div>
+                <div
+                  className="command-item"
+                  style={{ padding: '6px 8px', fontSize: '12px', cursor: 'pointer', color: '#a855f7' }}
+                  onClick={() => {
+                    setProfileTab('ai');
+                    setCurrentTab('settings');
+                    setShowProfile(false);
+                  }}
+                >
+                  ✦ AI Configuration
                 </div>
                 <div
                   className="command-item"
                   style={{ padding: '6px 8px', fontSize: '12px', cursor: 'pointer' }}
                   onClick={() => {
+                    setProfileTab('scanning');
                     setCurrentTab('settings');
                     setShowProfile(false);
                   }}
                 >
-                  Usage Billing
+                  Scanning Specifications
                 </div>
                 <div
                   className="command-item"

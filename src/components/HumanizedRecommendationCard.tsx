@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
+import { useApp } from '../context/AppContext';
 import type { Recommendation } from '../context/AppContext';
+import { API_BASE } from '../config/api';
+import { AIExplanation, AIExplanationSkeleton, AIExplanationError } from './ai';
+import type { ExplanationData } from './ai';
 import {
   ChevronDown,
   Copy,
   Check,
   Sparkles,
   ExternalLink,
-  ShieldCheck
+  ShieldCheck,
+  Loader2
 } from 'lucide-react';
 
 interface Props {
@@ -20,7 +25,13 @@ export const HumanizedRecommendationCard: React.FC<Props> = ({
   expanded = false,
   onToggle
 }) => {
+  const { setCurrentTab } = useApp();
   const [copied, setCopied] = useState(false);
+  const [aiExplanation, setAiExplanation] = useState<ExplanationData | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiErrorCode, setAiErrorCode] = useState<string | null>(null);
+  const [showAi, setShowAi] = useState(false);
 
   const std = rec.standardFinding;
   const problemText = std?.explanation?.problem || rec.finding?.description || rec.issue;
@@ -32,6 +43,58 @@ export const HumanizedRecommendationCard: React.FC<Props> = ({
         ? rec.evidence.map((e: any) => `${e.resource || e.selector || e.type} ${e.duration ? `(${e.duration}ms)` : ''}`).join(', ')
         : 'Target element state observed in rendered DOM'
   );
+
+  const handleExplain = async (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setShowAi(true);
+    if (aiExplanation) return;
+    setAiLoading(true);
+    setAiError(null);
+    setAiErrorCode(null);
+
+    const token = localStorage.getItem('perflens_token');
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const safeEvidence = (Array.isArray(rec.evidence) && rec.evidence.length > 0)
+      ? rec.evidence
+      : typeof rec.evidence === 'string' && rec.evidence.trim().length > 0
+        ? rec.evidence
+        : (observedEvidence ? [{ source: 'perflens-engine', details: { text: observedEvidence } }] : undefined);
+
+    try {
+      const resp = await fetch(`${API_BASE}/ai/explain`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          finding: {
+            ...rec,
+            evidence: safeEvidence
+          },
+          context: {
+            url: rec.sourceUrl
+          }
+        })
+      });
+      let data: any;
+      try {
+        data = await resp.json();
+      } catch {
+        data = { success: false, message: `Server returned status ${resp.status}. Please check backend service.` };
+      }
+      if (!resp.ok || !data.success) {
+        setAiError(data.message || data.error?.message || 'AI explanation is temporarily unavailable.');
+        setAiErrorCode(data.code || null);
+      } else {
+        setAiExplanation(data.data);
+      }
+    } catch {
+      setAiError('AI explanation is temporarily unavailable.');
+      setAiErrorCode(null);
+    } finally {
+      setAiLoading(false);
+    }
+  };
   const fixStrategy = std?.fixStrategy || rec.suggestedFix;
   const validationSteps: string[] = std?.validationSteps || rec.validationSteps || [
     'Rerun the inspection audit after making the change.',
@@ -94,6 +157,24 @@ export const HumanizedRecommendationCard: React.FC<Props> = ({
           >
             {rec.issue}
           </span>
+          {rec.sourceUrl && (
+            <span
+              style={{
+                fontSize: '11px',
+                color: 'var(--color-accent)',
+                backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                border: '1px solid rgba(59, 130, 246, 0.2)',
+                borderRadius: '4px',
+                padding: '2px 6px',
+                fontFamily: 'var(--font-mono)',
+                whiteSpace: 'nowrap',
+                flexShrink: 0
+              }}
+              title={rec.scanTimestamp ? `Audited at ${rec.scanTimestamp}` : undefined}
+            >
+              {rec.sourceUrl}
+            </span>
+          )}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '12px' }}>
@@ -116,6 +197,40 @@ export const HumanizedRecommendationCard: React.FC<Props> = ({
               Verified
             </span>
           )}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!expanded && onToggle) {
+                onToggle();
+              }
+              handleExplain(e);
+            }}
+            disabled={aiLoading}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              fontSize: '11px',
+              fontWeight: 600,
+              padding: '2px 8px',
+              backgroundColor: showAi ? 'rgba(168, 85, 247, 0.15)' : 'rgba(168, 85, 247, 0.08)',
+              color: '#a855f7',
+              border: '1px solid rgba(168, 85, 247, 0.3)',
+              borderRadius: '4px',
+              cursor: aiLoading ? 'not-allowed' : 'pointer',
+              opacity: aiLoading ? 0.8 : 1,
+              transition: 'all 0.2s'
+            }}
+            title={aiLoading ? 'Analyzing finding with PerfLens AI...' : 'Explain this finding with PerfLens AI'}
+          >
+            {aiLoading ? (
+              <Loader2 size={11} className="spin" style={{ color: '#a855f7' }} />
+            ) : (
+              <Sparkles size={11} style={{ color: '#a855f7' }} />
+            )}
+            <span>{aiLoading ? 'Explaining...' : 'AI Explain'}</span>
+          </button>
           <span style={{ fontSize: '11px', color: 'var(--color-muted)', textTransform: 'capitalize' }}>
             {rec.category}
           </span>
@@ -183,6 +298,58 @@ export const HumanizedRecommendationCard: React.FC<Props> = ({
               {observedEvidence}
             </div>
           </div>
+
+          {/* AI Explainer Section */}
+          {!showAi ? (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <button
+                type="button"
+                onClick={handleExplain}
+                disabled={aiLoading}
+                className="btn btn-sm"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '11.5px',
+                  fontWeight: 600,
+                  padding: '5px 12px',
+                  backgroundColor: 'rgba(168, 85, 247, 0.08)',
+                  color: '#a855f7',
+                  border: '1px solid rgba(168, 85, 247, 0.3)',
+                  borderRadius: 'var(--radius-sm)',
+                  cursor: aiLoading ? 'not-allowed' : 'pointer',
+                  opacity: aiLoading ? 0.8 : 1,
+                  transition: 'all 0.2s'
+                }}
+              >
+                {aiLoading ? (
+                  <Loader2 size={13} className="spin" style={{ color: '#a855f7' }} />
+                ) : (
+                  <Sparkles size={13} style={{ color: '#a855f7' }} />
+                )}
+                <span>{aiLoading ? 'Explaining...' : '✦ Explain with AI'}</span>
+              </button>
+            </div>
+          ) : (
+            <div>
+              {aiLoading && <AIExplanationSkeleton />}
+              {aiError && (
+                <AIExplanationError
+                  onRetry={() => handleExplain()}
+                  message={aiError}
+                  code={aiErrorCode || undefined}
+                  onGoToByok={() => {
+                    setCurrentTab('settings');
+                    setTimeout(() => {
+                      document.getElementById('ai-configuration')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                />
+              )}
+              {aiExplanation && <AIExplanation data={aiExplanation} />}
+            </div>
+          )}
 
           {/* 4. How should it be fixed? */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>

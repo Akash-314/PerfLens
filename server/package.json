@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "tsx server.ts",
-    "dev": "tsx server.ts",
+    "dev": "node --import tsx --watch server.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },

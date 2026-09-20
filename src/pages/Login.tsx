@@ -158,7 +158,9 @@ export const Login: React.FC = () => {
               </span>
               <input
                 id="email"
+                name="email"
                 type="email"
+                autoComplete="email"
                 ref={emailRef}
                 placeholder="developer@perflens.com"
                 value={email}
@@ -202,7 +204,9 @@ export const Login: React.FC = () => {
               </span>
               <input
                 id="password"
+                name="password"
                 type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

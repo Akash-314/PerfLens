@@ -163,6 +163,21 @@ export const parseMetricNumeric = (metric: any): number | null => {
   return null;
 };
 
+/**
+ * Distinguishes first-party host resources from external / CDN / third-party resources.
+ */
+export const isThirdPartyResource = (assetUrl?: string | null, targetUrl?: string | null): boolean => {
+  try {
+    if (!assetUrl || typeof assetUrl !== 'string' || !assetUrl.startsWith('http')) return false;
+    if (!targetUrl || typeof targetUrl !== 'string' || !targetUrl.startsWith('http')) return false;
+    const assetHost = new URL(assetUrl).hostname.replace(/^www\./i, '').toLowerCase();
+    const targetHost = new URL(targetUrl).hostname.replace(/^www\./i, '').toLowerCase();
+    return assetHost !== targetHost && !assetHost.endsWith(`.${targetHost}`);
+  } catch {
+    return false;
+  }
+};
+
 export const rules: RecommendationRule[] = [
   // ==========================================
   // 1. PERFORMANCE: CORE WEB VITALS - TBT
@@ -339,16 +354,18 @@ export const rules: RecommendationRule[] = [
       };
 
       let dynamicTitle = this.title;
-      let dynamicFix = 'Ensure the LCP resource is discovered early in HTML, preloaded with <link rel="preload">, and served with optimal caching.';
+      let dynamicFix = 'Review how the LCP resource is discovered and prioritized, and optimize server response and critical render path.';
       let potentialImpact = 'Accelerates time-to-render for the primary content block seen by users.';
 
       if (isImage) {
-        dynamicTitle = 'Preload and compress the Largest Contentful Paint hero image';
-        dynamicFix = `Add <link rel="preload" as="image" href="${elementUrl || 'image_url'}"> in <head> and serve modern WebP/AVIF format with fetchpriority="high".`;
+        dynamicTitle = 'Optimize Largest Contentful Paint hero image discovery and delivery';
+        dynamicFix = elementUrl
+          ? `Review how the LCP hero image is discovered and prioritized. If it is an above-the-fold hero image not pre-discovered by the browser parser, ensure it is in the initial HTML, consider preloading with <link rel="preload" as="image" href="${elementUrl}"> or fetchpriority="high", and serve modern WebP/AVIF format.`
+          : 'Review how the LCP image is discovered and prioritized: ensure early HTML discovery, optimal responsive sizing, modern image formats, and appropriate fetchpriority.';
         potentialImpact = 'Reduces resource discovery and download latency for the primary hero image.';
       } else {
         dynamicTitle = 'Reduce render delay for Largest Contentful Paint text/container block';
-        dynamicFix = 'Eliminate render-blocking CSS/JS and inline critical styles required to paint the LCP text block immediately after DOM parse.';
+        dynamicFix = 'Review critical path dependencies: eliminate render-blocking CSS/JS and inline critical styles required to paint the LCP text block immediately after DOM parse.';
         potentialImpact = 'Unblocks browser layout and font styling to render the main heading or text block earlier.';
       }
 
@@ -634,6 +651,12 @@ export const rules: RecommendationRule[] = [
       const estimateType = estimatedSavings ? 'transfer_only' : 'not_quantified';
       const evidence = `Analyzed ${candidates.length} images; sample: ${sample.url} can save ${sample.estimatedSizeReductionKb || 0} KB using WebP/AVIF`;
 
+      const targetUrl = input.targetUrl || input.seo?.seo?.canonicalUrl || '';
+      const isExternalImage = isThirdPartyResource(sample.url, targetUrl);
+      const dynamicFix = isExternalImage
+        ? 'Optimize image delivery: For site-managed images, compress raw assets or adopt dynamic image CDN transforms to serve next-gen formats (WebP/AVIF). If images are hosted on third-party CDNs, configure URL transformation parameters or review whether legacy formats can be updated.'
+        : 'Optimize raw image assets using image build transforms or dynamic CDN formatting to compress payloads and serve next-gen formats (WebP/AVIF).';
+
       return {
         id: this.id,
         findingId: 'REC_IMAGE_COMPRESSION_001',
@@ -650,7 +673,7 @@ export const rules: RecommendationRule[] = [
         potentialImpact,
         estimatedSavings,
         measuredImprovement: null,
-        suggestedFix: 'Optimize raw image assets using sharp, imagemin, or dynamic CDN image transforms to compress payloads and serve next-gen formats (WebP/AVIF).',
+        suggestedFix: dynamicFix,
         estimatedDifficulty: this.estimatedDifficulty,
         estimatedImplementationTime: `${this.hoursToImplement * 60} mins`,
         refUrl: 'https://web.dev/articles/serve-images-webp',
@@ -737,7 +760,7 @@ export const rules: RecommendationRule[] = [
         potentialImpact,
         estimatedSavings: null,
         measuredImprovement: null,
-        suggestedFix: `Add loading="lazy" attribute to all ${missingCount} images that appear below the viewport fold.`,
+        suggestedFix: `Review the ${missingCount} below-the-fold images and lazy-load those that are not required during initial rendering or early interaction.`,
         estimatedDifficulty: this.estimatedDifficulty,
         estimatedImplementationTime: `${this.hoursToImplement * 60} mins`,
         refUrl: 'https://web.dev/articles/browser-level-image-lazy-loading',
@@ -896,6 +919,16 @@ export const rules: RecommendationRule[] = [
       const estimatedSavings = savingsKb > 0 ? createTransferSavings(savingsKb) : null;
       const estimateType = estimatedSavings ? 'transfer_only' : 'not_quantified';
       const evidence = `Unminified script: ${sampleScript.url} (Size: ${sampleSize} KB, Minified: false)`;
+      const targetUrl = input.targetUrl || input.seo?.seo?.canonicalUrl || '';
+      const allThirdParty = unminifiedScripts.every((s: any) => isThirdPartyResource(s.url, targetUrl));
+      const hasThirdParty = unminifiedScripts.some((s: any) => isThirdPartyResource(s.url, targetUrl));
+
+      let suggestedFix = 'Ensure production JavaScript assets are minified during the build process to strip whitespace and shorten identifiers.';
+      if (allThirdParty) {
+        suggestedFix = 'A JavaScript resource served by the page is unminified. If this asset is controlled by the site owner, minify it during the production build. If it is third-party, review whether it can be deferred, removed, or replaced.';
+      } else if (hasThirdParty) {
+        suggestedFix = 'Minify first-party JavaScript during the production build pipeline. For third-party or CDN-hosted scripts, verify if production-minified bundles are available or defer non-essential scripts.';
+      }
 
       return {
         id: this.id,
@@ -913,7 +946,7 @@ export const rules: RecommendationRule[] = [
         potentialImpact,
         estimatedSavings,
         measuredImprovement: null,
-        suggestedFix: 'Integrate Terser, esbuild, or SWC into your production build pipeline to strip whitespace and shorten identifiers.',
+        suggestedFix,
         estimatedDifficulty: this.estimatedDifficulty,
         estimatedImplementationTime: `${this.hoursToImplement * 60} mins`,
         refUrl: 'https://web.dev/articles/reduce-javascript-payloads-with-code-splitting',
@@ -1184,7 +1217,7 @@ export const rules: RecommendationRule[] = [
         potentialImpact,
         estimatedSavings: null,
         measuredImprovement: null,
-        suggestedFix: 'Add the defer or async attribute to non-critical script tags in <head>, or convert scripts to type="module".',
+        suggestedFix: 'Audit parser-blocking scripts: add the defer or async attribute to scripts verified as non-critical during initial execution, or convert them to type="module". Scripts required for early layout or initialization should be evaluated for minimal critical inlining.',
         estimatedDifficulty: this.estimatedDifficulty,
         estimatedImplementationTime: `${this.hoursToImplement * 60} mins`,
         refUrl: 'https://web.dev/articles/render-blocking-resources',
@@ -1348,6 +1381,17 @@ export const rules: RecommendationRule[] = [
       const estimateType = estimatedSavings ? 'transfer_only' : 'not_quantified';
       const evidence = `Unminified stylesheet: ${sampleCss.url} (${(sampleCss.fileSizeKb || sampleCss.sizeKb || 0).toFixed(1)} KB, Minified: false)`;
 
+      const targetUrl = input.targetUrl || input.seo?.seo?.canonicalUrl || '';
+      const allThirdPartyCss = unminifiedCss.every((s: any) => isThirdPartyResource(s.url, targetUrl));
+      const hasThirdPartyCss = unminifiedCss.some((s: any) => isThirdPartyResource(s.url, targetUrl));
+
+      let suggestedFix = 'Minify production CSS stylesheets during compilation to strip comments and redundant whitespace.';
+      if (allThirdPartyCss) {
+        suggestedFix = 'A CSS stylesheet served by the page is unminified. If this stylesheet is controlled by the site owner, minify it during the production build. If it is an externally served or third-party resource, review whether a minified variant is available or if it can be deferred.';
+      } else if (hasThirdPartyCss) {
+        suggestedFix = 'Minify first-party stylesheets during compilation. For third-party or CDN-hosted styles, verify whether minified variants can be requested.';
+      }
+
       return {
         id: this.id,
         findingId: 'REC_CSS_MINIFY_001',
@@ -1364,7 +1408,7 @@ export const rules: RecommendationRule[] = [
         potentialImpact,
         estimatedSavings,
         measuredImprovement: null,
-        suggestedFix: 'Minify production CSS using clean-css, cssnano, or esbuild during compilation.',
+        suggestedFix,
         estimatedDifficulty: this.estimatedDifficulty,
         estimatedImplementationTime: `${this.hoursToImplement * 60} mins`,
         refUrl: 'https://web.dev/articles/defer-non-critical-css',
@@ -2718,6 +2762,8 @@ export const rules: RecommendationRule[] = [
       if (!ogDetails || ogDetails.coveragePercentage >= 60) return null;
 
       const missing = ogDetails.missingTags;
+      if (!missing || missing.length === 0) return null;
+
       const targetUrl = input.targetUrl || input.seo?.seo?.canonicalUrl || 'target page';
       const presentCount = ogDetails.presentCount ?? (ogDetails.properties ? ogDetails.properties.filter((p: OpenGraphPropertyCheck) => p.present).length : (5 - missing.length));
       const totalCount = ogDetails.totalCount ?? 5;
@@ -2729,11 +2775,18 @@ export const rules: RecommendationRule[] = [
       const whyItMatters = 'When users share your page link on social platforms or messaging apps, missing Open Graph tags result in blank previews without an image, title, or description, significantly reducing engagement.';
       const impact = 'Social media preview card appearance and link click-through rate.';
       const task = `Add the missing Open Graph tags (${missing.join(', ')}) to your document <head>.`;
-      const fixStrategy = 'Declare <meta property="og:title">, <meta property="og:description">, <meta property="og:image">, and <meta property="og:url"> in the document <head>.';
+
+      const formatMissingTagsList = (tags: string[]): string => {
+        if (tags.length === 1) return `<meta property="${tags[0]}">`;
+        if (tags.length === 2) return `<meta property="${tags[0]}"> and <meta property="${tags[1]}">`;
+        return `${tags.slice(0, -1).map(t => `<meta property="${t}">`).join(', ')}, and <meta property="${tags[tags.length - 1]}">`;
+      };
+
+      const fixStrategy = `Declare ${formatMissingTagsList(missing)} in the document <head> using the site's intended metadata configuration.`;
       const validationSteps = [
-        'Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.',
-        'Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).',
-        'Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector).'
+        `Inspect the rendered page <head> and verify ${missing.join(', ')} are declared.`,
+        ...(missing.includes('og:image') ? ['Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).'] : []),
+        'Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger).'
       ];
 
       const { standardFinding, aiFixPrompt } = buildStandardFindingAndPrompt({

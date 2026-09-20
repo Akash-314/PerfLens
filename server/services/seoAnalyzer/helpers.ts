@@ -4,7 +4,6 @@ import {
   StructuredDataDetails,
   RobotsMetaDetails,
   SocialCardDetails,
-  OpenGraphPropertyCheck,
   SeoScoreExplanation
 } from './types.js';
 
@@ -15,30 +14,39 @@ import {
 export const validateHeadingHierarchy = (
   headingsList: Array<{ tag: string; text: string }>
 ): HeadingsHierarchy => {
-  const h1List = headingsList.filter(h => h.tag === 'h1').map(h => h.text);
-  const h2List = headingsList.filter(h => h.tag === 'h2').map(h => h.text);
-  const h3List = headingsList.filter(h => h.tag === 'h3').map(h => h.text);
-  const h4List = headingsList.filter(h => h.tag === 'h4').map(h => h.text);
-  const h5List = headingsList.filter(h => h.tag === 'h5').map(h => h.text);
-  const h6List = headingsList.filter(h => h.tag === 'h6').map(h => h.text);
+  const h1List: string[] = [];
+  const h2List: string[] = [];
+  const h3List: string[] = [];
+  const h4List: string[] = [];
+  const h5List: string[] = [];
+  const h6List: string[] = [];
 
   const skippedLevels: Array<{ from: string; to: string; text: string }> = [];
   let prevLevel = 0;
 
-  headingsList.forEach(heading => {
-    const currentLevel = parseInt(heading.tag.replace('h', ''), 10);
+  for (const heading of headingsList) {
+    const text = heading.text;
+    const tag = heading.tag.toLowerCase();
+    if (tag === 'h1') h1List.push(text);
+    else if (tag === 'h2') h2List.push(text);
+    else if (tag === 'h3') h3List.push(text);
+    else if (tag === 'h4') h4List.push(text);
+    else if (tag === 'h5') h5List.push(text);
+    else if (tag === 'h6') h6List.push(text);
+
+    const currentLevel = parseInt(tag.replace('h', ''), 10);
     if (!isNaN(currentLevel)) {
       // If we jump more than 1 level down without an intervening heading (e.g. H1 -> H3)
       if (prevLevel > 0 && currentLevel > prevLevel + 1) {
         skippedLevels.push({
           from: `h${prevLevel}`,
           to: `h${currentLevel}`,
-          text: heading.text.slice(0, 50)
+          text: text.slice(0, 50)
         });
       }
       prevLevel = currentLevel;
     }
-  });
+  }
 
   return {
     h1: h1List,
@@ -288,10 +296,28 @@ export const validateSocialCards = (
   og: Record<string, string>,
   twitter: Record<string, string>
 ): SocialCardDetails => {
+  const ogKeys = Object.keys(og || {});
+  const getOgVal = (tag: string): string | null => {
+    if (!og) return null;
+    if (og[tag] && og[tag].trim().length > 0) return og[tag].trim();
+    const tagLower = tag.toLowerCase();
+    const foundKey = ogKeys.find(k => k.toLowerCase() === tagLower);
+    return foundKey && og[foundKey] && og[foundKey].trim().length > 0 ? og[foundKey].trim() : null;
+  };
+
+  const twitterKeys = Object.keys(twitter || {});
+  const getTwitterVal = (tag: string): string | null => {
+    if (!twitter) return null;
+    if (twitter[tag] && twitter[tag].trim().length > 0) return twitter[tag].trim();
+    const tagLower = tag.toLowerCase();
+    const foundKey = twitterKeys.find(k => k.toLowerCase() === tagLower);
+    return foundKey && twitter[foundKey] && twitter[foundKey].trim().length > 0 ? twitter[foundKey].trim() : null;
+  };
+
   const expectedOg = ['og:title', 'og:description', 'og:image', 'og:url', 'og:type'];
   const missingOg: string[] = [];
   const ogProperties = expectedOg.map(tag => {
-    const val = og[tag] && og[tag].trim().length > 0 ? og[tag].trim() : null;
+    const val = getOgVal(tag);
     const isPresent = val !== null;
     if (!isPresent) {
       missingOg.push(tag);
@@ -306,7 +332,8 @@ export const validateSocialCards = (
   const expectedTwitter = ['twitter:card', 'twitter:title', 'twitter:description', 'twitter:image'];
   const missingTwitter: string[] = [];
   expectedTwitter.forEach(tag => {
-    if (!twitter[tag] || twitter[tag].trim().length === 0) {
+    const val = getTwitterVal(tag);
+    if (!val) {
       missingTwitter.push(tag);
     }
   });
@@ -318,12 +345,12 @@ export const validateSocialCards = (
 
   return {
     openGraph: {
-      title: og['og:title'] || null,
-      description: og['og:description'] || null,
-      image: og['og:image'] || null,
-      url: og['og:url'] || null,
-      type: og['og:type'] || null,
-      siteName: og['og:site_name'] || null,
+      title: getOgVal('og:title'),
+      description: getOgVal('og:description'),
+      image: getOgVal('og:image'),
+      url: getOgVal('og:url'),
+      type: getOgVal('og:type'),
+      siteName: getOgVal('og:site_name'),
       missingTags: missingOg,
       properties: ogProperties,
       presentCount,
@@ -331,11 +358,11 @@ export const validateSocialCards = (
       coveragePercentage: ogCoverage
     },
     twitter: {
-      card: twitter['twitter:card'] || null,
-      title: twitter['twitter:title'] || null,
-      description: twitter['twitter:description'] || null,
-      image: twitter['twitter:image'] || null,
-      site: twitter['twitter:site'] || null,
+      card: getTwitterVal('twitter:card'),
+      title: getTwitterVal('twitter:title'),
+      description: getTwitterVal('twitter:description'),
+      image: getTwitterVal('twitter:image'),
+      site: getTwitterVal('twitter:site'),
       missingTags: missingTwitter,
       coveragePercentage: twitterCoverage
     }

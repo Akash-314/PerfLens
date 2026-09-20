@@ -1,0 +1,15 @@
+{
+  "title": "Understanding Total Blocking Time On Main Thread",
+  "whatIsHappening": "The browser spent measurable time processing JavaScript execution on the main thread during initial page load, delaying user interaction responsiveness.",
+  "whyItMatters": "Long blocking periods directly delay first input responsiveness (FID/INP), creating sluggish perceived performance for visitors attempting to tap, click, or scroll.",
+  "evidenceExplanation": "PerfLens recorded a Total Blocking Time of 380ms from lab diagnostic audits, indicating high CPU utilization during script execution.",
+  "knownFacts": [
+    "Measured Total Blocking Time is 380ms.",
+    "Measured by lab diagnostic audits."
+  ],
+  "unknowns": [
+    "The exact JavaScript task or function responsible requires CPU profile sampling.",
+    "Network latency and client-side device performance may vary in field conditions."
+  ],
+  "confidence": "high"
+}

@@ -11,6 +11,7 @@ import analysisRoutes from './routes/analysisRoutes.js';
 import reportRoutes from './routes/report.routes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
 
 import errorHandler from './middlewares/errorHandler.js';
 import { apiLimiter } from './middlewares/rateLimiter.js';
@@ -96,6 +97,8 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/analysis', analysisRoutes);
 app.use('/api/v1/reports', reportRoutes);
 app.use('/api/v1/projects', projectRoutes);
+app.use('/api/v1/ai', aiRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.get("/", (_req, res) => {
   res.send("PerfLens API Gateway Active");

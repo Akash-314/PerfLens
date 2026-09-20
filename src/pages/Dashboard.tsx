@@ -93,19 +93,21 @@ export const Dashboard: React.FC = () => {
     return 'metric-score-red';
   };
 
-  // Compile issues dynamically from recommendations of the latest audit report
+  // Compile issues dynamically from recommendations of the latest audit report with explicit scan context
   const mostCommonIssues = latestReport?.recommendations?.slice(0, 4).map((rec) => ({
     title: rec.issue,
     category: rec.category.toUpperCase(),
     severity: rec.priority.toLowerCase() === 'high' || rec.priority.toLowerCase() === 'critical' ? 'High' : 'Medium',
-    code: rec.id
+    code: rec.id,
+    url: latestReport.url,
+    timestamp: latestReport.timestamp
   })) || [];
 
   return (
     <div className="workspace-container fade-in">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 700, letterSpacing: '-0.03em' }}>Workspace Overview</h1>
+          <h1 style={{ fontSize: '24px', fontWeight: 700, letterSpacing: '-0.03em' }}>Performance Overview</h1>
           <p style={{ fontSize: '13px', color: 'var(--color-muted)' }}>Continuous performance telemetry and diagnostics.</p>
         </div>
         <button className="btn btn-primary" onClick={() => setCurrentTab('analyze')}>
@@ -314,11 +316,15 @@ export const Dashboard: React.FC = () => {
           </table>
         </div>
 
-        {/* Most Common Issues */}
+        {/* Recent Issues / Bottlenecks */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Frequent Warnings</h3>
-            <p style={{ fontSize: '12px', color: 'var(--color-muted)' }}>Core bottlenecks grouped across your sites.</p>
+            <h3 style={{ fontSize: '15px', fontWeight: 600 }}>
+              Recent Issues — {latestReport ? latestReport.url : 'Overview'}
+            </h3>
+            <p style={{ fontSize: '12px', color: 'var(--color-muted)' }}>
+              {latestReport ? `Key findings from latest scan (${latestReport.timestamp})` : 'No active performance warnings detected.'}
+            </p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {mostCommonIssues.length === 0 ? (
@@ -356,8 +362,10 @@ export const Dashboard: React.FC = () => {
                     >
                       {issue.title}
                     </p>
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '4px', fontSize: '10px' }}>
-                      <span style={{ color: 'var(--color-accent)' }}>{issue.category}</span>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '4px', fontSize: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                      <span style={{ color: 'var(--color-accent)', fontWeight: 600 }}>{issue.url}</span>
+                      <span style={{ color: 'var(--color-muted)' }}>•</span>
+                      <span style={{ color: 'var(--color-text-secondary)' }}>{issue.category}</span>
                       <span style={{ color: 'var(--color-muted)' }}>•</span>
                       <span style={{ color: 'var(--color-muted)' }}>Severity: {issue.severity}</span>
                     </div>

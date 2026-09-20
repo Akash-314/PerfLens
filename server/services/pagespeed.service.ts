@@ -145,7 +145,7 @@ export const logServerDiagnostic = (params: IDiagnosticLogParams): void => {
   if (apiKey && sanitizedTarget.includes(apiKey)) {
     sanitizedTarget = sanitizedTarget.split(apiKey).join('[REDACTED_KEY]');
   }
-  sanitizedTarget = sanitizedTarget.replace(/([?&]key=)[a-zA-Z0-9_\-]+/gi, '$1[REDACTED_KEY]');
+  sanitizedTarget = sanitizedTarget.replace(/([?&]key=)[a-zA-Z0-9_-]+/gi, '$1[REDACTED_KEY]');
   sanitizedTarget = sanitizedTarget.replace(/AIza[0-9A-Za-z-_]{10,}/gi, '[REDACTED_KEY]');
 
   console.log(
@@ -168,7 +168,7 @@ export const classifyGoogleError = (error: any): {
     if (apiKey && s.includes(apiKey)) {
       s = s.split(apiKey).join('[REDACTED_KEY]');
     }
-    s = s.replace(/([?&]key=)[a-zA-Z0-9_\-]+/gi, '$1[REDACTED_KEY]');
+    s = s.replace(/([?&]key=)[a-zA-Z0-9_-]+/gi, '$1[REDACTED_KEY]');
     s = s.replace(/AIza[0-9A-Za-z-_]{10,}/gi, '[REDACTED_KEY]');
     return s;
   };

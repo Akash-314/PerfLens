@@ -79,6 +79,9 @@ export interface Recommendation {
   aiFixPrompt?: string;
   fixStrategy?: string;
   validationSteps?: string[];
+  sourceUrl?: string;
+  scanTimestamp?: string;
+  scanId?: string;
 }
 
 export interface ResourceItem {
@@ -300,6 +303,8 @@ export interface Toast {
 interface AppContextType {
   currentTab: string;
   setCurrentTab: (tab: string) => void;
+  profileTab: 'account' | 'ai' | 'scanning' | 'advanced';
+  setProfileTab: (tab: 'account' | 'ai' | 'scanning' | 'advanced') => void;
   reports: Report[];
   currentReport: Report | null;
   setCurrentReport: (report: Report | null) => void;
@@ -557,7 +562,7 @@ const mapBackendReportToFrontend = (r: any): Report => {
   const metaDesc = seoData.metaDescription || seoData.description;
   const canonical = seoData.canonicalUrl || seoData.canonical;
   const canonicalDetails = seoData.canonicalDetails || null;
-  const hasSitemap = seoData.hasSitemapXml ?? (seoData.sitemap ? true : false);
+  const hasSitemap = seoData.hasSitemapXml ?? Boolean(seoData.sitemap);
   const ogTags = seoData.openGraphTags || {};
   const openGraphData = seoData.openGraph || null;
   const twitterData = seoData.twitterCard || null;
@@ -679,6 +684,7 @@ const mapBackendReportToFrontend = (r: any): Report => {
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentTab, setCurrentTab] = useState<string>('landing');
+  const [profileTab, setProfileTab] = useState<'account' | 'ai' | 'scanning' | 'advanced'>('account');
   const [reports, setReports] = useState<Report[]>([]);
   const [currentReport, setCurrentReport] = useState<Report | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -1115,6 +1121,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       value={{
         currentTab,
         setCurrentTab,
+        profileTab,
+        setProfileTab,
         reports,
         currentReport,
         setCurrentReport,

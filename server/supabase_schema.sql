@@ -82,7 +82,36 @@ CREATE TABLE IF NOT EXISTS public.saved_comparisons (
 
 CREATE INDEX IF NOT EXISTS idx_comparisons_owner ON public.saved_comparisons(owner_id);
 
--- 6. GRANT FULL ACCESS TO API ROLES
+-- 6. USER AI CONFIGURATIONS TABLE (BYOK & Managed Mode)
+CREATE TABLE IF NOT EXISTS public.user_ai_configs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE UNIQUE,
+  mode TEXT NOT NULL DEFAULT 'managed' CHECK (mode IN ('managed', 'byok')),
+  provider TEXT NOT NULL DEFAULT 'gemini',
+  model TEXT NOT NULL DEFAULT 'gemini-flash-lite-latest',
+  encrypted_api_key TEXT DEFAULT NULL,
+  base_url TEXT DEFAULT NULL,
+  configured_at TIMESTAMPTZ DEFAULT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_ai_configs_user ON public.user_ai_configs(user_id);
+
+-- 7. USER AI MONTHLY USAGE TABLE (Managed explanations quota tracking)
+CREATE TABLE IF NOT EXISTS public.user_ai_usages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  period TEXT NOT NULL, -- e.g. '2026-09'
+  managed_used INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(user_id, period)
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_ai_usages_user_period ON public.user_ai_usages(user_id, period);
+
+-- 8. GRANT FULL ACCESS TO API ROLES
 GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
 GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;

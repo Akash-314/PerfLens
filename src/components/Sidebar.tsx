@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   Globe,
   FileBarChart,
-  History,
   GitCompare,
   FolderGit,
   Sparkles,
@@ -27,25 +26,25 @@ export const Sidebar: React.FC = () => {
     activeProject,
     setActiveProject,
     addToast,
-    user
+    user,
+    setProfileTab
   } = useApp();
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'analyze', label: 'Analyze Website', icon: Globe },
     { id: 'reports', label: 'Reports', icon: FileBarChart },
-    { id: 'history', label: 'History', icon: History },
     { id: 'comparisons', label: 'Comparisons', icon: GitCompare },
     { id: 'projects', label: 'Projects', icon: FolderGit },
     { id: 'recommendations', label: 'Recommendations', icon: Sparkles },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'settings', label: 'Profile & Settings', icon: Settings },
     { id: 'support', label: 'Support', icon: HelpCircle }
   ];
 
   const handleProjectSwitch = (pId: string) => {
     const proj = projects.find((p) => p.id === pId) || null;
     setActiveProject(proj);
-    addToast(`Switched active workspace to "${proj?.name}"`, 'info');
+    addToast(`Switched active project to "${proj?.name}"`, 'info');
   };
 
   return (
@@ -100,7 +99,7 @@ export const Sidebar: React.FC = () => {
                   letterSpacing: '0.05em'
                 }}
               >
-                Workspaces
+                Projects
               </span>
               <button
                 onClick={() => setCurrentTab('projects')}
@@ -159,7 +158,15 @@ export const Sidebar: React.FC = () => {
         )}
       </nav>
 
-      <div className="sidebar-footer">
+      <div
+        className="sidebar-footer"
+        onClick={() => {
+          setProfileTab('account');
+          setCurrentTab('settings');
+        }}
+        style={{ cursor: 'pointer' }}
+        title="View Profile & Account Settings"
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div
             style={{
@@ -187,9 +194,11 @@ export const Sidebar: React.FC = () => {
               <span style={{ fontSize: '10px', color: 'var(--color-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user?.email || 'Not Signed In'}
               </span>
-              <span style={{ fontSize: '9.5px', color: 'var(--color-accent)', fontWeight: 500, marginTop: '2px' }}>
-                Free Subscription
-              </span>
+              {user && (
+                <span style={{ fontSize: '9.5px', color: 'var(--color-accent)', fontWeight: 500, marginTop: '2px' }}>
+                  {user.role ? (user.role === 'admin' ? 'Administrator' : 'Standard User') : 'Active Member'}
+                </span>
+              )}
             </div>
           )}
         </div>

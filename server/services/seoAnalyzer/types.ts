@@ -176,7 +176,7 @@ export interface SEOAnalysisSummary {
   twitterCardCoverage: number; // percentage (0-100)
   structuredDataPresence: boolean;
   structuredDataValid: boolean;
-  robotsTxtStatus: 'verified_exists' | 'missing' | 'unreachable' | 'invalid';
+  robotsTxtStatus: 'verified_exists' | 'missing' | 'unreachable' | 'invalid' | 'access_blocked';
   sitemapXmlStatus: 'verified_exists' | 'missing' | 'unreachable' | 'invalid' | 'access_blocked' | 'unable_to_verify';
   sitemapStatus?: 'SITEMAP_VALID' | 'SITEMAP_NOT_FOUND' | 'SITEMAP_INVALID' | 'SITEMAP_ACCESS_BLOCKED' | 'SITEMAP_UNREACHABLE' | 'SITEMAP_UNABLE_TO_VERIFY' | 'SITEMAP_FOUND';
   structuredDataStatus?: 'NOT_DETECTED' | 'VALID' | 'INVALID' | 'PARTIALLY_VALID';

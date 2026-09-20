@@ -978,6 +978,80 @@ describe('PerfLens Recommendation Engine & Estimated Improvement Overhaul (30. T
       }
     }
   });
+
+  // ---------------------------------------------------------------------------
+  // 32. Test D: Public scan does not invent build stack or file paths and distinguishes third-party assets
+  // ---------------------------------------------------------------------------
+  it('32: Test D — Public scan does not invent source details and distinguishes third-party assets', () => {
+    const minifyRule = rules.find(r => r.id === 'REC_JS_MINIFY');
+    expect(minifyRule).toBeDefined();
+
+    // Resource on CDN domain (m.media-amazon.com) while target is https://www.amazon.in
+    const rec = minifyRule?.evaluate({
+      targetUrl: 'https://www.amazon.in',
+      js: {
+        scripts: [
+          {
+            url: 'https://m.media-amazon.com/images/I/61xJcNKKLXL.js?AUIClients/AmazonUIjQuery',
+            isMinified: false,
+            fileSizeKb: 28.8
+          }
+        ]
+      }
+    });
+
+    expect(rec).toBeDefined();
+    // Must distinguish third-party ownership
+    expect(rec?.suggestedFix).toContain('A JavaScript resource served by the page is unminified');
+    expect(rec?.suggestedFix).toContain('If this asset is controlled by the site owner');
+    expect(rec?.suggestedFix).toContain('third-party');
+
+    // Must NOT blindly prescribe specific local build tools or assume repo ownership
+    expect(rec?.suggestedFix).not.toContain('Integrate Terser');
+    expect(rec?.suggestedFix).not.toContain('esbuild');
+    expect(rec?.suggestedFix).not.toContain('SWC');
+  });
+
+  // ---------------------------------------------------------------------------
+  // 33. Test F: Conditional and technically safe recommendations for images & render-blocking scripts
+  // ---------------------------------------------------------------------------
+  it('33: Test F — Recommendations are technically conditional and do not prescribe absolute harmful changes', () => {
+    const lazyRule = rules.find(r => r.id === 'REC_IMAGE_LAZY_LOAD');
+    const lazyRec = lazyRule?.evaluate({
+      targetUrl: 'https://www.amazon.in',
+      image: {
+        images: Array.from({ length: 46 }, (_, i) => ({
+          url: `https://m.media-amazon.com/images/img_${i}.jpg`,
+          isBelowTheFold: true,
+          lazyLoading: false
+        }))
+      }
+    });
+
+    expect(lazyRec).toBeDefined();
+    // Must NOT blindly command "Add loading='lazy' to all 46 images"
+    expect(lazyRec?.suggestedFix).toBe(
+      'Review the 46 below-the-fold images and lazy-load those that are not required during initial rendering or early interaction.'
+    );
+
+    const renderBlockingRule = rules.find(r => r.id === 'REC_JS_RENDER_BLOCKING');
+    const rbRec = renderBlockingRule?.evaluate({
+      targetUrl: 'https://www.amazon.in',
+      js: {
+        scripts: [
+          {
+            url: 'https://m.media-amazon.com/images/I/21Yni+jKzkL.js',
+            isRenderBlocking: true,
+            documentPosition: '<head>'
+          }
+        ]
+      }
+    });
+
+    expect(rbRec).toBeDefined();
+    // Must distinguish safe-to-defer scripts from those required during initial execution
+    expect(rbRec?.suggestedFix).toContain('verified as non-critical during initial execution');
+  });
 });
 
 

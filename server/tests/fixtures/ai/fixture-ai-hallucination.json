@@ -1,0 +1,38 @@
+{
+  "unsupportedFramework": {
+    "title": "React Hydration Error Detected",
+    "whatIsHappening": "Your React and Next.js hydration cycle is delaying the main thread by executing heavy rendering passes.",
+    "whyItMatters": "React components need immediate code splitting to avoid locking the UI.",
+    "evidenceExplanation": "PerfLens detected 380ms TBT caused by React state reconciliation.",
+    "knownFacts": ["TBT was 380ms"],
+    "unknowns": ["None"],
+    "confidence": "high"
+  },
+  "fabricatedSourceFile": {
+    "title": "Edit src/App.tsx Immediately",
+    "whatIsHappening": "The main thread issue originates in src/components/Dashboard.tsx and utils/helpers.js.",
+    "whyItMatters": "Refactoring src/App.tsx will decrease bundle overhead.",
+    "evidenceExplanation": "Observed large bundle originating in src/App.tsx.",
+    "knownFacts": ["Blocking time detected"],
+    "unknowns": ["None"],
+    "confidence": "high"
+  },
+  "speculativePenalty": {
+    "title": "Google Search Ranking Penalty Imminent",
+    "whatIsHappening": "Because of this issue, Google will penalize your domain and rankings will plummet by 50%.",
+    "whyItMatters": "Traffic will decrease severely unless immediate action is taken.",
+    "evidenceExplanation": "TBT measurements will trigger algorithmic search penalties.",
+    "knownFacts": ["Measured 380ms TBT"],
+    "unknowns": ["None"],
+    "confidence": "high"
+  },
+  "inventedEvidenceId": {
+    "title": "Unverified Telemetry Reference",
+    "whatIsHappening": "The site failed due to metric item E999 which was not collected.",
+    "whyItMatters": "Metric E999 is critical.",
+    "evidenceExplanation": "Evidence E999 proves severe degradation.",
+    "knownFacts": ["E999 was measured"],
+    "unknowns": ["None"],
+    "confidence": "high"
+  }
+}

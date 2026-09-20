@@ -1,0 +1,14 @@
+{
+  "oversizedField": {
+    "title": "Title with bounded length",
+    "whatIsHappening": "Extremely large repeating payload designed to test bounded memory and parsing safety. Extremely large repeating payload designed to test bounded memory and parsing safety. Extremely large repeating payload designed to test bounded memory and parsing safety. Extremely large repeating payload designed to test bounded memory and parsing safety. Extremely large repeating payload designed to test bounded memory and parsing safety. Extremely large repeating payload designed to test bounded memory and parsing safety. Extremely large repeating payload designed to test bounded memory and parsing safety. Extremely large repeating payload designed to test bounded memory and parsing safety.",
+    "whyItMatters": "Repeated text ensuring parser does not crash. Repeated text ensuring parser does not crash. Repeated text ensuring parser does not crash. Repeated text ensuring parser does not crash. Repeated text ensuring parser does not crash.",
+    "evidenceExplanation": "Connected evidence summary. Connected evidence summary. Connected evidence summary. Connected evidence summary. Connected evidence summary.",
+    "knownFacts": ["Fact 1", "Fact 2"],
+    "unknowns": ["Unknown 1", "Unknown 2"],
+    "confidence": "high"
+  },
+  "deeplyNestedDetails": {
+    "level1": { "level2": { "level3": { "level4": { "level5": "value" } } } }
+  }
+}
