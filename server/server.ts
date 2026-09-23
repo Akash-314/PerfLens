@@ -14,7 +14,8 @@ const PORT = process.env.PORT || 5001;
 connectDatabase();
 
 app.listen(PORT, () => {
-  console.log(`[PerfLens Server]: Web application backend active in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}.`);
+  console.log(`[PerfLens Server]: Backend API active at http://localhost:${PORT}`);
+  console.log(`[PerfLens Server]: Frontend UI running at http://localhost:5173`);
 });
 
 // Capture global promise rejections

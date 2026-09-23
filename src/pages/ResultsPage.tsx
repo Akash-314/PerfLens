@@ -910,26 +910,34 @@ export const ResultsPage: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {currentReport.bundleAnalysis.map((bundle, idx) => (
-                      <tr key={idx}>
-                        <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'var(--color-text-primary)' }}>{bundle.packageName}</td>
-                        <td style={{ fontFamily: 'var(--font-mono)' }}>{bundle.sizeKb} KB</td>
-                        <td>
-                          {bundle.isDuplicate ? (
-                            <span className="metric-pill metric-score-orange">Duplicate</span>
-                          ) : (
-                            <span style={{ color: 'var(--color-muted)' }}>No</span>
-                          )}
-                        </td>
-                        <td>
-                          {bundle.isUnused ? (
-                            <span className="metric-pill metric-score-red">100% Unused</span>
-                          ) : (
-                            <span style={{ color: 'var(--color-muted)' }}>0%</span>
-                          )}
+                    {currentReport.bundleAnalysis.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} style={{ textAlign: 'center', padding: '24px', color: 'var(--color-muted)' }}>
+                          No JavaScript bundle entries detected.
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      currentReport.bundleAnalysis.map((bundle, idx) => (
+                        <tr key={idx}>
+                          <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'var(--color-text-primary)' }}>{bundle.packageName}</td>
+                          <td style={{ fontFamily: 'var(--font-mono)' }}>{bundle.sizeKb} KB</td>
+                          <td>
+                            {bundle.isDuplicate ? (
+                              <span className="metric-pill metric-score-orange">Duplicate</span>
+                            ) : (
+                              <span style={{ color: 'var(--color-muted)' }}>No</span>
+                            )}
+                          </td>
+                          <td>
+                            {bundle.isUnused ? (
+                              <span className="metric-pill metric-score-red">100% Unused</span>
+                            ) : (
+                              <span style={{ color: 'var(--color-muted)' }}>0%</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -958,45 +966,53 @@ export const ResultsPage: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {currentReport.images.map((img, idx) => (
-                        <tr key={idx}>
-                          <td>
-                            <div
-                              style={{
-                                width: '32px',
-                                height: '32px',
-                                backgroundColor: 'var(--color-surface-secondary)',
-                                border: '1px solid var(--color-border)',
-                                borderRadius: 'var(--radius-sm)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                              }}
-                            >
-                              <ImageIcon size={14} style={{ color: 'var(--color-muted)' }} />
-                            </div>
-                          </td>
-                          <td style={{ fontFamily: 'var(--font-mono)', fontSize: '12px' }}>{img.src}</td>
-                          <td style={{ fontFamily: 'var(--font-mono)' }}>{img.sizeKb} KB ({img.format})</td>
-                          <td style={{ color: 'var(--color-success)', fontWeight: 500, fontFamily: 'var(--font-mono)' }}>
-                            -{img.savingsKb} KB ({img.suggestedFormat})
-                          </td>
-                          <td>
-                            {img.hasAlt ? (
-                              <span style={{ color: 'var(--color-success)' }}>Yes</span>
-                            ) : (
-                              <span style={{ color: 'var(--color-danger)' }}>Missing</span>
-                            )}
-                          </td>
-                          <td>
-                            {img.lazyLoaded ? (
-                              <span style={{ color: 'var(--color-text-secondary)' }}>Yes</span>
-                            ) : (
-                              <span style={{ color: 'var(--color-warning)' }}>Deactivated</span>
-                            )}
+                      {currentReport.images.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} style={{ textAlign: 'center', padding: '24px', color: 'var(--color-muted)' }}>
+                            No image assets detected on this page.
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        currentReport.images.map((img, idx) => (
+                          <tr key={idx}>
+                            <td>
+                              <div
+                                style={{
+                                  width: '32px',
+                                  height: '32px',
+                                  backgroundColor: 'var(--color-surface-secondary)',
+                                  border: '1px solid var(--color-border)',
+                                  borderRadius: 'var(--radius-sm)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}
+                              >
+                                <ImageIcon size={14} style={{ color: 'var(--color-muted)' }} />
+                              </div>
+                            </td>
+                            <td style={{ fontFamily: 'var(--font-mono)', fontSize: '12px' }}>{img.src}</td>
+                            <td style={{ fontFamily: 'var(--font-mono)' }}>{img.sizeKb} KB ({img.format})</td>
+                            <td style={{ color: 'var(--color-success)', fontWeight: 500, fontFamily: 'var(--font-mono)' }}>
+                              -{img.savingsKb} KB ({img.suggestedFormat})
+                            </td>
+                            <td>
+                              {img.hasAlt ? (
+                                <span style={{ color: 'var(--color-success)' }}>Yes</span>
+                              ) : (
+                                <span style={{ color: 'var(--color-danger)' }}>Missing</span>
+                              )}
+                            </td>
+                            <td>
+                              {img.lazyLoaded ? (
+                                <span style={{ color: 'var(--color-text-secondary)' }}>Yes</span>
+                              ) : (
+                                <span style={{ color: 'var(--color-warning)' }}>Deactivated</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -1179,35 +1195,43 @@ export const ResultsPage: React.FC = () => {
                     <span style={{ width: '200px' }}>Name / Resource</span>
                     <span style={{ width: '80px' }}>Type</span>
                     <span style={{ width: '80px' }}>Size</span>
-                    <span style={{ flex: 1 }}>Timeline (1.5s Load Time)</span>
+                    <span style={{ flex: 1 }}>Timeline (Network Distribution)</span>
                   </div>
 
                   {/* waterfall bars list */}
-                  {currentReport.resources.map((res, idx) => {
-                    // Simulating waterfall timings
-                    const startPercent = Math.min(80, (idx * 12));
-                    const widthPercent = Math.max(8, Math.min(90 - startPercent, (res.timeMs / 1500) * 100));
+                  {currentReport.resources.length === 0 ? (
+                    <div style={{ padding: '24px', textAlign: 'center', color: 'var(--color-muted)', fontSize: '12px' }}>
+                      No network resources recorded.
+                    </div>
+                  ) : (
+                    (() => {
+                      const maxTimeMs = Math.max(1, ...currentReport.resources.map((r) => r.timeMs || 0));
+                      return currentReport.resources.map((res, idx) => {
+                        const startPercent = Math.min(80, (idx * 12));
+                        const widthPercent = maxTimeMs > 0 ? Math.max(8, Math.min(90 - startPercent, (res.timeMs / maxTimeMs) * 100)) : 10;
 
-                    return (
-                      <div key={idx} className="waterfall-row">
-                        <span className="waterfall-name" title={res.name}>{res.name}</span>
-                        <span className="waterfall-type">{res.type.toUpperCase()}</span>
-                        <span className="waterfall-size">{res.sizeKb} KB</span>
-                        <div className="waterfall-timeline-track">
-                          <div
-                            className={`waterfall-bar ${res.type}`}
-                            style={{
-                              left: `${startPercent}%`,
-                              width: `${widthPercent}%`,
-                              height: '100%',
-                              borderRadius: '4px'
-                            }}
-                            title={`Load time: ${res.timeMs}ms, encoding: ${res.compression}`}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
+                        return (
+                          <div key={idx} className="waterfall-row">
+                            <span className="waterfall-name" title={res.name}>{res.name}</span>
+                            <span className="waterfall-type">{res.type.toUpperCase()}</span>
+                            <span className="waterfall-size">{res.sizeKb} KB</span>
+                            <div className="waterfall-timeline-track">
+                              <div
+                                className={`waterfall-bar ${res.type}`}
+                                style={{
+                                  left: `${startPercent}%`,
+                                  width: `${widthPercent}%`,
+                                  height: '100%',
+                                  borderRadius: '4px'
+                                }}
+                                title={`Load time: ${res.timeMs}ms, encoding: ${res.compression}`}
+                              />
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()
+                  )}
                 </div>
               </div>
             </div>

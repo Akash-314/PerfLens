@@ -2,7 +2,8 @@ export interface DetectedFrameworkInfo {
   framework: 'Next.js' | 'Nuxt' | 'Astro' | 'Vite' | 'React' | 'WordPress' | 'Vue' | 'Angular' | 'Svelte' | null;
   variant?: 'App Router' | 'Pages Router' | null;
   confidence: 'verified' | 'inferred' | 'none';
-  evidence: string;
+  evidence?: string;
+  signals?: string[];
 }
 
 /**

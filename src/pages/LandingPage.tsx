@@ -287,7 +287,7 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Engineering Highlights */}
       <section
         style={{
           borderTop: '1px solid var(--color-border)',
@@ -296,12 +296,12 @@ export const LandingPage: React.FC = () => {
         }}
       >
         <h2 style={{ fontSize: '22px', textAlign: 'center', marginBottom: '40px' }}>
-          Loved by Engineering Leads
+          Engineering Highlights & Architecture
         </h2>
         <div className="grid-cols-2">
           <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <p style={{ fontSize: '14px', fontStyle: 'italic', lineHeight: '1.6', color: 'var(--color-text-primary)' }}>
-              "PerfLens detected over 400KB of duplicate lodash and moments dependencies that our bundler missed. Our landing page load speed went down by 1.2 seconds in a single commit."
+            <p style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--color-text-primary)' }}>
+              "PerfLens inspects script bundles for duplicated packages, polyfill bloat, and tree-shaking opportunities directly from live production network payloads."
             </p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div
@@ -318,18 +318,18 @@ export const LandingPage: React.FC = () => {
                   color: 'var(--color-accent)'
                 }}
               >
-                M
+                JS
               </div>
               <div>
-                <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-primary)' }}>Marc L.</p>
-                <span style={{ fontSize: '10px', color: 'var(--color-muted)' }}>Staff Engineer at Stripe</span>
+                <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-primary)' }}>AST Dependency Analysis</p>
+                <span style={{ fontSize: '10px', color: 'var(--color-muted)' }}>Static & Dynamic Telemetry</span>
               </div>
             </div>
           </div>
 
           <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <p style={{ fontSize: '14px', fontStyle: 'italic', lineHeight: '1.6', color: 'var(--color-text-primary)' }}>
-              "We used to rely on generic scores, which developers ignored. PerfLens shows actual lines of code, CSS selectors, and specific image names. It has become our default PR tool."
+            <p style={{ fontSize: '14px', lineHeight: '1.6', color: 'var(--color-text-primary)' }}>
+              "Headless browser audits with synthetic user interaction measure Core Web Vitals (LCP, CLS, INP) with millisecond accuracy without client-side script overhead."
             </p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div
@@ -346,11 +346,11 @@ export const LandingPage: React.FC = () => {
                   color: 'var(--color-success)'
                 }}
               >
-                K
+                CW
               </div>
               <div>
-                <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-primary)' }}>Kathryn P.</p>
-                <span style={{ fontSize: '10px', color: 'var(--color-muted)' }}>VP of Product at Vercel</span>
+                <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-primary)' }}>Accurate Browser Emulation</p>
+                <span style={{ fontSize: '10px', color: 'var(--color-muted)' }}>Automated Headless Runner</span>
               </div>
             </div>
           </div>
@@ -405,7 +405,7 @@ export const LandingPage: React.FC = () => {
       >
         <h2 style={{ fontSize: '20px', marginBottom: '12px' }}>Start optimizing your frontend bundles today</h2>
         <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginBottom: '24px' }}>
-          No credit card required. Explore pre-scanned mock reports or run a diagnostic immediately.
+          No credit card required. Run a comprehensive diagnostic immediately.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
           <button 

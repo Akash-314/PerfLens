@@ -72,6 +72,8 @@ export function adaptFindingToExplanationInput(finding: any, context?: any): Exp
           unit: item.unit ? sanitizeText(item.unit) : (item.duration !== undefined ? 'ms' : (item.sizeKb !== undefined ? 'KB' : undefined)),
           resource: item.resource ? sanitizeText(item.resource) : undefined,
           selector: item.selector ? sanitizeText(item.selector) : undefined,
+          url: item.url ? sanitizeText(item.url) : undefined,
+          canonical: item.canonical ? sanitizeText(item.canonical) : undefined,
           details: item.details ? JSON.parse(JSON.stringify(item.details)) : undefined
         });
       }

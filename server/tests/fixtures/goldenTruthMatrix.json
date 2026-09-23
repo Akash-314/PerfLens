@@ -1,0 +1,654 @@
+{
+  "version": "1.0.0",
+  "name": "PerfLens Golden Truth Calibration Matrix",
+  "description": "Authoritative scenarios across 7 domains with expected status, severity, score behavior, and zero-fabrication constraints.",
+  "matrix": {
+    "performance": [
+      {
+        "id": "PERF_LCP_EXCELLENT",
+        "scenario": "Excellent LCP",
+        "metric": "lcp",
+        "evidence": { "rawValue": 1.2, "unit": "s", "normalizedValueMs": 1200 },
+        "expectedRating": "good",
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "scoreRange": [90, 100],
+        "forbiddenClaims": ["TBT was high", "LCP is slow", "needs improvement"]
+      },
+      {
+        "id": "PERF_LCP_POOR",
+        "scenario": "Poor LCP",
+        "metric": "lcp",
+        "evidence": { "rawValue": 5.2, "unit": "s", "normalizedValueMs": 5200 },
+        "expectedRating": "poor",
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "high",
+        "scoreRange": [0, 49],
+        "forbiddenClaims": ["LCP is optimal", "good performance"]
+      },
+      {
+        "id": "PERF_CLS_EXCELLENT",
+        "scenario": "Excellent CLS",
+        "metric": "cls",
+        "evidence": { "rawValue": 0.02, "unit": "", "normalizedValueMs": 0.02 },
+        "expectedRating": "good",
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "scoreRange": [90, 100],
+        "forbiddenClaims": ["layout shift issue", "unexpected movement"]
+      },
+      {
+        "id": "PERF_CLS_POOR",
+        "scenario": "Poor CLS",
+        "metric": "cls",
+        "evidence": { "rawValue": 0.35, "unit": "", "normalizedValueMs": 0.35 },
+        "expectedRating": "poor",
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "high",
+        "scoreRange": [0, 49],
+        "forbiddenClaims": ["CLS is stable", "no layout shifts"]
+      },
+      {
+        "id": "PERF_TBT_EXCELLENT",
+        "scenario": "Excellent TBT",
+        "metric": "tbt",
+        "evidence": { "rawValue": 50, "unit": "ms", "normalizedValueMs": 50 },
+        "expectedRating": "good",
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "scoreRange": [90, 100],
+        "forbiddenClaims": ["heavy main thread", "blocking scripts"]
+      },
+      {
+        "id": "PERF_TBT_POOR",
+        "scenario": "Poor TBT",
+        "metric": "tbt",
+        "evidence": { "rawValue": 750, "unit": "ms", "normalizedValueMs": 750 },
+        "expectedRating": "poor",
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "high",
+        "scoreRange": [0, 49],
+        "forbiddenClaims": ["main thread is idle", "no blocking tasks"]
+      },
+      {
+        "id": "PERF_FCP_POOR",
+        "scenario": "Poor FCP",
+        "metric": "fcp",
+        "evidence": { "rawValue": 3.5, "unit": "s", "normalizedValueMs": 3500 },
+        "expectedRating": "poor",
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "medium",
+        "scoreRange": [0, 49],
+        "forbiddenClaims": ["fast initial paint"]
+      },
+      {
+        "id": "PERF_TTFB_POOR",
+        "scenario": "Poor TTFB",
+        "metric": "ttfb",
+        "evidence": { "rawValue": 1.8, "unit": "s", "normalizedValueMs": 1800 },
+        "expectedRating": "poor",
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "medium",
+        "scoreRange": [0, 49],
+        "forbiddenClaims": ["sub-second server response"]
+      },
+      {
+        "id": "PERF_INP_MISSING_LAB",
+        "scenario": "Missing INP",
+        "metric": "inp",
+        "evidence": { "rawValue": null, "unit": "ms", "available": false },
+        "expectedRating": "unrated",
+        "expectedStatus": "NOT_APPLICABLE",
+        "expectedSeverity": "info",
+        "scoreRange": [null, null],
+        "forbiddenClaims": ["INP is 0ms", "INP failed", "poor INP"]
+      },
+      {
+        "id": "PERF_PROVIDER_FAILURE",
+        "scenario": "Provider failure",
+        "metric": "pagespeed",
+        "evidence": { "status": "PROVIDER_ERROR", "error": "Quota or network failure" },
+        "expectedRating": "unrated",
+        "expectedStatus": "UNABLE_TO_VERIFY",
+        "expectedSeverity": "warning",
+        "scoreRange": [null, null],
+        "forbiddenClaims": ["Google Lighthouse passed", "score is 100"]
+      },
+      {
+        "id": "PERF_LIGHTHOUSE_FALLBACK",
+        "scenario": "Lighthouse fallback",
+        "metric": "performance",
+        "evidence": { "source": "puppeteer", "fallbackUsed": true },
+        "expectedRating": "good",
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "scoreRange": [50, 100],
+        "forbiddenClaims": ["Google PageSpeed Insights certified"]
+      }
+    ],
+    "seo": [
+      {
+        "id": "SEO_TITLE_PRESENT",
+        "scenario": "title present",
+        "evidence": { "title": "PerfLens - Frontend Performance Inspector", "length": 42 },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["missing title tag"]
+      },
+      {
+        "id": "SEO_TITLE_MISSING",
+        "scenario": "title missing",
+        "evidence": { "title": "", "length": 0 },
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "high",
+        "forbiddenClaims": ["title is optimal"]
+      },
+      {
+        "id": "SEO_TITLE_LONG",
+        "scenario": "long title",
+        "evidence": { "title": "This is an extremely verbose page title that extends well past seventy characters in total length", "length": 98 },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["missing title"]
+      },
+      {
+        "id": "SEO_DESC_PRESENT",
+        "scenario": "description present",
+        "evidence": { "metaDescription": "A comprehensive frontend performance inspection engine ensuring audit consistency.", "length": 86 },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["missing meta description"]
+      },
+      {
+        "id": "SEO_DESC_MISSING",
+        "scenario": "description missing",
+        "evidence": { "metaDescription": "", "length": 0 },
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "high",
+        "forbiddenClaims": ["meta description exists"]
+      },
+      {
+        "id": "SEO_CANONICAL_VALID",
+        "scenario": "canonical valid",
+        "evidence": { "canonical": "https://example.com/page", "url": "https://example.com/page" },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["missing canonical link"]
+      },
+      {
+        "id": "SEO_CANONICAL_MISSING",
+        "scenario": "canonical missing",
+        "evidence": { "canonical": null },
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["valid canonical tag"]
+      },
+      {
+        "id": "SEO_CANONICAL_INVALID",
+        "scenario": "canonical invalid",
+        "evidence": { "canonical": "/relative-link" },
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["canonical is absolute and valid"]
+      },
+      {
+        "id": "SEO_H1_PRESENT",
+        "scenario": "H1 present",
+        "evidence": { "h1Count": 1, "h1Text": ["Main Heading"] },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["missing H1", "multiple H1"]
+      },
+      {
+        "id": "SEO_H1_MISSING",
+        "scenario": "H1 missing",
+        "evidence": { "h1Count": 0, "h1Text": [] },
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "high",
+        "forbiddenClaims": ["H1 tag found"]
+      },
+      {
+        "id": "SEO_H1_MULTIPLE",
+        "scenario": "multiple H1",
+        "evidence": { "h1Count": 3, "h1Text": ["Heading 1", "Heading 2", "Heading 3"] },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["single H1 tag present"]
+      },
+      {
+        "id": "SEO_HEADING_HIERARCHY_ISSUE",
+        "scenario": "heading hierarchy issue",
+        "evidence": { "isHierarchyValid": false, "skippedLevels": ["h1 -> h3"] },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["valid sequential hierarchy"]
+      },
+      {
+        "id": "SEO_JSONLD_VALID",
+        "scenario": "JSON-LD valid",
+        "evidence": { "hasJsonLd": true, "isValidJson": true, "schemas": ["WebSite"] },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["invalid structured data"]
+      },
+      {
+        "id": "SEO_JSONLD_INVALID",
+        "scenario": "JSON-LD invalid",
+        "evidence": { "hasJsonLd": true, "isValidJson": false, "error": "SyntaxError: Unexpected token" },
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["valid structured data"]
+      },
+      {
+        "id": "SEO_JSONLD_ABSENT",
+        "scenario": "JSON-LD absent",
+        "evidence": { "hasJsonLd": false, "schemas": [] },
+        "expectedStatus": "NOT_DETECTED",
+        "expectedSeverity": "info",
+        "forbiddenClaims": ["corrupt structured data"]
+      },
+      {
+        "id": "SEO_OG_COMPLETE",
+        "scenario": "OG complete",
+        "evidence": { "presentCount": 5, "totalExpected": 5, "percentage": 100 },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["missing Open Graph tags"]
+      },
+      {
+        "id": "SEO_OG_PARTIAL",
+        "scenario": "OG partial",
+        "evidence": { "presentCount": 2, "totalExpected": 5, "percentage": 40 },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["all Open Graph tags configured"]
+      },
+      {
+        "id": "SEO_OG_ABSENT",
+        "scenario": "OG absent",
+        "evidence": { "presentCount": 0, "totalExpected": 5, "percentage": 0 },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["Open Graph present"]
+      },
+      {
+        "id": "SEO_TWITTER_COMPLETE",
+        "scenario": "Twitter metadata complete",
+        "evidence": { "hasTwitterCard": true, "hasTwitterTitle": true },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["missing Twitter card"]
+      },
+      {
+        "id": "SEO_TWITTER_ABSENT",
+        "scenario": "Twitter metadata absent",
+        "evidence": { "hasTwitterCard": false, "hasTwitterTitle": false },
+        "expectedStatus": "NOT_DETECTED",
+        "expectedSeverity": "info",
+        "forbiddenClaims": ["Twitter card configured"]
+      },
+      {
+        "id": "SEO_ROBOTS_ACCESSIBLE",
+        "scenario": "robots accessible",
+        "evidence": { "hasRobotsTxt": true, "httpStatus": 200 },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["robots.txt unreachable"]
+      },
+      {
+        "id": "SEO_ROBOTS_BLOCKED",
+        "scenario": "robots blocked",
+        "evidence": { "hasRobotsTxt": true, "isDisallowed": true, "path": "/" },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["unrestricted crawling"]
+      },
+      {
+        "id": "SEO_SITEMAP_VALID",
+        "scenario": "sitemap valid",
+        "evidence": { "hasSitemapXml": true, "httpStatus": 200 },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["sitemap missing"]
+      },
+      {
+        "id": "SEO_SITEMAP_MISSING",
+        "scenario": "sitemap missing",
+        "evidence": { "hasSitemapXml": false, "httpStatus": 404 },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["valid sitemap XML found"]
+      },
+      {
+        "id": "SEO_SITEMAP_UNREACHABLE",
+        "scenario": "sitemap unreachable",
+        "evidence": { "hasSitemapXml": false, "status": "timeout" },
+        "expectedStatus": "UNABLE_TO_VERIFY",
+        "expectedSeverity": "warning",
+        "forbiddenClaims": ["sitemap definitively missing"]
+      }
+    ],
+    "accessibility": [
+      {
+        "id": "A11Y_ALT_VALID",
+        "scenario": "valid alt",
+        "evidence": { "totalImages": 5, "missingAltCount": 0 },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["missing alt attributes"]
+      },
+      {
+        "id": "A11Y_ALT_MISSING",
+        "scenario": "missing alt",
+        "evidence": { "totalImages": 5, "missingAltCount": 3 },
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "high",
+        "forbiddenClaims": ["all images have alternative text"]
+      },
+      {
+        "id": "A11Y_ALT_DECORATIVE",
+        "scenario": "decorative image",
+        "evidence": { "totalImages": 2, "decorativeCount": 2, "missingAltCount": 0 },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["accessibility violation on decorative image"]
+      },
+      {
+        "id": "A11Y_LABEL_MISSING",
+        "scenario": "missing label",
+        "evidence": { "formElements": 3, "unlabeledForms": 2 },
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "high",
+        "forbiddenClaims": ["all form inputs labeled"]
+      },
+      {
+        "id": "A11Y_LABEL_VALID",
+        "scenario": "valid label",
+        "evidence": { "formElements": 3, "unlabeledForms": 0 },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["unlabeled inputs found"]
+      },
+      {
+        "id": "A11Y_CONTRAST_ISSUE",
+        "scenario": "contrast issue",
+        "evidence": { "contrastViolations": 4, "lowestRatio": 2.1 },
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "high",
+        "forbiddenClaims": ["WCAG AA contrast achieved"]
+      },
+      {
+        "id": "A11Y_KEYBOARD_NAV",
+        "scenario": "keyboard navigation issue",
+        "evidence": { "focusableIssues": 2 },
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "high",
+        "forbiddenClaims": ["keyboard accessible interface"]
+      },
+      {
+        "id": "A11Y_SKIP_LINK",
+        "scenario": "skip link",
+        "evidence": { "missingSkipLink": true, "navLinksCount": 12 },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["skip navigation link verified"]
+      },
+      {
+        "id": "A11Y_HEADING_HIERARCHY",
+        "scenario": "heading hierarchy",
+        "evidence": { "isHierarchyValid": false },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["sequential heading structure"]
+      }
+    ],
+    "images": [
+      {
+        "id": "IMG_OVERSIZED",
+        "scenario": "oversized image",
+        "evidence": { "displayedWidth": 300, "naturalWidth": 2400, "wastedBytes": 450000 },
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "high",
+        "forbiddenClaims": ["properly dimensioned image"]
+      },
+      {
+        "id": "IMG_CORRECTLY_SIZED",
+        "scenario": "correctly sized image",
+        "evidence": { "displayedWidth": 400, "naturalWidth": 400, "wastedBytes": 0 },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["resize image", "wasted dimensions"]
+      },
+      {
+        "id": "IMG_NEXT_GEN",
+        "scenario": "next-gen format",
+        "evidence": { "format": "webp", "sizeKb": 45 },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["convert to modern image format"]
+      },
+      {
+        "id": "IMG_LEGACY_FORMAT",
+        "scenario": "legacy format",
+        "evidence": { "format": "png", "sizeKb": 850, "estimatedWebpSavingsKb": 600 },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["modern format in use"]
+      },
+      {
+        "id": "IMG_LAZY_LOADED",
+        "scenario": "lazy-loaded image",
+        "evidence": { "lazyLoaded": true, "position": "below-the-fold" },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["missing lazy loading"]
+      },
+      {
+        "id": "IMG_NON_LAZY_BELOW_FOLD",
+        "scenario": "non-lazy below-fold image",
+        "evidence": { "lazyLoaded": false, "position": "below-the-fold", "sizeKb": 240 },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["lazy loaded below fold"]
+      },
+      {
+        "id": "IMG_LCP_IMAGE",
+        "scenario": "LCP image",
+        "evidence": { "isLcpElement": true, "fetchPriority": "high" },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["lazy load LCP image", "defer critical hero image"]
+      },
+      {
+        "id": "IMG_EXTERNAL_CDN",
+        "scenario": "external CDN image",
+        "evidence": { "url": "https://cdn.example.org/assets/img.jpg", "ownership": "THIRD_PARTY" },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["edit source repository code for CDN image"]
+      }
+    ],
+    "javascript_css_bundle": [
+      {
+        "id": "BUNDLE_LARGE_JS",
+        "scenario": "large JS",
+        "evidence": { "sizeKb": 1200, "type": "js" },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "high",
+        "forbiddenClaims": ["lightweight bundle"]
+      },
+      {
+        "id": "BUNDLE_MINIFIED_JS",
+        "scenario": "minified JS",
+        "evidence": { "isMinified": true },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["unminified javascript detected"]
+      },
+      {
+        "id": "BUNDLE_UNMINIFIED_JS",
+        "scenario": "unminified JS",
+        "evidence": { "isMinified": false, "wastedKb": 120 },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["javascript is minified"]
+      },
+      {
+        "id": "BUNDLE_PARSER_BLOCKING_JS",
+        "scenario": "parser-blocking JS",
+        "evidence": { "inHead": true, "hasAsync": false, "hasDefer": false },
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "high",
+        "forbiddenClaims": ["non-blocking script"]
+      },
+      {
+        "id": "BUNDLE_DEFERRED_JS",
+        "scenario": "deferred JS",
+        "evidence": { "hasDefer": true },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["parser blocking script"]
+      },
+      {
+        "id": "BUNDLE_LARGE_CSS",
+        "scenario": "large CSS",
+        "evidence": { "sizeKb": 250, "type": "css" },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["minimal stylesheet size"]
+      },
+      {
+        "id": "BUNDLE_UNMINIFIED_CSS",
+        "scenario": "unminified CSS",
+        "evidence": { "isMinified": false, "wastedKb": 45 },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["css is minified"]
+      },
+      {
+        "id": "BUNDLE_UNUSED_JS_EVIDENCE",
+        "scenario": "unused/deferred JS evidence",
+        "evidence": { "unusedBytes": 350000, "unusedPercentage": 55 },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["high code coverage"]
+      },
+      {
+        "id": "BUNDLE_SIZE_ANOMALY",
+        "scenario": "bundle size anomaly",
+        "evidence": { "duplicatePackages": ["lodash@4.17.20", "lodash@4.17.21"] },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["zero bundle duplication"]
+      }
+    ],
+    "network": [
+      {
+        "id": "NET_FAST_REQUEST",
+        "scenario": "fast request",
+        "evidence": { "durationMs": 45, "status": 200 },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["slow network waterfall"]
+      },
+      {
+        "id": "NET_SLOW_REQUEST",
+        "scenario": "slow request",
+        "evidence": { "durationMs": 1850, "status": 200 },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["instant response time"]
+      },
+      {
+        "id": "NET_LARGE_RESPONSE",
+        "scenario": "large response",
+        "evidence": { "sizeKb": 3500 },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "medium",
+        "forbiddenClaims": ["lightweight payload"]
+      },
+      {
+        "id": "NET_FAILED_REQUEST",
+        "scenario": "failed request",
+        "evidence": { "status": 500, "statusText": "Internal Server Error" },
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "high",
+        "forbiddenClaims": ["successful network response"]
+      },
+      {
+        "id": "NET_REDIRECT",
+        "scenario": "redirect",
+        "evidence": { "status": 301, "location": "https://example.com/target" },
+        "expectedStatus": "WARNING",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["direct 200 response"]
+      },
+      {
+        "id": "NET_THIRD_PARTY",
+        "scenario": "third-party request",
+        "evidence": { "url": "https://stats.external-analytics.com/tag.js", "ownership": "THIRD_PARTY" },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["edit tag.js source code"]
+      },
+      {
+        "id": "NET_TIMEOUT",
+        "scenario": "timeout",
+        "evidence": { "error": "Navigation timeout of 30000 ms exceeded" },
+        "expectedStatus": "UNABLE_TO_VERIFY",
+        "expectedSeverity": "warning",
+        "forbiddenClaims": ["server answered 200 OK"]
+      }
+    ],
+    "crawler": [
+      {
+        "id": "CRAWL_SUCCESS",
+        "scenario": "successful page",
+        "evidence": { "httpStatus": 200, "domNodesCount": 850, "success": true },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["crawler error"]
+      },
+      {
+        "id": "CRAWL_BLOCKED",
+        "scenario": "blocked page",
+        "evidence": { "httpStatus": 403, "success": false, "botChallenge": true },
+        "expectedStatus": "UNABLE_TO_VERIFY",
+        "expectedSeverity": "warning",
+        "forbiddenClaims": ["full DOM analyzed"]
+      },
+      {
+        "id": "CRAWL_TIMEOUT",
+        "scenario": "timeout",
+        "evidence": { "error": "timeout", "durationMs": 60000, "success": false },
+        "expectedStatus": "UNABLE_TO_VERIFY",
+        "expectedSeverity": "warning",
+        "forbiddenClaims": ["crawl completed within timeout"]
+      },
+      {
+        "id": "CRAWL_REDIRECT",
+        "scenario": "redirect",
+        "evidence": { "redirectChain": ["http://example.com", "https://example.com"], "httpStatus": 200 },
+        "expectedStatus": "PASS",
+        "expectedSeverity": "low",
+        "forbiddenClaims": ["endless redirect loop"]
+      },
+      {
+        "id": "CRAWL_MALFORMED",
+        "scenario": "malformed response",
+        "evidence": { "htmlSizeKb": 0, "domNodesCount": 0, "success": false },
+        "expectedStatus": "FAIL",
+        "expectedSeverity": "high",
+        "forbiddenClaims": ["valid DOM content parsed"]
+      },
+      {
+        "id": "CRAWL_INACCESSIBLE",
+        "scenario": "inaccessible resource",
+        "evidence": { "error": "net::ERR_NAME_NOT_RESOLVED", "success": false },
+        "expectedStatus": "UNABLE_TO_VERIFY",
+        "expectedSeverity": "warning",
+        "forbiddenClaims": ["site is operational"]
+      }
+    ]
+  }
+}

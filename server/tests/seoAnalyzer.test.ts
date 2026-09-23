@@ -545,7 +545,7 @@ describe('PERFLEX SEO Analyzer & Evidence Engine', () => {
       expect(rec?.evidence).not.toContain('og:title');
       expect(rec?.suggestedFix).not.toContain('og:title');
       expect(rec?.standardFinding?.fixStrategy).not.toContain('og:title');
-      expect(rec?.standardFinding?.validationSteps.join(' ')).not.toContain('og:title');
+      expect(rec?.standardFinding?.validationSteps?.join(' ')).not.toContain('og:title');
 
       // Must address exactly the 3 missing properties
       expect(rec?.finding.description).toContain('og:image');

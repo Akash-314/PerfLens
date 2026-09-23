@@ -20,6 +20,8 @@ export interface VerifiedEvidenceItem {
   unit?: string;
   resource?: string;
   selector?: string;
+  url?: string;
+  canonical?: string;
   details?: Record<string, any>;
 }
 

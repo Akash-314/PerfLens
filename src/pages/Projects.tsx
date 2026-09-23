@@ -38,12 +38,10 @@ export const Projects: React.FC = () => {
         .reverse()
     : [];
 
-  const projectHistoryData = matchingReports.length > 0
-    ? matchingReports.map((r, idx) => ({
-        name: `Run ${idx + 1}`,
-        score: r.scores?.overall ?? 0
-      }))
-    : [{ name: 'No Runs', score: 0 }];
+  const projectHistoryData = matchingReports.map((r, idx) => ({
+    name: `Run ${idx + 1}`,
+    score: r.scores?.overall ?? 0
+  }));
 
   return (
     <div className="workspace-container fade-in">
@@ -148,7 +146,7 @@ export const Projects: React.FC = () => {
                 <div>
                   <h3 style={{ fontSize: '16px', fontWeight: 700 }}>{activeProject.name}</h3>
                   <div style={{ display: 'flex', gap: '12px', marginTop: '4px', fontSize: '11px', color: 'var(--color-muted)' }}>
-                    <span>Average score: <strong style={{ color: 'var(--color-success)' }}>{activeProject.avgScore}/100</strong></span>
+                    <span>Average score: <strong style={{ color: 'var(--color-success)' }}>{matchingReports.length > 0 ? `${activeProject.avgScore}/100` : 'N/A'}</strong></span>
                     <span>•</span>
                     <span>Matching Scans: {matchingReports.length}</span>
                   </div>
@@ -193,23 +191,29 @@ export const Projects: React.FC = () => {
                 <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Performance Trend</h3>
                 <p style={{ fontSize: '12px', color: 'var(--color-muted)' }}>Scores of audits conducted across this project's domains.</p>
               </div>
-              <div style={{ width: '100%', height: '180px' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={projectHistoryData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                    <XAxis dataKey="name" stroke="var(--color-muted)" fontSize={11} tickLine={false} axisLine={false} />
-                    <YAxis stroke="var(--color-muted)" fontSize={11} domain={[0, 100]} tickLine={false} axisLine={false} />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: 'var(--color-surface)',
-                        border: '1px solid var(--color-border)',
-                        borderRadius: '6px',
-                        fontSize: '12px'
-                      }}
-                    />
-                    <Line type="monotone" dataKey="score" stroke="var(--color-success)" strokeWidth={2} dot={{ fill: 'var(--color-success)' }} />
-                  </LineChart>
-                </ResponsiveContainer>
+              <div style={{ width: '100%', height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {projectHistoryData.length === 0 ? (
+                  <p style={{ fontSize: '12px', color: 'var(--color-muted)', textAlign: 'center' }}>
+                    No audit trend data available yet for this project.
+                  </p>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={projectHistoryData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+                      <XAxis dataKey="name" stroke="var(--color-muted)" fontSize={11} tickLine={false} axisLine={false} />
+                      <YAxis stroke="var(--color-muted)" fontSize={11} domain={[0, 100]} tickLine={false} axisLine={false} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'var(--color-surface)',
+                          border: '1px solid var(--color-border)',
+                          borderRadius: '6px',
+                          fontSize: '12px'
+                        }}
+                      />
+                      <Line type="monotone" dataKey="score" stroke="var(--color-success)" strokeWidth={2} dot={{ fill: 'var(--color-success)' }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </div>
 

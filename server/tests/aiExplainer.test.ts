@@ -486,7 +486,7 @@ describe('PERFLENS AI Explainer V1 — Ralph Loop Test Suite', () => {
     });
 
     it('IMMUTABILITY: original finding object is never mutated or altered by AI', async () => {
-      const service = new AIService(undefined, deterministicProvider, { enabled: true });
+      const service = new AIService(deterministicProvider, undefined, { enabled: true });
       const originalFinding = {
         id: 'immut-001',
         category: 'seo',

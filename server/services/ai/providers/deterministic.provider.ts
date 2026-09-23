@@ -15,8 +15,15 @@ export class DeterministicProvider implements AIProvider {
     const knownFacts: string[] = [];
     const unknowns: string[] = [];
 
+    if (input.url) {
+      knownFacts.push(`Target page URL: ${input.url}`);
+    }
+
     // Extract facts from evidence
     for (const ev of input.evidence) {
+      if (ev.url) {
+        knownFacts.push(`Verified URL: ${ev.url}`);
+      }
       if (ev.metric && ev.value !== undefined) {
         const formattedUnit = ev.unit ? (/^[a-zA-Z%]+$/.test(ev.unit) ? ev.unit : ` ${ev.unit}`) : '';
         knownFacts.push(`${ev.metric} was measured at ${ev.value}${formattedUnit}`);
@@ -27,6 +34,8 @@ export class DeterministicProvider implements AIProvider {
         knownFacts.push(`Observed resource: ${ev.resource}${ev.value ? ` (${ev.value}${ev.unit || ''})` : ''}`);
       } else if (ev.selector) {
         knownFacts.push(`Target DOM element: ${ev.selector}`);
+      } else if (ev.canonical) {
+        knownFacts.push(`Canonical URL: ${ev.canonical}`);
       } else if (ev.details?.text) {
         knownFacts.push(`Evidence note: ${ev.details.text}`);
       }
@@ -37,7 +46,7 @@ export class DeterministicProvider implements AIProvider {
     }
 
     // Pattern matching on verified finding categories
-    if (lowerId.includes('tbt') || lowerTitle.includes('total blocking time') || lowerTitle.includes('blocking')) {
+    if (lowerId.includes('tbt') || lowerTitle.includes('tbt') || lowerTitle.includes('total blocking time') || lowerTitle.includes('blocking')) {
       const tbtVal = input.evidence.find((e) => (e.metric || '').toLowerCase() === 'tbt')?.value;
       whatIsHappening = `PerfLens detected substantial main-thread processing work${tbtVal !== undefined ? ` (${tbtVal}ms Total Blocking Time)` : ''} that delayed the browser from responding to user interactions during the tested load window.`;
       whyItMatters = 'When the main thread is occupied by long JavaScript execution, user actions such as taps, clicks, and keystrokes feel sluggish. Substantial main-thread delay harms perceived performance.';
@@ -60,9 +69,11 @@ export class DeterministicProvider implements AIProvider {
       evidenceExplanation = 'DOM head node inspection showed no matching meta tag or an empty content attribute in the rendered HTML.';
       unknowns.push('Whether server-side routing injects descriptions on specific edge routes cannot be established from this single target scan.');
     } else if (lowerId.includes('canonical') || lowerTitle.includes('canonical')) {
-      whatIsHappening = 'No <link rel="canonical"> tag was detected in the rendered document <head>.';
+      const targetUrl = input.url || input.evidence.find(e => e.url)?.url;
+      whatIsHappening = `No <link rel="canonical"> tag was detected in the rendered document <head>${targetUrl ? ` for ${targetUrl}` : ''}.`;
       whyItMatters = 'A canonical link communicates the authoritative URL for a page to search engine crawlers, preventing duplicate content dilution across URL parameters or protocol variants.';
-      evidenceExplanation = 'Inspection of document head nodes revealed zero canonical link tags present in the rendered DOM.';
+      evidenceExplanation = `Inspection of document head nodes${targetUrl ? ` for ${targetUrl}` : ''} revealed zero canonical link tags present in the rendered DOM.`;
+      unknowns.push('The authoritative or preferred canonical URL structure intended by the application architecture is not known to the scanner.');
       unknowns.push('The authoritative or preferred canonical URL structure intended by the application architecture is not known to the scanner.');
     } else if (lowerId.includes('h1') || lowerTitle.includes('h1')) {
       if (lowerTitle.includes('multiple') || lowerId.includes('multiple')) {
