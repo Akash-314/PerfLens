@@ -26,11 +26,11 @@ export const CommandMenu: React.FC = () => {
 
   // Command configurations
   const items = [
-    { type: 'action', label: 'Go to Dashboard', icon: LayoutDashboard, action: () => setCurrentTab('dashboard'), shortcut: '↵' },
-    { type: 'action', label: 'Start New Performance Audit', icon: Globe, action: () => setCurrentTab('analyze'), shortcut: '↵' },
-    { type: 'action', label: 'Compare Two Websites Side-by-Side', icon: GitCompare, action: () => setCurrentTab('comparisons'), shortcut: '↵' },
-    { type: 'action', label: 'Open Optimization Recommendations', icon: Sparkles, action: () => setCurrentTab('recommendations'), shortcut: '↵' },
-    { type: 'action', label: 'Configure Profile & Settings', icon: Settings, action: () => setCurrentTab('settings'), shortcut: '↵' }
+    { type: 'action', label: 'Go to Overview', icon: LayoutDashboard, action: () => setCurrentTab('dashboard'), shortcut: '↵' },
+    { type: 'action', label: 'Check a Website', icon: Globe, action: () => setCurrentTab('analyze'), shortcut: '↵' },
+    { type: 'action', label: 'Compare Two Websites', icon: GitCompare, action: () => setCurrentTab('comparisons'), shortcut: '↵' },
+    { type: 'action', label: 'View Fixes & Recommendations', icon: Sparkles, action: () => setCurrentTab('recommendations'), shortcut: '↵' },
+    { type: 'action', label: 'Open Settings', icon: Settings, action: () => setCurrentTab('settings'), shortcut: '↵' }
   ];
 
   // Map reports to command items

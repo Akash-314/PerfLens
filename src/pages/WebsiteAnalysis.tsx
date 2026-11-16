@@ -1,11 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { Globe, ArrowRight, CheckCircle2, Loader2, Terminal } from 'lucide-react';
+import { Globe, ArrowRight, CheckCircle2, Loader2, Info, ChevronDown, ChevronUp, Activity } from 'lucide-react';
+
+const STEP_MICROCOPY: Record<number, string> = {
+  1: 'Connecting to your server and checking initial response...',
+  2: 'Looking at page structure, headings, and images...',
+  3: 'Checking how quickly the page becomes usable...',
+  4: 'Testing readability, color contrast, and navigation structure...',
+  5: 'Checking whether search engines and social previews can read your page...',
+  6: 'Finding the fixes that will make the biggest difference...'
+};
 
 export const WebsiteAnalysis: React.FC = () => {
   const { startAnalysis, scanningUrl, scanProgress, scanLogs } = useApp();
   const [urlInput, setUrlInput] = useState('');
   const [includeLighthouse, setIncludeLighthouse] = useState(true);
+  const [showTechnicalLogs, setShowTechnicalLogs] = useState(false);
   const logEndRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -17,37 +27,40 @@ export const WebsiteAnalysis: React.FC = () => {
 
   // Autoscroll logs box when scanning is running
   useEffect(() => {
-    logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [scanLogs]);
+    if (showTechnicalLogs) {
+      logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [scanLogs, showTechnicalLogs]);
 
   const isScanning = scanningUrl.length > 0;
+  const activeStep = scanProgress.find((s) => s.status === 'scanning');
 
   return (
-    <div className="workspace-container fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 120px)' }}>
+    <div className="workspace-container fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 120px)', padding: '24px' }}>
       {!isScanning ? (
-        <div style={{ maxWidth: '540px', width: '100%', textAlign: 'center' }}>
+        <div style={{ maxWidth: '580px', width: '100%', textAlign: 'center' }}>
           <div
             style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: 'var(--radius-lg)',
-              backgroundColor: 'var(--color-surface-secondary)',
-              border: '1px solid var(--color-border)',
+              width: '56px',
+              height: '56px',
+              borderRadius: 'var(--radius-xl)',
+              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(6, 182, 212, 0.12))',
+              border: '1px solid rgba(99, 102, 241, 0.25)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'var(--color-accent)',
-              margin: '0 auto 24px auto'
+              color: 'var(--color-accent-cyan)',
+              margin: '0 auto 20px auto'
             }}
           >
-            <Globe size={24} />
+            <Globe size={28} />
           </div>
 
-          <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '8px', letterSpacing: '-0.02em' }}>
-            Run Website Performance Audit
-          </h2>
-          <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginBottom: '32px', lineHeight: '1.5' }}>
-            Inspect core performance metrics, unused CSS styles, bundle duplicates, compression statuses, and accessibility parameters for any public host.
+          <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '10px', letterSpacing: '-0.03em', color: 'var(--color-text-primary)' }}>
+            Let's check your website
+          </h1>
+          <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', marginBottom: '32px', lineHeight: '1.6' }}>
+            Paste your URL and we'll look for speed, accessibility, SEO, and technical problems.
           </p>
 
           <form
@@ -57,15 +70,15 @@ export const WebsiteAnalysis: React.FC = () => {
               gap: '8px',
               backgroundColor: 'var(--color-surface)',
               border: '1px solid var(--color-border)',
-              padding: '6px',
-              borderRadius: 'var(--radius-lg)',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-              marginBottom: '16px'
+              padding: '8px',
+              borderRadius: 'var(--radius-xl)',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
+              marginBottom: '20px'
             }}
           >
             <input
               type="text"
-              placeholder="e.g. stripe.com or github.com"
+              placeholder="e.g. mywebsite.com"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
               style={{
@@ -73,29 +86,32 @@ export const WebsiteAnalysis: React.FC = () => {
                 background: 'transparent',
                 border: 'none',
                 outline: 'none',
-                fontSize: '14px',
+                fontSize: '15px',
                 color: 'var(--color-text-primary)',
-                paddingLeft: '12px',
+                paddingLeft: '14px',
                 fontFamily: 'var(--font-sans)'
               }}
             />
-            <button type="submit" className="btn btn-primary" style={{ padding: '8px 16px' }}>
-              <span>Analyze URL</span>
-              <ArrowRight size={14} />
+            <button type="submit" className="btn btn-primary" style={{ padding: '10px 22px', fontSize: '14px', fontWeight: 600 }}>
+              <span>Check my website</span>
+              <ArrowRight size={15} />
             </button>
           </form>
 
-          {/* Optional lighthouse checkbox */}
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+          {/* Secondary lighthouse option with tooltip */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--color-text-secondary)' }}>
             <input 
               type="checkbox" 
               id="includeLighthouse" 
               checked={includeLighthouse} 
               onChange={(e) => setIncludeLighthouse(e.target.checked)}
-              style={{ accentColor: 'var(--color-accent)', cursor: 'pointer' }}
+              style={{ accentColor: 'var(--color-accent)', cursor: 'pointer', width: '16px', height: '16px' }}
             />
-            <label htmlFor="includeLighthouse" style={{ cursor: 'pointer', userSelect: 'none' }}>
-              Include Google Lighthouse Metrics
+            <label htmlFor="includeLighthouse" style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>Include detailed Lighthouse checks</span>
+              <span title="Adds Google's Lighthouse performance signals to the scan." style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--color-muted)' }}>
+                <Info size={14} />
+              </span>
             </label>
           </div>
         </div>
@@ -103,99 +119,153 @@ export const WebsiteAnalysis: React.FC = () => {
         <div style={{ maxWidth: '640px', width: '100%', display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Header */}
           <div style={{ textAlign: 'center' }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '4px' }}>
-              Auditing <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-accent)' }}>{scanningUrl}</span>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(99, 102, 241, 0.12)', border: '1px solid rgba(99, 102, 241, 0.25)', padding: '6px 14px', borderRadius: '20px', marginBottom: '12px' }}>
+              <span className="spin" style={{ display: 'inline-flex', color: 'var(--color-accent-cyan)' }}>
+                <Loader2 size={14} />
+              </span>
+              <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-accent-cyan)' }}>
+                Checking your website
+              </span>
+            </div>
+            <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '6px', color: 'var(--color-text-primary)' }}>
+              {scanningUrl.replace(/^https?:\/\//, '')}
             </h2>
-            <p style={{ fontSize: '12px', color: 'var(--color-muted)' }}>Running server-crawled virtual lighthouse checks.</p>
+            <p style={{ fontSize: '13.5px', color: 'var(--color-text-secondary)' }}>
+              {activeStep ? STEP_MICROCOPY[activeStep.step] || 'Inspecting page signals...' : 'Analyzing scan signals...'}
+            </p>
           </div>
 
           {/* Stepper Status Indicators */}
           <div
+            className="card"
             style={{
-              backgroundColor: 'var(--color-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-lg)',
-              padding: '20px'
+              padding: '24px',
+              borderRadius: 'var(--radius-xl)'
             }}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {scanProgress.map((step) => (
-                <div key={step.step} style={{ display: 'flex', alignItems: 'center', justifySelf: 'stretch', gap: '12px' }}>
-                  {step.status === 'done' ? (
-                    <CheckCircle2 size={16} style={{ color: 'var(--color-success)', flexShrink: 0 }} />
-                  ) : step.status === 'scanning' ? (
-                    <Loader2 size={16} className="spin" style={{ color: 'var(--color-accent)', animation: 'spin 1s linear infinite', flexShrink: 0 }} />
-                  ) : (
-                    <div
-                      style={{
-                        width: '16px',
-                        height: '16px',
-                        borderRadius: '50%',
-                        border: '1px solid var(--color-border)',
-                        backgroundColor: 'var(--color-surface-secondary)',
-                        flexShrink: 0
-                      }}
-                    />
-                  )}
-                  <span
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              {scanProgress.map((step) => {
+                const isCurrent = step.status === 'scanning';
+                const isDone = step.status === 'done';
+                return (
+                  <div
+                    key={step.step}
                     style={{
-                      fontSize: '13px',
-                      fontWeight: step.status === 'scanning' ? 600 : 400,
-                      color:
-                        step.status === 'pending'
-                          ? 'var(--color-muted)'
-                          : 'var(--color-text-primary)'
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px',
+                      padding: '8px 12px',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: isCurrent ? 'var(--color-surface-secondary)' : 'transparent',
+                      transition: 'background-color 0.2s ease'
                     }}
                   >
-                    {step.title}
-                  </span>
-                  {step.status === 'scanning' && (
-                    <span
-                      style={{
-                        marginLeft: 'auto',
-                        fontSize: '11px',
-                        color: 'var(--color-accent)',
-                        fontFamily: 'var(--font-mono)'
-                      }}
-                    >
-                      Active
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Console Logger box */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 600, color: 'var(--color-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              <Terminal size={12} />
-              <span>Inspector Stream Log</span>
-            </div>
-            <div className="scan-log-box">
-              {scanLogs.length === 0 ? (
-                <div style={{ color: 'var(--color-muted)', padding: '12px 0' }}>Establishing socket connection to telemetry node...</div>
-              ) : (
-                scanLogs.map((log, idx) => (
-                  <div key={idx} className="scan-log-line">
-                    <span className="scan-log-time">[{new Date().toLocaleTimeString().split(' ')[0]}]</span>
-                    <span className="scan-log-message">{log}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      {isDone ? (
+                        <CheckCircle2 size={18} style={{ color: 'var(--color-success)', flexShrink: 0 }} />
+                      ) : isCurrent ? (
+                        <Loader2 size={18} className="spin" style={{ color: 'var(--color-accent-cyan)', flexShrink: 0 }} />
+                      ) : (
+                        <div
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            borderRadius: '50%',
+                            border: '1.5px solid var(--color-border)',
+                            backgroundColor: 'var(--color-surface-secondary)',
+                            flexShrink: 0
+                          }}
+                        />
+                      )}
+                      <span
+                        style={{
+                          fontSize: '14px',
+                          fontWeight: isCurrent ? 700 : isDone ? 500 : 400,
+                          color: isCurrent
+                            ? 'var(--color-text-primary)'
+                            : isDone
+                            ? 'var(--color-text-primary)'
+                            : 'var(--color-muted)'
+                        }}
+                      >
+                        {step.title}
+                      </span>
+                      {isCurrent && (
+                        <span
+                          style={{
+                            marginLeft: 'auto',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            color: 'var(--color-accent-cyan)',
+                            backgroundColor: 'rgba(6, 182, 212, 0.12)',
+                            padding: '2px 8px',
+                            borderRadius: '10px'
+                          }}
+                        >
+                          Checking now
+                        </span>
+                      )}
+                    </div>
+                    {isCurrent && (
+                      <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginLeft: '30px', marginTop: '2px' }}>
+                        {STEP_MICROCOPY[step.step]}
+                      </p>
+                    )}
                   </div>
-                ))
-              )}
-              <div ref={logEndRef} />
+                );
+              })}
             </div>
           </div>
 
-          {/* Spinner Custom Rotation CSS injected inside inline tag for quick helper */}
-          <style>{`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}</style>
+          {/* Progressive Technical Details Drawer */}
+          <div className="card" style={{ padding: '14px 18px', borderRadius: 'var(--radius-lg)' }}>
+            <button
+              type="button"
+              onClick={() => setShowTechnicalLogs(!showTechnicalLogs)}
+              style={{
+                width: '100%',
+                background: 'transparent',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer',
+                color: 'var(--color-text-secondary)',
+                fontSize: '12.5px',
+                fontWeight: 600,
+                padding: 0
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Activity size={14} style={{ color: 'var(--color-accent-cyan)' }} />
+                <span>Live scan activity ({scanLogs.length} events)</span>
+              </div>
+              {showTechnicalLogs ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+
+            {showTechnicalLogs && (
+              <div style={{ marginTop: '14px' }}>
+                <div className="scan-log-box" style={{ maxHeight: '180px' }}>
+                  {scanLogs.length === 0 ? (
+                    <div style={{ color: 'var(--color-muted)', padding: '8px 0', fontSize: '12px' }}>
+                      Establishing connection to scanner node...
+                    </div>
+                  ) : (
+                    scanLogs.map((log, idx) => (
+                      <div key={idx} className="scan-log-line">
+                        <span className="scan-log-time">[{new Date().toLocaleTimeString().split(' ')[0]}]</span>
+                        <span className="scan-log-message">{log}</span>
+                      </div>
+                    ))
+                  )}
+                  <div ref={logEndRef} />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
   );
 };
+

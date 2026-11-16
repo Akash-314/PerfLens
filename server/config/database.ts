@@ -1,4 +1,4 @@
-import { isSupabaseConfigured, checkSupabaseConnection } from './supabase.js';
+import { isSupabaseConfigured, checkSupabaseConnectionDetailed } from './supabase.js';
 
 /**
  * Orchestrate database connection verification for Supabase.
@@ -11,11 +11,17 @@ const connectDatabase = async (): Promise<void> => {
   }
 
   try {
-    const isConnected = await checkSupabaseConnection();
-    if (isConnected) {
-      console.log('✅ Supabase PostgreSQL Database Connected successfully.');
+    const status = await checkSupabaseConnectionDetailed(8000);
+    if (status.connected) {
+      console.log(`✅ Supabase PostgreSQL Database Connected successfully (${status.durationMs}ms).`);
+    } else if (status.isTableMissing) {
+      console.warn(`⚠️ Supabase reached, but table 'users' does not exist in schema (${status.error}).`);
+      console.warn('   Please execute server/supabase_schema.sql in your Supabase SQL Editor.');
+    } else if (status.timedOut) {
+      console.warn(`⚠️ Supabase connection check timed out: ${status.error}`);
+      console.warn('   The server will continue, but Supabase network operations may experience latency.');
     } else {
-      console.warn('⚠️ Supabase reached but failed querying users table. Please ensure supabase_schema.sql has been executed.');
+      console.warn(`⚠️ Supabase connection check error: ${status.error || 'Unknown query error'}`);
     }
   } catch (error: any) {
     console.error(`Supabase Connection Error: ${error.message}`);

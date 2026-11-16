@@ -31,14 +31,14 @@ export const Sidebar: React.FC = () => {
   } = useApp();
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'analyze', label: 'Analyze Website', icon: Globe },
-    { id: 'reports', label: 'Reports', icon: FileBarChart },
-    { id: 'comparisons', label: 'Comparisons', icon: GitCompare },
-    { id: 'projects', label: 'Projects', icon: FolderGit },
-    { id: 'recommendations', label: 'Recommendations', icon: Sparkles },
-    { id: 'settings', label: 'Profile & Settings', icon: Settings },
-    { id: 'support', label: 'Support', icon: HelpCircle }
+    { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
+    { id: 'analyze', label: 'Check a Website', icon: Globe },
+    { id: 'reports', label: 'Scan History', icon: FileBarChart },
+    { id: 'comparisons', label: 'Compare Sites', icon: GitCompare },
+    { id: 'recommendations', label: 'Fixes', icon: Sparkles },
+    { id: 'projects', label: 'My Projects', icon: FolderGit },
+    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'support', label: 'Help', icon: HelpCircle }
   ];
 
   const handleProjectSwitch = (pId: string) => {
@@ -51,7 +51,11 @@ export const Sidebar: React.FC = () => {
     <aside className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
         <div className="sidebar-logo">
-          <Globe size={18} className="text-accent" style={{ color: 'var(--color-accent)' }} />
+          <img
+            src="/favicon.svg"
+            alt="PerfLens"
+            style={{ width: '18px', height: '18px', objectFit: 'contain', flexShrink: 0 }}
+          />
           <span style={{ cursor: 'pointer' }} onClick={() => setCurrentTab('landing')}>PerfLens</span>
         </div>
         <button

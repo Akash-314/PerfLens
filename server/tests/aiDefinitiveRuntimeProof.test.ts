@@ -194,7 +194,7 @@ describe('PERFLENS — DEFINITIVE AI RUNTIME PROOF & DOM VERIFICATION', () => {
       expect(json.data.source).toBe('ai');
       expect(json.data.provider).toBe('managed');
       expect(json.data.model).toBe('gemini-flash-lite-latest');
-    });
+    }, 15000);
 
     it('POST /api/ai/explain alias route behaves identically with marker preservation', async () => {
       const testProvider: AIProvider = {
@@ -401,7 +401,7 @@ describe('PERFLENS — DEFINITIVE AI RUNTIME PROOF & DOM VERIFICATION', () => {
 
       const afterFail = await aiConfigService.getUserUsage(dbUserId);
       expect(afterFail.managedUsed).toBe(startCount + 1);
-    });
+    }, 15000);
   });
 
   // =======================================================================

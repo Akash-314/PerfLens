@@ -3,12 +3,12 @@
   "version": "2.0",
   "status": "success",
   "duration": 0,
-  "createdAt": "2026-09-15T20:28:26.147Z",
+  "createdAt": "2026-09-23T14:06:08.729Z",
   "scores": {
-    "overall": 93,
+    "overall": 88,
     "performance": 100,
     "accessibility": 96,
-    "seo": 80,
+    "seo": 60,
     "bestPractices": 96,
     "explanation": {
       "finalScore": 100,
@@ -248,7 +248,7 @@
       "elementTag": "P",
       "selector": "P",
       "elementUrl": null,
-      "renderTimeMs": 528,
+      "renderTimeMs": 984,
       "loadTimeMs": null
     },
     "cls": {
@@ -284,22 +284,22 @@
       "mainThreadWork": [
         {
           "group": "Other",
-          "durationMs": 22
-        },
-        {
-          "group": "Style & Layout",
-          "durationMs": 4
+          "durationMs": 27
         },
         {
           "group": "Script Evaluation",
-          "durationMs": 4
+          "durationMs": 7
         },
         {
-          "group": "Rendering",
+          "group": "Style & Layout",
+          "durationMs": 6
+        },
+        {
+          "group": "Parse HTML & CSS",
           "durationMs": 1
         },
         {
-          "group": "Garbage Collection",
+          "group": "Rendering",
           "durationMs": 1
         }
       ],
@@ -665,30 +665,30 @@
         },
         "impact": "Social media preview card appearance and link click-through rate.",
         "recommendation": "Add the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.",
-        "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, and <meta property=\"og:url\"> in the document <head>.",
+        "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, <meta property=\"og:url\">, and <meta property=\"og:type\"> in the document <head> using the site's intended metadata configuration.",
         "validation": [
-          "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+          "Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.",
           "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
-          "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+          "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger)."
         ],
         "validationSteps": [
-          "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+          "Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.",
           "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
-          "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+          "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger)."
         ],
-        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector).",
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger).",
         "frameworkAwareness": {
           "detectedFramework": null,
           "confidence": "none",
           "evidenceSnippet": "No framework-specific signals detected"
         }
       },
-      "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector).",
-      "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, and <meta property=\"og:url\"> in the document <head>.",
+      "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger).",
+      "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, <meta property=\"og:url\">, and <meta property=\"og:type\"> in the document <head> using the site's intended metadata configuration.",
       "validationSteps": [
-        "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+        "Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.",
         "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
-        "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+        "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger)."
       ],
       "issue": "Provide essential Open Graph metadata for social sharing",
       "whyItMatters": "When users share your page link on social platforms or messaging apps, missing Open Graph tags result in blank previews without an image, title, or description, significantly reducing engagement.",
@@ -815,19 +815,19 @@
       "sizeKb": 0.5,
       "transferSizeKb": 0.5,
       "statusCode": 200,
-      "timeMs": 498,
-      "durationMs": 498,
-      "startTimeMs": 12463828,
+      "timeMs": 941,
+      "durationMs": 941,
+      "startTimeMs": 17809465,
       "initiator": "other",
       "fromCache": false,
       "timingBreakdown": {
-        "dnsMs": 190,
-        "tcpMs": 84,
-        "tlsMs": 81,
-        "ttfbMs": 53,
+        "dnsMs": 283,
+        "tcpMs": 328,
+        "tlsMs": 288,
+        "ttfbMs": 62,
         "downloadMs": 0,
-        "startTimeMs": 12463828,
-        "durationMs": 498
+        "startTimeMs": 17809465,
+        "durationMs": 941
       },
       "compression": "brotli",
       "cacheControl": "no-cache, no-store",
@@ -835,6 +835,7 @@
       "isCompressed": true
     }
   ],
+  "owner": "a35cfd3c-c8cd-4ab4-a4c9-f819625a169b",
   "scoreExplanation": {
     "finalScore": 100,
     "overallPerformanceScore": 100,
@@ -1260,6 +1261,8 @@
     }
   },
   "pageSpeed": {
+    "status": "SUCCESS",
+    "available": true,
     "performance": 100,
     "accessibility": 96,
     "seo": 80,
@@ -1280,14 +1283,14 @@
         "id": "first-contentful-paint",
         "weight": 10,
         "score": 100,
-        "numericValue": 757,
+        "numericValue": 756,
         "displayValue": "0.8 s"
       },
       "largest-contentful-paint": {
         "id": "largest-contentful-paint",
         "weight": 25,
         "score": 100,
-        "numericValue": 757,
+        "numericValue": 756,
         "displayValue": "0.8 s"
       },
       "total-blocking-time": {
@@ -1308,7 +1311,7 @@
         "id": "speed-index",
         "weight": 10,
         "score": 100,
-        "numericValue": 757,
+        "numericValue": 756,
         "displayValue": "0.8 s"
       }
     },
@@ -1320,22 +1323,107 @@
       "mainThreadWork": [
         {
           "group": "Other",
-          "durationMs": 22
-        },
-        {
-          "group": "Style & Layout",
-          "durationMs": 4
+          "durationMs": 27
         },
         {
           "group": "Script Evaluation",
-          "durationMs": 4
+          "durationMs": 7
+        },
+        {
+          "group": "Style & Layout",
+          "durationMs": 6
+        },
+        {
+          "group": "Parse HTML & CSS",
+          "durationMs": 1
         },
         {
           "group": "Rendering",
           "durationMs": 1
+        }
+      ],
+      "topScriptsByExecution": []
+    }
+  },
+  "pageSpeedTelemetry": {
+    "status": "SUCCESS",
+    "available": true,
+    "performance": 100,
+    "accessibility": 96,
+    "seo": 80,
+    "bestPractices": 96,
+    "metrics": {
+      "lcp": "0.8 s",
+      "fcp": "0.8 s",
+      "inp": "N/A",
+      "inpSource": "unknown",
+      "inpMode": "lab",
+      "tbt": "0 ms",
+      "cls": "0",
+      "ttfb": "1ms",
+      "speedIndex": "0.8 s"
+    },
+    "lighthouseScoreBreakdown": {
+      "first-contentful-paint": {
+        "id": "first-contentful-paint",
+        "weight": 10,
+        "score": 100,
+        "numericValue": 756,
+        "displayValue": "0.8 s"
+      },
+      "largest-contentful-paint": {
+        "id": "largest-contentful-paint",
+        "weight": 25,
+        "score": 100,
+        "numericValue": 756,
+        "displayValue": "0.8 s"
+      },
+      "total-blocking-time": {
+        "id": "total-blocking-time",
+        "weight": 30,
+        "score": 100,
+        "numericValue": 0,
+        "displayValue": "0 ms"
+      },
+      "cumulative-layout-shift": {
+        "id": "cumulative-layout-shift",
+        "weight": 25,
+        "score": 100,
+        "numericValue": 0,
+        "displayValue": "0"
+      },
+      "speed-index": {
+        "id": "speed-index",
+        "weight": 10,
+        "score": 100,
+        "numericValue": 756,
+        "displayValue": "0.8 s"
+      }
+    },
+    "tbtDetails": {
+      "totalBlockingTimeMs": 0,
+      "longTaskCount": 0,
+      "maxTaskDurationMs": 0,
+      "tasks": [],
+      "mainThreadWork": [
+        {
+          "group": "Other",
+          "durationMs": 27
         },
         {
-          "group": "Garbage Collection",
+          "group": "Script Evaluation",
+          "durationMs": 7
+        },
+        {
+          "group": "Style & Layout",
+          "durationMs": 6
+        },
+        {
+          "group": "Parse HTML & CSS",
+          "durationMs": 1
+        },
+        {
+          "group": "Rendering",
           "durationMs": 1
         }
       ],
@@ -1360,7 +1448,7 @@
         {
           "name": "https://example.com/",
           "url": "https://example.com/",
-          "durationMs": 498
+          "durationMs": 941
         }
       ],
       "largestJs": "None",
@@ -1393,7 +1481,9 @@
   "analysisSources": {
     "perfLensEngine": true,
     "puppeteerRuntime": true,
-    "googleLighthouse": true
+    "googleLighthouse": true,
+    "googleLighthouseStatus": "SUCCESS",
+    "googleLighthouseError": null
   },
   "seo": {
     "summary": {
@@ -2258,30 +2348,30 @@
           },
           "impact": "Social media preview card appearance and link click-through rate.",
           "recommendation": "Add the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.",
-          "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, and <meta property=\"og:url\"> in the document <head>.",
+          "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, <meta property=\"og:url\">, and <meta property=\"og:type\"> in the document <head> using the site's intended metadata configuration.",
           "validation": [
-            "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+            "Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.",
             "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
-            "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+            "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger)."
           ],
           "validationSteps": [
-            "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+            "Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.",
             "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
-            "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+            "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger)."
           ],
-          "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector).",
+          "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger).",
           "frameworkAwareness": {
             "detectedFramework": null,
             "confidence": "none",
             "evidenceSnippet": "No framework-specific signals detected"
           }
         },
-        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector).",
-        "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, and <meta property=\"og:url\"> in the document <head>.",
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger).",
+        "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, <meta property=\"og:url\">, and <meta property=\"og:type\"> in the document <head> using the site's intended metadata configuration.",
         "validationSteps": [
-          "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+          "Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.",
           "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
-          "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+          "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger)."
         ],
         "issue": "Provide essential Open Graph metadata for social sharing",
         "whyItMatters": "When users share your page link on social platforms or messaging apps, missing Open Graph tags result in blank previews without an image, title, or description, significantly reducing engagement.",
@@ -2684,30 +2774,30 @@
           },
           "impact": "Social media preview card appearance and link click-through rate.",
           "recommendation": "Add the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.",
-          "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, and <meta property=\"og:url\"> in the document <head>.",
+          "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, <meta property=\"og:url\">, and <meta property=\"og:type\"> in the document <head> using the site's intended metadata configuration.",
           "validation": [
-            "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+            "Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.",
             "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
-            "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+            "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger)."
           ],
           "validationSteps": [
-            "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+            "Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.",
             "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
-            "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+            "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger)."
           ],
-          "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector).",
+          "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger).",
           "frameworkAwareness": {
             "detectedFramework": null,
             "confidence": "none",
             "evidenceSnippet": "No framework-specific signals detected"
           }
         },
-        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector).",
-        "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, and <meta property=\"og:url\"> in the document <head>.",
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nThe page has incomplete Open Graph metadata (0 / 5 present, 0%). Missing properties: og:title, og:description, og:image, og:url, og:type.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: meta[property^=\"og:\"], Observed: 0 / 5 present (0%) [✗ og:title, ✗ og:description, ✗ og:image, ✗ og:url, ✗ og:type]\n\nTask:\nAdd the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.\n2. Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).\n3. Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger).",
+        "fixStrategy": "Declare <meta property=\"og:title\">, <meta property=\"og:description\">, <meta property=\"og:image\">, <meta property=\"og:url\">, and <meta property=\"og:type\"> in the document <head> using the site's intended metadata configuration.",
         "validationSteps": [
-          "Inspect the rendered page <head> and verify og:title, og:description, og:image, and og:url are present.",
+          "Inspect the rendered page <head> and verify og:title, og:description, og:image, og:url, og:type are declared.",
           "Verify og:image points to a valid absolute image URL (minimum 1200x630px recommended).",
-          "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector)."
+          "Test the URL with social preview debuggers (e.g. LinkedIn Post Inspector or Facebook Sharing Debugger)."
         ],
         "issue": "Provide essential Open Graph metadata for social sharing",
         "whyItMatters": "When users share your page link on social platforms or messaging apps, missing Open Graph tags result in blank previews without an image, title, or description, significantly reducing engagement.",
@@ -2847,9 +2937,9 @@
     "browserVersion": "Chrome/148.0.7778.97",
     "debugLogs": {
       "imageAnalyzer": {
-        "started": "2026-09-15T20:28:18.594Z",
-        "finished": "2026-09-15T20:28:18.596Z",
-        "executionTimeMs": 2,
+        "started": "2026-09-23T14:06:00.689Z",
+        "finished": "2026-09-23T14:06:00.692Z",
+        "executionTimeMs": 3,
         "errors": [
           "No images found on page."
         ],
@@ -2858,8 +2948,8 @@
         "confidence": "Low"
       },
       "cssAnalyzer": {
-        "started": "2026-09-15T20:28:18.596Z",
-        "finished": "2026-09-15T20:28:18.596Z",
+        "started": "2026-09-23T14:06:00.692Z",
+        "finished": "2026-09-23T14:06:00.692Z",
         "executionTimeMs": 0,
         "errors": [
           "Stylesheet elements detected in DOM but network resource timing was unavailable."
@@ -2869,8 +2959,8 @@
         "confidence": "High"
       },
       "jsAnalyzer": {
-        "started": "2026-09-15T20:28:18.596Z",
-        "finished": "2026-09-15T20:28:18.597Z",
+        "started": "2026-09-23T14:06:00.692Z",
+        "finished": "2026-09-23T14:06:00.693Z",
         "executionTimeMs": 1,
         "errors": [
           "No JavaScript resources found."
@@ -2880,9 +2970,9 @@
         "confidence": "Medium"
       },
       "seoAnalyzer": {
-        "started": "2026-09-15T20:28:18.597Z",
-        "finished": "2026-09-15T20:28:18.714Z",
-        "executionTimeMs": 117,
+        "started": "2026-09-23T14:06:00.693Z",
+        "finished": "2026-09-23T14:06:00.822Z",
+        "executionTimeMs": 129,
         "errors": [],
         "warnings": [
           "No meta description was found in the rendered document head. Your page does not currently provide a description specifically written for search-result snippets.",
@@ -2892,9 +2982,9 @@
         "confidence": "High"
       },
       "accessibilityAnalyzer": {
-        "started": "2026-09-15T20:28:18.714Z",
-        "finished": "2026-09-15T20:28:18.715Z",
-        "executionTimeMs": 1,
+        "started": "2026-09-23T14:06:00.822Z",
+        "finished": "2026-09-23T14:06:00.825Z",
+        "executionTimeMs": 3,
         "errors": [],
         "warnings": [
           "Skip navigation link was not detected. Skip links allow keyboard users to bypass layout header items."
@@ -2904,8 +2994,8 @@
       }
     },
     "screenshots": {
-      "fullPagePath": "C:\\Users\\itsak\\OneDrive\\Desktop\\Projects\\Perflens\\server\\temp\\screenshot_full_1789504098513.png",
-      "viewportPath": "C:\\Users\\itsak\\OneDrive\\Desktop\\Projects\\Perflens\\server\\temp\\screenshot_viewport_1789504098513.png"
+      "fullPagePath": "C:\\Users\\itsak\\OneDrive\\Desktop\\Projects\\Perflens\\server\\temp\\screenshot_full_1790172360596.png",
+      "viewportPath": "C:\\Users\\itsak\\OneDrive\\Desktop\\Projects\\Perflens\\server\\temp\\screenshot_viewport_1790172360596.png"
     },
     "resources": [
       {
@@ -2916,20 +3006,20 @@
         "contentType": "text/html",
         "transferSizeKb": 0.5,
         "cacheControl": "no-cache, no-store",
-        "durationMs": 498,
+        "durationMs": 941,
         "compression": "brotli",
         "httpVersion": "HTTP/1.1",
         "fromCache": false,
         "initiator": "other",
-        "startTimeMs": 12463828,
+        "startTimeMs": 17809465,
         "timingBreakdown": {
-          "dnsMs": 190,
-          "tcpMs": 84,
-          "tlsMs": 81,
-          "ttfbMs": 53,
+          "dnsMs": 283,
+          "tcpMs": 328,
+          "tlsMs": 288,
+          "ttfbMs": 62,
           "downloadMs": 0,
-          "startTimeMs": 12463828,
-          "durationMs": 498
+          "startTimeMs": 17809465,
+          "durationMs": 941
         }
       }
     ],
@@ -3604,6 +3694,8 @@
       }
     },
     "pageSpeedTelemetry": {
+      "status": "SUCCESS",
+      "available": true,
       "performance": 100,
       "accessibility": 96,
       "seo": 80,
@@ -3624,14 +3716,14 @@
           "id": "first-contentful-paint",
           "weight": 10,
           "score": 100,
-          "numericValue": 757,
+          "numericValue": 756,
           "displayValue": "0.8 s"
         },
         "largest-contentful-paint": {
           "id": "largest-contentful-paint",
           "weight": 25,
           "score": 100,
-          "numericValue": 757,
+          "numericValue": 756,
           "displayValue": "0.8 s"
         },
         "total-blocking-time": {
@@ -3652,7 +3744,7 @@
           "id": "speed-index",
           "weight": 10,
           "score": 100,
-          "numericValue": 757,
+          "numericValue": 756,
           "displayValue": "0.8 s"
         }
       },
@@ -3664,22 +3756,22 @@
         "mainThreadWork": [
           {
             "group": "Other",
-            "durationMs": 22
-          },
-          {
-            "group": "Style & Layout",
-            "durationMs": 4
+            "durationMs": 27
           },
           {
             "group": "Script Evaluation",
-            "durationMs": 4
+            "durationMs": 7
           },
           {
-            "group": "Rendering",
+            "group": "Style & Layout",
+            "durationMs": 6
+          },
+          {
+            "group": "Parse HTML & CSS",
             "durationMs": 1
           },
           {
-            "group": "Garbage Collection",
+            "group": "Rendering",
             "durationMs": 1
           }
         ],
@@ -3695,19 +3787,19 @@
           "sizeKb": 0.5,
           "transferSizeKb": 0.5,
           "statusCode": 200,
-          "timeMs": 498,
-          "durationMs": 498,
-          "startTimeMs": 12463828,
+          "timeMs": 941,
+          "durationMs": 941,
+          "startTimeMs": 17809465,
           "initiator": "other",
           "fromCache": false,
           "timingBreakdown": {
-            "dnsMs": 190,
-            "tcpMs": 84,
-            "tlsMs": 81,
-            "ttfbMs": 53,
+            "dnsMs": 283,
+            "tcpMs": 328,
+            "tlsMs": 288,
+            "ttfbMs": 62,
             "downloadMs": 0,
-            "startTimeMs": 12463828,
-            "durationMs": 498
+            "startTimeMs": 17809465,
+            "durationMs": 941
           },
           "compression": "brotli",
           "cacheControl": "no-cache, no-store",

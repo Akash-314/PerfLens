@@ -15,9 +15,11 @@ import {
   Activity,
   Layers,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  CheckCircle2
 } from 'lucide-react';
 import { HumanizedRecommendationCard } from '../components/HumanizedRecommendationCard';
+import { CWV_METRICS, getScoreCoaching } from '../utils/developerCoach';
 
 // SVG circular Gauge component
 const CircularGauge: React.FC<{ score: number; label: string }> = ({ score, label }) => {
@@ -63,16 +65,16 @@ const CircularGauge: React.FC<{ score: number; label: string }> = ({ score, labe
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '18px',
-            fontWeight: 700,
+            fontFamily: 'var(--font-sans)',
+            fontSize: '20px',
+            fontWeight: 800,
             color: 'var(--color-text-primary)'
           }}
         >
           {score}
         </div>
       </div>
-      <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--color-text-secondary)', textAlign: 'center' }}>
+      <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', textAlign: 'center' }}>
         {label}
       </span>
     </div>
@@ -87,14 +89,16 @@ export const ResultsPage: React.FC = () => {
   if (!currentReport) {
     return (
       <div className="workspace-container" style={{ textAlign: 'center', padding: '100px 24px' }}>
-        <h3>No report selected</h3>
-        <p style={{ color: 'var(--color-muted)', marginBottom: '20px' }}>Please perform a website scan first.</p>
+        <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>No report selected</h2>
+        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '24px' }}>Let's check a website to view performance signals and actionable fixes.</p>
         <button className="btn btn-primary" onClick={() => setCurrentTab('analyze')}>
-          Go to Scan Page
+          Check a website
         </button>
       </div>
     );
   }
+
+  const scoreCoach = getScoreCoaching(currentReport.scores.overall);
 
   const toggleRec = (id: string) => {
     setExpandedRecs((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -176,32 +180,43 @@ export const ResultsPage: React.FC = () => {
           justifyContent: 'space-between',
           alignItems: 'flex-start',
           borderBottom: '1px solid var(--color-border)',
-          paddingBottom: '20px',
-          marginBottom: '24px'
+          paddingBottom: '22px',
+          marginBottom: '28px',
+          flexWrap: 'wrap',
+          gap: '16px'
         }}
       >
         <div>
-          <span
-            style={{
-              fontSize: '11px',
-              fontFamily: 'var(--font-mono)',
-              backgroundColor: 'var(--color-surface-secondary)',
-              border: '1px solid var(--color-border)',
-              padding: '2px 8px',
-              borderRadius: '4px',
-              color: 'var(--color-text-secondary)'
-            }}
-          >
-            SCAN COMPLETED
-          </span>
-          <h1 style={{ fontSize: '26px', fontWeight: 700, marginTop: '8px', letterSpacing: '-0.03em' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontSize: '11px',
+                backgroundColor: 'rgba(34, 197, 94, 0.12)',
+                border: '1px solid rgba(34, 197, 94, 0.25)',
+                padding: '3px 10px',
+                borderRadius: '12px',
+                color: 'var(--color-success)',
+                fontWeight: 600
+              }}
+            >
+              <CheckCircle2 size={12} />
+              Scan complete
+            </span>
+            <span className={`metric-pill ${scoreCoach.badgeClass}`}>
+              {scoreCoach.pillText}
+            </span>
+          </div>
+          <h1 style={{ fontSize: '28px', fontWeight: 800, marginTop: '10px', letterSpacing: '-0.03em', color: 'var(--color-text-primary)' }}>
             {currentReport.url}
           </h1>
-          <p style={{ fontSize: '12px', color: 'var(--color-muted)', marginTop: '4px' }}>
-            Diagnostics executed on {currentReport.timestamp} (Simulated Googlebot mobile crawler)
+          <p style={{ fontSize: '13.5px', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
+            {scoreCoach.summary} Scanned on {currentReport.timestamp}.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
           <button
             className="btn btn-secondary"
             onClick={() => setActiveSubTab('recommendations')}
@@ -216,7 +231,7 @@ export const ResultsPage: React.FC = () => {
             }}
           >
             <Sparkles size={14} style={{ color: '#c084fc' }} />
-            <span>✦ AI Recommendations ({currentReport.recommendations?.length || 0})</span>
+            <span>Fixes ({currentReport.recommendations?.length || 0})</span>
           </button>
           <button className="btn btn-secondary" onClick={handleCopyLink}>
             <Share2 size={13} />
@@ -245,13 +260,13 @@ export const ResultsPage: React.FC = () => {
         >
           {[
             { id: 'overview', label: 'Overview', icon: Zap },
-            { id: 'recommendations', label: 'AI Recommendations', icon: Sparkles, badge: currentReport.recommendations?.length },
+            { id: 'recommendations', label: 'Fixes', icon: Sparkles, badge: currentReport.recommendations?.length },
             { id: 'bundles', label: 'Bundle Analyzer', icon: Code2 },
-            { id: 'images', label: 'Image Optimization', icon: ImageIcon },
-            { id: 'css-js', label: 'CSS / JS Audits', icon: Code2 },
-            { id: 'network', label: 'Network Waterfall', icon: Network },
+            { id: 'images', label: 'Images', icon: ImageIcon },
+            { id: 'css-js', label: 'Styles & Scripts', icon: Code2 },
+            { id: 'network', label: 'Network Requests', icon: Network },
             { id: 'accessibility', label: 'Accessibility', icon: HelpCircle },
-            { id: 'seo', label: 'SEO & Meta', icon: Globe }
+            { id: 'seo', label: 'Search & Sharing', icon: Globe }
           ].map((tab) => {
             const Icon = tab.icon;
             return (
@@ -310,11 +325,11 @@ export const ResultsPage: React.FC = () => {
                   backgroundColor: 'var(--color-surface)'
                 }}
               >
-                <CircularGauge score={currentReport.scores.overall} label="Overall Score" />
-                <CircularGauge score={currentReport.scores.performance} label="Performance" />
+                <CircularGauge score={currentReport.scores.overall} label="Website Health" />
+                <CircularGauge score={currentReport.scores.performance} label="Speed" />
                 <CircularGauge score={currentReport.scores.accessibility} label="Accessibility" />
-                <CircularGauge score={currentReport.scores.seo} label="SEO & Tags" />
-                <CircularGauge score={currentReport.scores.bestPractices} label="Best Practices" />
+                <CircularGauge score={currentReport.scores.seo} label="Search & Sharing" />
+                <CircularGauge score={currentReport.scores.bestPractices} label="Standards" />
               </div>
 
               {/* ✦ AI Recommendations & Explanations Spotlight (Top of Overview) */}
@@ -555,24 +570,25 @@ export const ResultsPage: React.FC = () => {
                 </div>
                 <div className="grid-cols-3">
                   {[
-                    { name: 'Largest Contentful Paint (LCP)', item: currentReport.vitals.lcp, desc: 'Measures perceived loading speed (2.5s threshold)' },
-                    { name: 'Cumulative Layout Shift (CLS)', item: currentReport.vitals.cls, desc: 'Measures visual stability (0.1 threshold)' },
+                    { friendlyTitle: CWV_METRICS.lcp.friendlyName, techName: 'LCP', item: currentReport.vitals.lcp, desc: 'How quickly the main content appears (under 2.5s is fast)' },
+                    { friendlyTitle: CWV_METRICS.cls.friendlyName, techName: 'CLS', item: currentReport.vitals.cls, desc: 'Checks if content jumps around while loading (under 0.1 is smooth)' },
                     { 
-                      name: 'Interaction to Next Paint (INP)', 
+                      friendlyTitle: CWV_METRICS.inp.friendlyName,
+                      techName: 'INP', 
                       item: (currentReport.vitals.inp?.available && currentReport.vitals.inp.value && currentReport.vitals.inp.value !== 'N/A')
                         ? currentReport.vitals.inp
                         : (currentReport.pageSpeed?.metrics?.inp 
                           ? { value: currentReport.pageSpeed.metrics.inp, rating: 'unrated' as const, source: 'crux', mode: 'field', score: null, available: true } 
                           : { value: 'Not measured', rating: 'unrated' as const, source: 'crux', mode: 'field', score: null, available: false, reason: 'Field metric (not measured in lab)' }), 
-                      desc: 'Measures responsiveness to user input (200ms threshold)' 
+                      desc: 'How fast the page reacts to visitor taps or clicks (under 200ms is snappy)' 
                     }
                   ].map((vit, idx) => (
                     <div
                       key={idx}
                       style={{
-                        padding: '16px',
+                        padding: '18px',
                         border: '1px solid var(--color-border)',
-                        borderRadius: 'var(--radius-md)',
+                        borderRadius: 'var(--radius-lg)',
                         backgroundColor: 'var(--color-bg)',
                         display: 'flex',
                         flexDirection: 'column',
@@ -580,9 +596,14 @@ export const ResultsPage: React.FC = () => {
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
-                          {vit.name}
-                        </span>
+                        <div>
+                          <span style={{ fontSize: '13px', color: 'var(--color-text-primary)', fontWeight: 700 }}>
+                            {vit.friendlyTitle}
+                          </span>
+                          <span style={{ fontSize: '11px', color: 'var(--color-muted)', marginLeft: '6px', fontFamily: 'var(--font-mono)' }}>
+                            ({vit.techName})
+                          </span>
+                        </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                           {vit.item?.source && (
                             <span style={{ fontSize: '9px', padding: '1px 5px', borderRadius: '3px', background: 'rgba(255,255,255,0.06)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.4px', fontWeight: 600 }}>
@@ -607,12 +628,12 @@ export const ResultsPage: React.FC = () => {
                         </div>
                       </div>
                       <p 
-                        style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}
+                        style={{ fontSize: '24px', fontWeight: 800, fontFamily: 'var(--font-sans)', color: 'var(--color-text-primary)', margin: '4px 0 0 0' }}
                         title={vit.item?.unavailableReason || vit.item?.reason || undefined}
                       >
                         {vit.item?.available === false ? (vit.item?.value && vit.item.value !== 'N/A' && !vit.item.value.includes('N/A') ? vit.item.value : 'Not measured') : (vit.item?.value ?? 'Not measured')}
                       </p>
-                      <span style={{ fontSize: '10px', color: 'var(--color-muted)' }} title={vit.item?.unavailableReason || vit.item?.reason || undefined}>
+                      <span style={{ fontSize: '11.5px', color: 'var(--color-text-secondary)', lineHeight: '1.4' }} title={vit.item?.unavailableReason || vit.item?.reason || undefined}>
                         {vit.item?.available === false && (vit.item?.unavailableReason || vit.item?.reason)
                           ? (vit.item.unavailableReason || vit.item.reason)
                           : vit.desc}
@@ -623,14 +644,14 @@ export const ResultsPage: React.FC = () => {
 
                 <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>Other Performance Metrics (Lab Diagnostics)</h4>
-                    <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Browser Instrumentation</span>
+                    <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>Additional Speed Signals (Lab Checks)</h4>
+                    <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Browser Measurement</span>
                   </div>
                   <div className="grid-cols-3">
                     {[
-                      { name: 'First Contentful Paint (FCP)', item: currentReport.vitals.fcp, desc: 'Marks first rendered text/image node (1.8s threshold)' },
-                      { name: 'Total Blocking Time (TBT)', item: currentReport.vitals.tbt, desc: 'Sum of script execution tasks over 50ms (200ms threshold)' },
-                      { name: 'Time to First Byte (TTFB)', item: currentReport.vitals.ttfb, desc: 'Initial server response latency (800ms threshold)' }
+                      { friendlyTitle: CWV_METRICS.fcp.friendlyName, techName: 'FCP', item: currentReport.vitals.fcp, desc: 'First rendered text or image (under 1.8s is fast)' },
+                      { friendlyTitle: CWV_METRICS.tbt.friendlyName, techName: 'TBT', item: currentReport.vitals.tbt, desc: 'Heavy script execution holding browser busy (under 200ms is ideal)' },
+                      { friendlyTitle: CWV_METRICS.ttfb.friendlyName, techName: 'TTFB', item: currentReport.vitals.ttfb, desc: 'Time for your server to send the first byte (under 800ms is good)' }
                     ].map((vit, idx) => (
                       <div
                         key={idx}
@@ -645,9 +666,14 @@ export const ResultsPage: React.FC = () => {
                         }}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
-                            {vit.name}
-                          </span>
+                          <div>
+                            <span style={{ fontSize: '12.5px', color: 'var(--color-text-primary)', fontWeight: 600 }}>
+                              {vit.friendlyTitle}
+                            </span>
+                            <span style={{ fontSize: '10.5px', color: 'var(--color-muted)', marginLeft: '6px', fontFamily: 'var(--font-mono)' }}>
+                              ({vit.techName})
+                            </span>
+                          </div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             {vit.item?.source && (
                               <span style={{ fontSize: '9px', padding: '1px 5px', borderRadius: '3px', background: 'rgba(255,255,255,0.06)', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.4px', fontWeight: 600 }}>
@@ -661,26 +687,24 @@ export const ResultsPage: React.FC = () => {
                                 borderRadius: '50%',
                                 backgroundColor:
                                   vit.item?.rating === 'good'
-                                  ? 'var(--color-success)'
-                                  : vit.item?.rating === 'needs-improvement'
-                                  ? 'var(--color-warning)'
-                                  : vit.item?.rating === 'poor'
-                                  ? 'var(--color-danger)'
-                                  : 'var(--color-muted)'
+                                    ? 'var(--color-success)'
+                                    : vit.item?.rating === 'needs-improvement'
+                                    ? 'var(--color-warning)'
+                                    : vit.item?.rating === 'poor'
+                                    ? 'var(--color-danger)'
+                                    : 'var(--color-muted)'
                               }}
                             />
                           </div>
                         </div>
                         <p 
-                          style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}
+                          style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'var(--font-sans)', color: 'var(--color-text-primary)', margin: '2px 0 0 0' }}
                           title={vit.item?.unavailableReason || vit.item?.reason || undefined}
                         >
-                          {vit.item?.value ?? 'N/A'}
+                          {vit.item?.value ?? 'Not measured'}
                         </p>
-                        <span style={{ fontSize: '10px', color: 'var(--color-muted)' }} title={vit.item?.unavailableReason || vit.item?.reason || undefined}>
-                          {vit.item?.available === false && (vit.item?.unavailableReason || vit.item?.reason)
-                            ? (vit.item.unavailableReason || vit.item.reason)
-                            : vit.desc}
+                        <span style={{ fontSize: '11px', color: 'var(--color-muted)', lineHeight: '1.4' }}>
+                          {vit.desc}
                         </span>
                       </div>
                     ))}

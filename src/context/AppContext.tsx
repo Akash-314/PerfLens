@@ -1012,24 +1012,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setScanLogs([]);
 
     setScanProgress([
-      { step: 1, title: 'Connecting to host', status: 'scanning' },
-      { step: 2, title: 'Collecting styles, images, and bundles', status: 'pending' },
-      { step: 3, title: 'Analyzing static asset payload overhead', status: 'pending' },
-      { step: 4, title: 'Generating Core Web Vitals telemetry', status: 'pending' },
-      { step: 5, title: 'Synthesizing AI architectural advice', status: 'pending' }
+      { step: 1, title: 'Connecting to your website', status: 'scanning' },
+      { step: 2, title: 'Checking page structure', status: 'pending' },
+      { step: 3, title: 'Checking speed & responsiveness', status: 'pending' },
+      { step: 4, title: 'Checking accessibility', status: 'pending' },
+      { step: 5, title: 'Checking search & sharing', status: 'pending' },
+      { step: 6, title: 'Finding easy improvements', status: 'pending' }
     ]);
 
     const logsList = [
-      'DNS lookup successful. Establishing socket connection to telemetry node...',
-      'TLS handshake established: TLS_AES_256_GCM_SHA384 (HTTP/2 enabled).',
-      'Requesting HTML documents... HTTP 200 OK.',
-      'Parsing DOM structure... Scraped tag headings and image attributes.',
-      'Downloading core scripts and stylesheets... Brotli compression verified.',
-      'Checking CSS selectors coverage. Unused rules cataloged.',
-      'Inspecting image sources... Running metadata check.',
-      'Evaluating Core Web Vitals timings: FCP, LCP, CLS, TBT mapping.',
-      'Running rules matching engine... Optimizations extracted.',
-      'Persisting completed performance report into database...'
+      'Connecting to your server and verifying response...',
+      'Inspecting HTML structure, headings, and images...',
+      'Checking how quickly the page becomes usable...',
+      'Looking for scripts or styles that make the browser work harder...',
+      'Testing readability and color contrast for visitors...',
+      'Checking whether search engines and social links can understand your page...',
+      'Finding the fixes that can make the biggest difference...',
+      'Preparing your friendly website report...'
     ];
 
     let logIndex = 0;
@@ -1053,7 +1052,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
         return next;
       });
-    }, 1000);
+    }, 850);
 
     try {
       const res = await fetch(`${API_BASE}/analysis/scan`, {

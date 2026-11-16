@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { Globe, Lock, Mail, User as UserIcon, Loader2 } from 'lucide-react';
+import { Lock, Mail, User as UserIcon, Loader2 } from 'lucide-react';
 
 export const Register: React.FC = () => {
   const { register, setCurrentTab } = useApp();
@@ -126,7 +126,11 @@ export const Register: React.FC = () => {
             }}
             title="Go to landing page"
           >
-            <Globe size={22} className="text-accent" />
+            <img
+              src="/favicon.svg"
+              alt="PerfLens"
+              style={{ width: '22px', height: '22px', objectFit: 'contain' }}
+            />
           </div>
           <h2 style={{ fontSize: '20px', fontWeight: 700, letterSpacing: '-0.02em', marginTop: '8px' }}>
             Create your PerfLens Account

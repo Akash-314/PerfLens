@@ -59,7 +59,7 @@ PerfLens starts with a public landing page designed with rich styling, dynamic m
 - **Dynamic Call-to-Actions (CTAs)**: Primary buttons across the landing page adapt based on session validity:
   - Unauthenticated users are redirected to Register/Login pages.
   - Authenticated users go straight to the scan dashboard or workspace.
-- **Home Navigation**: The brand Globe logo inside the Login and Register pages allows users to easily jump back to the public Landing page.
+- **Home Navigation**: The unified PerfLens brand logo inside the Login and Register pages allows users to easily jump back to the public Landing page.
 
 ### 2. Automated Domain Crawling & Auditing
 The Express gateway server manages request scheduling and orchestrates background workers:

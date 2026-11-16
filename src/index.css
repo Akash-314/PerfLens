@@ -1,33 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  /* Color Palette */
-  --color-bg: #09090B;
-  --color-surface: #111113;
-  --color-surface-secondary: #18181B;
-  --color-border: #27272A;
-  --color-accent: #3B82F6;
-  --color-accent-hover: #2563EB;
-  --color-accent-dim: rgba(59, 130, 246, 0.1);
-  --color-success: #22C55E;
-  --color-success-dim: rgba(34, 197, 94, 0.1);
-  --color-warning: #F59E0B;
-  --color-warning-dim: rgba(245, 158, 11, 0.1);
-  --color-danger: #EF4444;
-  --color-danger-dim: rgba(239, 68, 68, 0.1);
+  /* Color Palette - Friendly Dark Workspace */
+  --color-bg: #0c0f17;
+  --color-surface: #131825;
+  --color-surface-secondary: #1a2234;
+  --color-surface-tertiary: #222c42;
+  --color-border: #232c3f;
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-accent: #6366f1;
+  --color-accent-hover: #4f46e5;
+  --color-accent-dim: rgba(99, 102, 241, 0.14);
+  --color-accent-cyan: #06b6d4;
+  --color-accent-violet: #8b5cf6;
+  --color-success: #10b981;
+  --color-success-dim: rgba(16, 185, 129, 0.12);
+  --color-warning: #f59e0b;
+  --color-warning-dim: rgba(245, 158, 11, 0.12);
+  --color-danger: #ef4444;
+  --color-danger-dim: rgba(239, 68, 68, 0.12);
   
-  --color-text-primary: #FAFAFA;
-  --color-text-secondary: #A1A1AA;
-  --color-muted: #71717A;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-muted: #64748b;
   
   /* Fonts */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   
-  /* Border Radius */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
+  /* Border Radius - Softer & Friendlier */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
   
   /* Spacing Grid (8px based) */
   --space-1: 4px;
@@ -407,6 +413,82 @@ a:hover {
 .metric-score-red {
   color: var(--color-danger);
   background-color: var(--color-danger-dim);
+}
+
+/* Developer Coach Impact Badges */
+.badge-impact-high {
+  background-color: rgba(239, 68, 68, 0.14);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.badge-impact-medium {
+  background-color: rgba(245, 158, 11, 0.14);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.badge-impact-low {
+  background-color: rgba(6, 182, 212, 0.14);
+  color: #38bdf8;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Skeleton Loading Shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-secondary) 50%, var(--color-surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Coach Card and Progressive Disclosure */
+.coach-box {
+  background: linear-gradient(180deg, var(--color-surface) 0%, rgba(19, 24, 37, 0.6) 100%);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  transition: all var(--transition-normal);
+}
+
+.coach-box:hover {
+  border-color: rgba(99, 102, 241, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.details-drawer {
+  background-color: var(--color-surface-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-top: var(--space-3);
+  font-size: 13px;
 }
 
 /* Dashboard Workspace Grid */

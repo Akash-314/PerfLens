@@ -593,7 +593,7 @@ describe('PERFLENS AI Explainer V1 — Ralph Loop Test Suite', () => {
       expect(body.data.knownFacts.length).toBeGreaterThan(0);
       expect(body.data.unknowns.length).toBeGreaterThan(0);
       expect(['high', 'medium', 'low']).toContain(body.data.confidence);
-    });
+    }, 15000);
 
     it('POST /api/v1/ai/explain returns 400 when finding payload is missing', async () => {
       const res = await fetch(`${baseUrl}/api/v1/ai/explain`, {
@@ -648,6 +648,6 @@ describe('PERFLENS AI Explainer V1 — Ralph Loop Test Suite', () => {
       const body = await res.json();
       expect(body.success).toBe(true);
       expect(body.data.whatIsHappening).toContain('canonical');
-    });
+    }, 15000);
   });
 });

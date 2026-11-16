@@ -9,7 +9,8 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts';
-import { Zap, Search, AlertCircle, ArrowUpRight, Play, FileText } from 'lucide-react';
+import { Zap, Search, AlertCircle, ArrowUpRight, Play, FileText, CheckCircle2, Sparkles, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { getScoreCoaching, humanizeFinding, humanizeSeverity, humanizeCategory } from '../utils/developerCoach';
 
 export const Dashboard: React.FC = () => {
   const { reports, setCurrentReport, setCurrentTab, loading, error, fetchData } = useApp();
@@ -17,22 +18,19 @@ export const Dashboard: React.FC = () => {
   // Skeleton Loader UI
   if (loading) {
     return (
-      <div className="workspace-container fade-in" style={{ padding: '24px' }}>
-        <div style={{ marginBottom: '24px', animation: 'pulse 1.5s infinite' }}>
-          <div style={{ height: '32px', width: '240px', backgroundColor: 'var(--color-surface)', borderRadius: '4px', marginBottom: '8px' }} />
-          <div style={{ height: '16px', width: '400px', backgroundColor: 'var(--color-surface)', borderRadius: '4px' }} />
+      <div className="workspace-container fade-in" style={{ padding: '28px' }}>
+        <div style={{ marginBottom: '28px' }}>
+          <div className="skeleton-shimmer" style={{ height: '32px', width: '280px', borderRadius: '8px', marginBottom: '10px' }} />
+          <div className="skeleton-shimmer" style={{ height: '18px', width: '420px', borderRadius: '6px' }} />
         </div>
-        <div className="grid-cols-4" style={{ marginBottom: '24px', animation: 'pulse 1.5s infinite' }}>
+        <div className="grid-cols-4" style={{ marginBottom: '28px' }}>
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="card" style={{ height: '100px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ height: '12px', width: '80px', backgroundColor: 'var(--color-surface-secondary)', borderRadius: '2px' }} />
-              <div style={{ height: '28px', width: '50px', backgroundColor: 'var(--color-surface-secondary)', borderRadius: '2px' }} />
-            </div>
+            <div key={i} className="card skeleton-shimmer" style={{ height: '120px', borderRadius: 'var(--radius-xl)' }} />
           ))}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', animation: 'pulse 1.5s infinite' }}>
-          <div className="card" style={{ height: '280px', backgroundColor: 'var(--color-surface)' }} />
-          <div className="card" style={{ height: '280px', backgroundColor: 'var(--color-surface)' }} />
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+          <div className="card skeleton-shimmer" style={{ height: '280px', borderRadius: 'var(--radius-xl)' }} />
+          <div className="card skeleton-shimmer" style={{ height: '280px', borderRadius: 'var(--radius-xl)' }} />
         </div>
       </div>
     );
@@ -41,14 +39,16 @@ export const Dashboard: React.FC = () => {
   // Error State UI
   if (error) {
     return (
-      <div className="workspace-container fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', textAlign: 'center' }}>
-        <AlertCircle size={40} style={{ color: 'var(--color-danger)', marginBottom: '16px' }} />
-        <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>Connection Failure</h3>
-        <p style={{ color: 'var(--color-text-secondary)', fontSize: '13px', maxWidth: '400px', marginBottom: '20px', lineHeight: '1.5' }}>
-          {error}
+      <div className="workspace-container fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', textAlign: 'center', padding: '32px' }}>
+        <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: 'rgba(239, 68, 68, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
+          <AlertCircle size={28} style={{ color: 'var(--color-danger)' }} />
+        </div>
+        <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px', letterSpacing: '-0.02em' }}>We couldn't reach your website data</h2>
+        <p style={{ color: 'var(--color-text-secondary)', fontSize: '14px', maxWidth: '440px', marginBottom: '24px', lineHeight: '1.6' }}>
+          {error || 'An unexpected issue occurred while fetching your website overview. Check your network or try again.'}
         </p>
         <button className="btn btn-primary" onClick={fetchData}>
-          Retry Connection
+          Try again
         </button>
       </div>
     );
@@ -57,14 +57,17 @@ export const Dashboard: React.FC = () => {
   // Empty State UI
   if (reports.length === 0) {
     return (
-      <div className="workspace-container fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', textAlign: 'center' }}>
-        <Zap size={40} style={{ color: 'var(--color-muted)', marginBottom: '16px' }} />
-        <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>No Audits Saved Yet</h3>
-        <p style={{ color: 'var(--color-text-secondary)', fontSize: '13px', maxWidth: '420px', marginBottom: '20px', lineHeight: '1.5' }}>
-          Analyze a public target URL to generate performance diagrams, duplicate JS bundle inspections, and Core Web Vitals roadmaps.
+      <div className="workspace-container fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '65vh', textAlign: 'center', padding: '32px' }}>
+        <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(6, 182, 212, 0.12))', border: '1px solid rgba(99, 102, 241, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
+          <Sparkles size={32} style={{ color: 'var(--color-accent-cyan)' }} />
+        </div>
+        <h2 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '10px', letterSpacing: '-0.02em' }}>Let's check your first website</h2>
+        <p style={{ color: 'var(--color-text-secondary)', fontSize: '15px', maxWidth: '480px', marginBottom: '28px', lineHeight: '1.6' }}>
+          Paste your website URL and PerfLens will inspect speed, accessibility, search readiness, and tell you exactly what to fix.
         </p>
-        <button className="btn btn-primary" onClick={() => setCurrentTab('analyze')}>
-          Run First Scan
+        <button className="btn btn-primary" style={{ padding: '12px 28px', fontSize: '15px' }} onClick={() => setCurrentTab('analyze')}>
+          <Play size={16} fill="currentColor" />
+          <span>Check a website</span>
         </button>
       </div>
     );
@@ -72,6 +75,21 @@ export const Dashboard: React.FC = () => {
 
   // Pick the latest report
   const latestReport = reports[0];
+  const coaching = getScoreCoaching(latestReport.scores.overall);
+
+  // Score comparison with previous report if available
+  let trendHeadline = 'Consistent performance across recent scans.';
+  let trendIcon = <Minus size={14} style={{ color: 'var(--color-muted)' }} />;
+  if (reports.length > 1) {
+    const diff = latestReport.scores.overall - reports[1].scores.overall;
+    if (diff > 0) {
+      trendHeadline = `Your score improved by ${diff} point${diff > 1 ? 's' : ''} compared to the previous scan.`;
+      trendIcon = <TrendingUp size={14} style={{ color: 'var(--color-success)' }} />;
+    } else if (diff < 0) {
+      trendHeadline = `Your score dipped by ${Math.abs(diff)} point${Math.abs(diff) > 1 ? 's' : ''} since the last scan. Let's fix the new issues.`;
+      trendIcon = <TrendingDown size={14} style={{ color: 'var(--color-warning)' }} />;
+    }
+  }
 
   // Dynamic Performance trends from user's report history
   const trendData = reports
@@ -87,105 +105,192 @@ export const Dashboard: React.FC = () => {
     setCurrentTab('results');
   };
 
-  const getScoreColorClass = (score: number) => {
-    if (score >= 90) return 'metric-score-green';
-    if (score >= 70) return 'metric-score-orange';
-    return 'metric-score-red';
+  const handleFixesView = (report: Report) => {
+    setCurrentReport(report);
+    setCurrentTab('recommendations');
   };
 
-  // Compile issues dynamically from recommendations of the latest audit report with explicit scan context
-  const mostCommonIssues = latestReport?.recommendations?.slice(0, 4).map((rec) => ({
-    title: rec.issue,
-    category: rec.category.toUpperCase(),
-    severity: rec.priority.toLowerCase() === 'high' || rec.priority.toLowerCase() === 'critical' ? 'High' : 'Medium',
-    code: rec.id,
-    url: latestReport.url,
-    timestamp: latestReport.timestamp
-  })) || [];
+  // Top opportunity for "Start here"
+  const topRecommendations = latestReport?.recommendations || [];
+  const topOpportunity = topRecommendations[0];
+  const topOpportunityCoach = topOpportunity ? humanizeFinding(topOpportunity.issue, topOpportunity.category) : null;
+  const topOpportunitySeverity = topOpportunity ? humanizeSeverity(topOpportunity.priority) : null;
 
   return (
     <div className="workspace-container fade-in">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 700, letterSpacing: '-0.03em' }}>Performance Overview</h1>
-          <p style={{ fontSize: '13px', color: 'var(--color-muted)' }}>Continuous performance telemetry and diagnostics.</p>
+          <h1 style={{ fontSize: '26px', fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--color-text-primary)' }}>
+            How is your website doing?
+          </h1>
+          <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
+            Here's a quick look at your site's health and the things worth fixing for <strong style={{ color: 'var(--color-text-primary)', fontWeight: 600 }}>{latestReport.url}</strong>.
+          </p>
         </div>
         <button className="btn btn-primary" onClick={() => setCurrentTab('analyze')}>
-          <Play size={12} fill="currentColor" />
-          <span>New Diagnostics Scan</span>
+          <Play size={14} fill="currentColor" />
+          <span>Check a website</span>
         </button>
       </div>
 
       {/* Main Metric Cards Grid */}
-      {latestReport && (
-        <div className="grid-cols-4" style={{ marginBottom: '24px' }}>
-          <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-text-secondary)' }}>Overall Score</span>
-              <span className={`metric-pill ${getScoreColorClass(latestReport.scores.overall)}`}>
-                {latestReport.scores.overall}/100
-              </span>
-            </div>
-            <p style={{ fontSize: '28px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-              {latestReport.scores.overall}
-            </p>
-            <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Average of all core categories</span>
+      <div className="grid-cols-4" style={{ marginBottom: '28px' }}>
+        {/* Website Health */}
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>Website Health</span>
+            <span className={`metric-pill ${coaching.badgeClass}`}>
+              {coaching.pillText}
+            </span>
           </div>
-
-          <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-text-secondary)' }}>Performance</span>
-              <span className={`metric-pill ${getScoreColorClass(latestReport.scores.performance)}`}>
-                {latestReport.scores.performance}%
+          <div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+              <span style={{ fontSize: '36px', fontWeight: 800, fontFamily: 'var(--font-sans)', letterSpacing: '-0.03em' }}>
+                {latestReport.scores.overall}
               </span>
+              <span style={{ fontSize: '14px', color: 'var(--color-muted)' }}>/ 100</span>
             </div>
-            <p style={{ fontSize: '28px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-              {latestReport.scores.performance}
+            <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '4px', lineHeight: '1.4' }}>
+              {coaching.summary}
             </p>
-            <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>LCP, TBT, Speed Index</span>
           </div>
+        </div>
 
-          <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-text-secondary)' }}>Accessibility</span>
-              <span className={`metric-pill ${getScoreColorClass(latestReport.scores.accessibility)}`}>
-                {latestReport.scores.accessibility}%
-              </span>
-            </div>
-            <p style={{ fontSize: '28px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-              {latestReport.scores.accessibility}
-            </p>
-            <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Contrast, Aria patterns</span>
+        {/* Speed */}
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>Speed</span>
+            <span className={`metric-pill ${latestReport.scores.performance >= 90 ? 'metric-score-green' : latestReport.scores.performance >= 70 ? 'metric-score-orange' : 'metric-score-red'}`}>
+              {latestReport.scores.performance >= 90 ? 'Fast' : latestReport.scores.performance >= 70 ? 'Moderate' : 'Sluggish'}
+            </span>
           </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+              <span style={{ fontSize: '36px', fontWeight: 800, fontFamily: 'var(--font-sans)', letterSpacing: '-0.03em' }}>
+                {latestReport.scores.performance}
+              </span>
+              <span style={{ fontSize: '14px', color: 'var(--color-muted)' }}>/ 100</span>
+            </div>
+            <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '4px', lineHeight: '1.4' }}>
+              Main content appears in {latestReport.vitals.lcp.value || 'good time'}.
+            </p>
+          </div>
+        </div>
 
-          <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-text-secondary)' }}>SEO / Standards</span>
-              <span className={`metric-pill ${getScoreColorClass(latestReport.scores.seo)}`}>
-                {latestReport.scores.seo}%
+        {/* Accessibility */}
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>Accessibility</span>
+            <span className={`metric-pill ${latestReport.scores.accessibility >= 90 ? 'metric-score-green' : latestReport.scores.accessibility >= 70 ? 'metric-score-orange' : 'metric-score-red'}`}>
+              {latestReport.scores.accessibility >= 90 ? 'Inclusive' : latestReport.scores.accessibility >= 70 ? 'Needs tweaks' : 'Fix contrast'}
+            </span>
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+              <span style={{ fontSize: '36px', fontWeight: 800, fontFamily: 'var(--font-sans)', letterSpacing: '-0.03em' }}>
+                {latestReport.scores.accessibility}
+              </span>
+              <span style={{ fontSize: '14px', color: 'var(--color-muted)' }}>/ 100</span>
+            </div>
+            <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '4px', lineHeight: '1.4' }}>
+              Checks readability, contrast, and navigation structure.
+            </p>
+          </div>
+        </div>
+
+        {/* Search & Sharing */}
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>Search & Sharing</span>
+            <span className={`metric-pill ${latestReport.scores.seo >= 90 ? 'metric-score-green' : latestReport.scores.seo >= 70 ? 'metric-score-orange' : 'metric-score-red'}`}>
+              {latestReport.scores.seo >= 90 ? 'Search-ready' : latestReport.scores.seo >= 70 ? 'Good shape' : 'Needs meta'}
+            </span>
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+              <span style={{ fontSize: '36px', fontWeight: 800, fontFamily: 'var(--font-sans)', letterSpacing: '-0.03em' }}>
+                {latestReport.scores.seo}
+              </span>
+              <span style={{ fontSize: '14px', color: 'var(--color-muted)' }}>/ 100</span>
+            </div>
+            <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '4px', lineHeight: '1.4' }}>
+              Headings, meta tags, and social preview cards.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Start Here: Next Best Action Banner */}
+      {topOpportunity && topOpportunityCoach && (
+        <div
+          className="card"
+          style={{
+            marginBottom: '28px',
+            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(6, 182, 212, 0.05) 100%)',
+            border: '1px solid rgba(99, 102, 241, 0.25)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            padding: '20px 24px'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Sparkles size={16} style={{ color: 'var(--color-accent-cyan)' }} />
+              <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--color-accent-cyan)' }}>
+                Start here • Your biggest opportunity
               </span>
             </div>
-            <p style={{ fontSize: '28px', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
-              {latestReport.scores.seo}
-            </p>
-            <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Meta tag & OpenGraph validity</span>
+            {topOpportunitySeverity && (
+              <span className={topOpportunitySeverity.badgeClass}>
+                {topOpportunitySeverity.label}
+              </span>
+            )}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            <div style={{ maxWidth: '780px' }}>
+              <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '4px' }}>
+                {topOpportunityCoach.headline}
+              </h3>
+              <p style={{ fontSize: '13.5px', color: 'var(--color-text-secondary)', lineHeight: '1.5' }}>
+                {topOpportunityCoach.summary} {topOpportunityCoach.whyItMatters}
+              </p>
+            </div>
+            <button
+              className="btn btn-primary"
+              style={{ whiteSpace: 'nowrap' }}
+              onClick={() => handleFixesView(latestReport)}
+            >
+              <span>See the fix</span>
+              <ArrowUpRight size={14} />
+            </button>
           </div>
         </div>
       )}
 
-      <div className="grid-cols-3" style={{ marginBottom: '24px' }}>
-        {/* Performance Trend Area Chart */}
+      {/* Two Columns: Trend & Quick Actions */}
+      <div className="grid-cols-3" style={{ marginBottom: '28px' }}>
+        {/* Trend Area Chart */}
         <div className="card" style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div>
-            <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Performance Score Trend</h3>
-            <p style={{ fontSize: '12px', color: 'var(--color-muted)' }}>Historical telemetry scores over successive audits.</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+            <div>
+              <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-text-primary)' }}>Is your site getting better?</h3>
+              <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
+                See how your website's health has changed over time.
+              </p>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--color-text-secondary)', backgroundColor: 'var(--color-surface-secondary)', padding: '6px 12px', borderRadius: '20px' }}>
+              {trendIcon}
+              <span>{trendHeadline}</span>
+            </div>
           </div>
           <div style={{ width: '100%', height: '220px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--color-accent)" stopOpacity={0.2}/>
+                    <stop offset="5%" stopColor="var(--color-accent)" stopOpacity={0.25}/>
                     <stop offset="95%" stopColor="var(--color-accent)" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
@@ -208,18 +313,19 @@ export const Dashboard: React.FC = () => {
                   contentStyle={{
                     backgroundColor: 'var(--color-surface)',
                     border: '1px solid var(--color-border)',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     fontSize: '12px',
-                    color: 'var(--color-text-primary)'
+                    color: 'var(--color-text-primary)',
+                    boxShadow: 'var(--shadow-md)'
                   }}
-                  itemStyle={{ color: 'var(--color-accent)' }}
+                  itemStyle={{ color: 'var(--color-accent-cyan)' }}
                   labelStyle={{ color: 'var(--color-text-secondary)' }}
                 />
                 <Area
                   type="monotone"
                   dataKey="score"
                   stroke="var(--color-accent)"
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                   fillOpacity={1}
                   fill="url(#colorScore)"
                 />
@@ -230,148 +336,190 @@ export const Dashboard: React.FC = () => {
 
         {/* Quick Actions Panel */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Quick Actions</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+          <div>
+            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-text-primary)' }}>What do you want to do?</h3>
+            <p style={{ fontSize: '12.5px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
+              Common tasks to keep your website fast.
+            </p>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
             <button
               className="btn btn-secondary"
-              style={{ justifyContent: 'flex-start', padding: '10px 12px', width: '100%' }}
+              style={{ justifyContent: 'flex-start', padding: '12px 14px', width: '100%', borderRadius: 'var(--radius-lg)' }}
               onClick={() => setCurrentTab('analyze')}
             >
-              <Search size={14} />
-              <div style={{ textAlign: 'left', marginLeft: '8px' }}>
-                <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--color-text-primary)' }}>Run new website audit</p>
-                <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Scan any public url instantly</span>
+              <Search size={16} style={{ color: 'var(--color-accent-cyan)' }} />
+              <div style={{ textAlign: 'left', marginLeft: '10px' }}>
+                <p style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--color-text-primary)' }}>Check a website</p>
+                <span style={{ fontSize: '11.5px', color: 'var(--color-text-secondary)' }}>Inspect any page URL in seconds</span>
               </div>
             </button>
 
             <button
               className="btn btn-secondary"
-              style={{ justifyContent: 'flex-start', padding: '10px 12px', width: '100%' }}
+              style={{ justifyContent: 'flex-start', padding: '12px 14px', width: '100%', borderRadius: 'var(--radius-lg)' }}
               onClick={() => setCurrentTab('comparisons')}
             >
-              <Zap size={14} />
-              <div style={{ textAlign: 'left', marginLeft: '8px' }}>
-                <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--color-text-primary)' }}>Compare side-by-side</p>
-                <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Test performance of two target hosts</span>
+              <Zap size={16} style={{ color: 'var(--color-accent)' }} />
+              <div style={{ textAlign: 'left', marginLeft: '10px' }}>
+                <p style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--color-text-primary)' }}>Compare two websites</p>
+                <span style={{ fontSize: '11.5px', color: 'var(--color-text-secondary)' }}>See how you stack up against competitors</span>
               </div>
             </button>
 
             <button
               className="btn btn-secondary"
-              style={{ justifyContent: 'flex-start', padding: '10px 12px', width: '100%' }}
+              style={{ justifyContent: 'flex-start', padding: '12px 14px', width: '100%', borderRadius: 'var(--radius-lg)' }}
               onClick={() => setCurrentTab('reports')}
             >
-              <FileText size={14} />
-              <div style={{ textAlign: 'left', marginLeft: '8px' }}>
-                <p style={{ fontSize: '13px', fontWeight: 500, color: 'var(--color-text-primary)' }}>Export performance reports</p>
-                <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>Retrieve generated diagnostics logs</span>
+              <FileText size={16} style={{ color: '#a855f7' }} />
+              <div style={{ textAlign: 'left', marginLeft: '10px' }}>
+                <p style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--color-text-primary)' }}>View previous scans</p>
+                <span style={{ fontSize: '11.5px', color: 'var(--color-text-secondary)' }}>Browse history and download reports</span>
               </div>
             </button>
           </div>
         </div>
       </div>
 
+      {/* Two Columns: Recent Scans & Key Findings */}
       <div className="grid-cols-3">
-        {/* Recent Audits Table */}
+        {/* Recent Scans Table */}
         <div className="table-container" style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ padding: '16px', borderBottom: '1px solid var(--color-border)' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 600 }}>Recent Diagnostics History</h3>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-text-primary)' }}>Your recent scans</h3>
+              <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
+                Open any scan to see what changed and what to fix.
+              </p>
+            </div>
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => setCurrentTab('reports')}
+            >
+              <span>View all ({reports.length})</span>
+            </button>
           </div>
           <table className="custom-table">
             <thead>
               <tr>
-                <th>Domain</th>
-                <th>Overall</th>
-                <th>FCP</th>
-                <th>LCP</th>
-                <th>Scanned At</th>
+                <th>Website</th>
+                <th>Health</th>
+                <th>Speed</th>
+                <th>Main content</th>
+                <th>Scanned</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {reports.slice(0, 4).map((r) => (
-                <tr key={r.id}>
-                  <td style={{ fontWeight: 500, color: 'var(--color-text-primary)' }}>{r.url}</td>
-                  <td>
-                    <span className={`metric-pill ${getScoreColorClass(r.scores.overall)}`}>
-                      {r.scores.overall}
-                    </span>
-                  </td>
-                  <td>{r.vitals.fcp.value}</td>
-                  <td>{r.vitals.lcp.value}</td>
-                  <td style={{ fontSize: '12px' }}>{r.timestamp.split(',')[0]}</td>
-                  <td>
-                    <button
-                      className="btn btn-ghost btn-sm"
-                      style={{ gap: '4px' }}
-                      onClick={() => handleReportView(r)}
-                    >
-                      <span>Inspect</span>
-                      <ArrowUpRight size={12} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {reports.slice(0, 5).map((r) => {
+                const rCoach = getScoreCoaching(r.scores.overall);
+                return (
+                  <tr key={r.id}>
+                    <td style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                      {r.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                    </td>
+                    <td>
+                      <span className={`metric-pill ${rCoach.badgeClass}`}>
+                        {r.scores.overall}
+                      </span>
+                    </td>
+                    <td>
+                      <span style={{ fontWeight: 500 }}>{r.scores.performance}%</span>
+                    </td>
+                    <td style={{ color: 'var(--color-text-secondary)', fontSize: '12.5px' }}>
+                      {r.vitals.lcp.value || '—'}
+                    </td>
+                    <td style={{ fontSize: '12px', color: 'var(--color-muted)' }}>
+                      {r.timestamp.split(',')[0]}
+                    </td>
+                    <td>
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        style={{ gap: '4px' }}
+                        onClick={() => handleReportView(r)}
+                      >
+                        <span>Open scan</span>
+                        <ArrowUpRight size={13} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
 
-        {/* Recent Issues / Bottlenecks */}
+        {/* Things Worth Fixing */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <h3 style={{ fontSize: '15px', fontWeight: 600 }}>
-              Recent Issues — {latestReport ? latestReport.url : 'Overview'}
+            <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+              Things worth fixing
             </h3>
-            <p style={{ fontSize: '12px', color: 'var(--color-muted)' }}>
-              {latestReport ? `Key findings from latest scan (${latestReport.timestamp})` : 'No active performance warnings detected.'}
+            <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
+              Biggest opportunities from <strong style={{ color: 'var(--color-text-primary)' }}>{latestReport.url.replace(/^https?:\/\//, '')}</strong>
             </p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {mostCommonIssues.length === 0 ? (
-              <p style={{ fontSize: '12px', color: 'var(--color-muted)', textAlign: 'center', padding: '12px' }}>
-                No active performance warnings detected.
-              </p>
+            {topRecommendations.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '24px 12px', color: 'var(--color-text-secondary)' }}>
+                <CheckCircle2 size={32} style={{ color: 'var(--color-success)', margin: '0 auto 8px' }} />
+                <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>All clean!</p>
+                <p style={{ fontSize: '12px', color: 'var(--color-muted)' }}>No urgent issues detected on this scan.</p>
+              </div>
             ) : (
-              mostCommonIssues.map((issue, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    display: 'flex',
-                    gap: '10px',
-                    alignItems: 'flex-start',
-                    paddingBottom: '12px',
-                    borderBottom: idx !== mostCommonIssues.length - 1 ? '1px solid var(--color-border)' : 'none'
-                  }}
-                >
-                  <AlertCircle
-                    size={14}
+              topRecommendations.slice(0, 4).map((rec, idx) => {
+                const hFinding = humanizeFinding(rec.issue, rec.category);
+                const hSev = humanizeSeverity(rec.priority);
+                return (
+                  <div
+                    key={idx}
                     style={{
-                      color: issue.severity === 'High' ? 'var(--color-danger)' : 'var(--color-warning)',
-                      marginTop: '2px',
-                      flexShrink: 0
+                      display: 'flex',
+                      gap: '10px',
+                      alignItems: 'flex-start',
+                      paddingBottom: '12px',
+                      borderBottom: idx !== Math.min(topRecommendations.length, 4) - 1 ? '1px solid var(--color-border)' : 'none'
                     }}
-                  />
-                  <div>
-                    <p
-                      style={{
-                        fontSize: '12.5px',
-                        color: 'var(--color-text-primary)',
-                        lineHeight: '1.4',
-                        fontWeight: 500
-                      }}
-                    >
-                      {issue.title}
-                    </p>
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '4px', fontSize: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
-                      <span style={{ color: 'var(--color-accent)', fontWeight: 600 }}>{issue.url}</span>
-                      <span style={{ color: 'var(--color-muted)' }}>•</span>
-                      <span style={{ color: 'var(--color-text-secondary)' }}>{issue.category}</span>
-                      <span style={{ color: 'var(--color-muted)' }}>•</span>
-                      <span style={{ color: 'var(--color-muted)' }}>Severity: {issue.severity}</span>
+                  >
+                    <div style={{ marginTop: '2px', flexShrink: 0 }}>
+                      <span className={hSev.badgeClass} style={{ fontSize: '9.5px', padding: '2px 6px' }}>
+                        {hSev.label}
+                      </span>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <p
+                        style={{
+                          fontSize: '13px',
+                          color: 'var(--color-text-primary)',
+                          lineHeight: '1.4',
+                          fontWeight: 600
+                        }}
+                      >
+                        {hFinding.headline}
+                      </p>
+                      <p style={{ fontSize: '11.5px', color: 'var(--color-text-secondary)', marginTop: '2px', lineHeight: '1.4' }}>
+                        {hFinding.summary}
+                      </p>
+                      <div style={{ display: 'flex', gap: '6px', marginTop: '4px', fontSize: '11px', alignItems: 'center' }}>
+                        <span style={{ color: 'var(--color-accent-cyan)', fontWeight: 500 }}>
+                          {humanizeCategory(rec.category)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
+            )}
+            {topRecommendations.length > 0 && (
+              <button
+                className="btn btn-secondary btn-sm"
+                style={{ width: '100%', marginTop: '4px' }}
+                onClick={() => handleFixesView(latestReport)}
+              >
+                <span>View all fixes ({topRecommendations.length})</span>
+                <ArrowUpRight size={12} />
+              </button>
             )}
           </div>
         </div>
@@ -379,3 +527,4 @@ export const Dashboard: React.FC = () => {
     </div>
   );
 };
+

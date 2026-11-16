@@ -19,41 +19,46 @@ export const TopNav: React.FC = () => {
   return (
     <header className="top-nav">
       <div className="top-nav-left">
-        <button className="search-trigger" onClick={() => setGlobalSearchOpen(true)}>
-          <Search size={14} />
-          <span>Search or command...</span>
-          <kbd className="search-shortcut">⌘K</kbd>
-        </button>
-
         {currentTab !== 'analyze' && (
           <form
             onSubmit={handleQuickAnalyze}
-            style={{ display: 'flex', gap: '8px', flex: 1, marginLeft: '16px' }}
+            style={{ display: 'flex', gap: '8px', flex: 1, maxWidth: '420px' }}
           >
             <input
               type="text"
-              placeholder="Quick scan URL (e.g. google.com)"
+              placeholder="Paste your website URL..."
               value={quickUrl}
               onChange={(e) => setQuickUrl(e.target.value)}
               className="form-input"
               style={{
-                height: '32px',
+                height: '34px',
                 padding: '0 12px',
                 fontSize: '13px',
                 flex: 1,
-                backgroundColor: 'var(--color-bg)'
+                backgroundColor: 'var(--color-bg)',
+                borderRadius: 'var(--radius-md)'
               }}
             />
             <button
               type="submit"
               className="btn btn-primary"
-              style={{ height: '32px', padding: '0 12px', fontSize: '12px' }}
+              style={{ height: '34px', padding: '0 14px', fontSize: '12px', whiteSpace: 'nowrap' }}
             >
-              <Play size={10} fill="currentColor" />
-              <span>Scan</span>
+              <Play size={11} fill="currentColor" />
+              <span>Check Website</span>
             </button>
           </form>
         )}
+
+        <button
+          className="search-trigger"
+          onClick={() => setGlobalSearchOpen(true)}
+          style={{ maxWidth: '180px', height: '34px', opacity: 0.85 }}
+          title="Search or jump to page (⌘K)"
+        >
+          <Search size={13} />
+          <span>Search or ⌘K</span>
+        </button>
       </div>
 
       <div className="top-nav-right">
