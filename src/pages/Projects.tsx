@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { FolderGit, PlusCircle, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { Plus, ArrowUpRight } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 export const Projects: React.FC = () => {
@@ -26,11 +26,10 @@ export const Projects: React.FC = () => {
     setShowAddForm(false);
   };
 
-  // Dynamically calculate history data from reports matching activeProject's websites
   const matchingReports = activeProject
     ? reports
         .filter((r) =>
-          activeProject.websites.some((w) =>
+          activeProject.websites?.some((w) =>
             r.url.toLowerCase().includes(w.replace(/^(https?:\/\/)?(www\.)?/, '').toLowerCase())
           )
         )
@@ -45,44 +44,49 @@ export const Projects: React.FC = () => {
 
   return (
     <div className="workspace-container fade-in">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 700, letterSpacing: '-0.03em' }}>Projects</h1>
-          <p style={{ fontSize: '13px', color: 'var(--color-muted)' }}>Group and track performance audits across your monitored websites.</p>
+          <h1 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-fg-default)', letterSpacing: '-0.02em' }}>
+            Projects
+          </h1>
+          <p style={{ fontSize: '14px', color: 'var(--color-fg-muted)', marginTop: '4px' }}>
+            Group and track performance audits across your monitored websites and domains.
+          </p>
         </div>
         <button className="btn btn-primary" onClick={() => setShowAddForm(!showAddForm)}>
-          <PlusCircle size={14} />
-          <span>New Project</span>
+          <Plus size={14} />
+          <span>New project</span>
         </button>
       </div>
 
-      {/* Creation Modal Form */}
+      {/* GitHub Creation Box */}
       {showAddForm && (
         <form
           onSubmit={handleCreateProject}
-          className="card fade-in"
+          className="gh-box fade-in"
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '16px',
-            backgroundColor: 'var(--color-surface)',
-            marginBottom: '24px',
-            maxWidth: '500px'
+            gap: '14px',
+            marginBottom: '20px',
+            maxWidth: '540px'
           }}
         >
-          <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Create New Project</h3>
+          <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-fg-default)' }}>Create a new project</h3>
           <div className="form-group">
-            <label className="form-label">Project Name</label>
+            <label className="form-label">Project name</label>
             <input
               type="text"
               className="form-input"
               value={newProjName}
               onChange={(e) => setNewProjName(e.target.value)}
               placeholder="e.g. Acme Marketing Landing"
+              autoFocus
             />
           </div>
           <div className="form-group">
-            <label className="form-label">Associated Domains (Comma separated)</label>
+            <label className="form-label">Associated domains (comma separated)</label>
             <input
               type="text"
               className="form-input"
@@ -91,8 +95,8 @@ export const Projects: React.FC = () => {
               placeholder="e.g. acme.com, blog.acme.com"
             />
           </div>
-          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-            <button type="submit" className="btn btn-primary btn-sm">Create Project</button>
+          <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+            <button type="submit" className="btn btn-primary btn-sm">Create project</button>
             <button
               type="button"
               className="btn btn-secondary btn-sm"
@@ -104,182 +108,170 @@ export const Projects: React.FC = () => {
         </form>
       )}
 
-      {/* Sidebar List and Active project Workspace side-by-side */}
-      <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-        {/* Project directory list */}
-        <div style={{ width: '220px', display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
-          {projects.length === 0 ? (
-            <div className="card" style={{ padding: '16px', textAlign: 'center', color: 'var(--color-muted)', fontSize: '12px' }}>
-              No projects yet. Create a project to group related website scans.
-            </div>
-          ) : (
-            projects.map((proj) => (
-              <div
-                key={proj.id}
-                onClick={() => setActiveProject(proj)}
-                className="card card-interactive"
-                style={{
-                  padding: '12px 16px',
-                  borderColor: activeProject?.id === proj.id ? 'var(--color-accent)' : 'var(--color-border)',
-                  backgroundColor: activeProject?.id === proj.id ? 'var(--color-surface-secondary)' : 'var(--color-surface)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px'
-                }}
-              >
-                <FolderGit size={16} style={{ color: activeProject?.id === proj.id ? 'var(--color-accent)' : 'var(--color-muted)' }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{proj.name}</p>
-                  <span style={{ fontSize: '10px', color: 'var(--color-muted)' }}>{proj.websites.length} Domains</span>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+      {/* Projects Grid Layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 320px) minmax(0, 1fr)', gap: '20px', alignItems: 'start' }}>
+        {/* Project List */}
+        <div className="gh-box" style={{ padding: 0 }}>
+          <div className="gh-box-header">
+            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-fg-default)' }}>
+              Projects ({projects.length})
+            </span>
+          </div>
 
-        {/* Selected Project details */}
-        {activeProject ? (
-          <div style={{ flex: 1, minWidth: '320px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            {/* Headline and Team details */}
-            <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 700 }}>{activeProject.name}</h3>
-                  <div style={{ display: 'flex', gap: '12px', marginTop: '4px', fontSize: '11px', color: 'var(--color-muted)' }}>
-                    <span>Average score: <strong style={{ color: 'var(--color-success)' }}>{matchingReports.length > 0 ? `${activeProject.avgScore}/100` : 'N/A'}</strong></span>
-                    <span>•</span>
-                    <span>Matching Scans: {matchingReports.length}</span>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {projects.map((proj) => {
+              const isSelected = activeProject?.id === proj.id;
+              return (
+                <div
+                  key={proj.id}
+                  className="gh-box-row"
+                  onClick={() => setActiveProject(proj)}
+                  style={{
+                    cursor: 'pointer',
+                    justifyContent: 'space-between',
+                    backgroundColor: isSelected ? 'var(--color-surface-secondary)' : 'transparent',
+                    borderLeft: isSelected ? '3px solid var(--color-accent-fg)' : '3px solid transparent'
+                  }}
+                >
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600, color: isSelected ? 'var(--color-fg-default)' : 'var(--color-accent-fg)' }}>
+                      {proj.name}
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--color-fg-muted)', marginTop: '2px' }}>
+                      {proj.websites?.length || 0} associated domain(s)
+                    </div>
                   </div>
                 </div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: 'var(--color-muted)' }}>
-                  <CheckCircle2 size={13} style={{ color: 'var(--color-success)' }} />
-                  <span>Monitored</span>
-                </div>
-              </div>
+              );
+            })}
 
-              {/* Domains in project list */}
-              <div>
-                <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Target Domains</span>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '6px' }}>
-                  {activeProject.websites.length === 0 ? (
-                    <span style={{ fontSize: '12px', color: 'var(--color-muted)' }}>No domains added yet.</span>
-                  ) : (
-                    activeProject.websites.map((web, idx) => (
-                      <span
-                        key={idx}
-                        style={{
-                          padding: '4px 10px',
-                          borderRadius: 'var(--radius-sm)',
-                          backgroundColor: 'var(--color-bg)',
-                          border: '1px solid var(--color-border)',
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: '12px',
-                          color: 'var(--color-text-primary)'
-                        }}
-                      >
-                        {web}
+            {projects.length === 0 && (
+              <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--color-fg-muted)', fontSize: '13px' }}>
+                No projects created yet.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Selected Project View */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', minWidth: 0 }}>
+          {activeProject ? (
+            <>
+              {/* Project Details Box */}
+              <div className="gh-box">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
+                  <div>
+                    <h2 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--color-fg-default)' }}>
+                      {activeProject.name}
+                    </h2>
+                    <p style={{ fontSize: '13px', color: 'var(--color-fg-muted)', marginTop: '2px' }}>
+                      Active monitoring configuration & audit history.
+                    </p>
+                  </div>
+                  <span className="badge badge-green">
+                    Active Project
+                  </span>
+                </div>
+
+                <div style={{ borderTop: '1px solid var(--color-border-default)', paddingTop: '12px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-fg-muted)', display: 'block', marginBottom: '6px' }}>
+                    Monitored Domains
+                  </span>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {activeProject.websites?.map((w, i) => (
+                      <span key={i} className="badge badge-neutral" style={{ fontFamily: 'var(--font-mono)' }}>
+                        {w}
                       </span>
-                    ))
-                  )}
+                    ))}
+                    {(!activeProject.websites || activeProject.websites.length === 0) && (
+                      <span style={{ fontSize: '12.5px', color: 'var(--color-fg-subtle)' }}>
+                        No domains assigned.
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Aggregated Line Performance Trend Chart */}
-            <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div>
-                <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Performance Trend</h3>
-                <p style={{ fontSize: '12px', color: 'var(--color-muted)' }}>Scores of audits conducted across this project's domains.</p>
-              </div>
-              <div style={{ width: '100%', height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {projectHistoryData.length === 0 ? (
-                  <p style={{ fontSize: '12px', color: 'var(--color-muted)', textAlign: 'center' }}>
-                    No audit trend data available yet for this project.
-                  </p>
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={projectHistoryData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
-                      <XAxis dataKey="name" stroke="var(--color-muted)" fontSize={11} tickLine={false} axisLine={false} />
-                      <YAxis stroke="var(--color-muted)" fontSize={11} domain={[0, 100]} tickLine={false} axisLine={false} />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: 'var(--color-surface)',
-                          border: '1px solid var(--color-border)',
-                          borderRadius: '6px',
-                          fontSize: '12px'
-                        }}
-                      />
-                      <Line type="monotone" dataKey="score" stroke="var(--color-success)" strokeWidth={2} dot={{ fill: 'var(--color-success)' }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                )}
-              </div>
-            </div>
-
-            {/* Real matching scans */}
-            <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontSize: '15px', fontWeight: 600 }}>Recent Scans for this Project</h3>
-                <span style={{ fontSize: '11px', color: 'var(--color-muted)' }}>{matchingReports.length} audit(s)</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {matchingReports.length === 0 ? (
-                  <p style={{ fontSize: '12px', color: 'var(--color-muted)', textAlign: 'center', padding: '16px' }}>
-                    No scans recorded for this project's domains yet. Run an audit on one of the target domains.
-                  </p>
-                ) : (
-                  matchingReports.slice(0, 5).map((r) => (
-                    <div
-                      key={r.id}
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '10px 12px',
-                        borderRadius: 'var(--radius-sm)',
-                        backgroundColor: 'var(--color-bg)',
-                        border: '1px solid var(--color-border)'
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
-                        <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.url}</span>
-                        <span style={{ fontSize: '11px', color: 'var(--color-muted)', whiteSpace: 'nowrap' }}>{r.timestamp}</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '12px' }}>
-                        <span
-                          className={`metric-pill ${
-                            r.scores.overall >= 90
-                              ? 'metric-score-green'
-                              : r.scores.overall >= 70
-                              ? 'metric-score-orange'
-                              : 'metric-score-red'
-                          }`}
-                        >
-                          {r.scores.overall}/100
-                        </span>
-                        <button
-                          className="btn btn-ghost btn-sm"
-                          onClick={() => {
-                            setCurrentReport(r);
-                            setCurrentTab('results');
+              {/* History Trend Chart */}
+              {projectHistoryData.length > 1 && (
+                <div className="gh-box">
+                  <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-fg-default)', marginBottom: '12px' }}>
+                    Project health score history
+                  </h3>
+                  <div style={{ width: '100%', height: '180px' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={projectHistoryData} margin={{ top: 5, right: 10, left: -25, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-default)" vertical={false} />
+                        <XAxis dataKey="name" stroke="var(--color-fg-subtle)" fontSize={11} tickLine={false} axisLine={false} />
+                        <YAxis stroke="var(--color-fg-subtle)" fontSize={11} domain={[0, 100]} tickLine={false} axisLine={false} />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: 'var(--color-surface)',
+                            border: '1px solid var(--color-border-default)',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            color: 'var(--color-fg-default)'
                           }}
-                          title="Inspect audit report"
-                        >
-                          <ArrowUpRight size={13} />
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
+                        />
+                        <Line type="monotone" dataKey="score" stroke="var(--color-accent-fg)" strokeWidth={2} dot={{ r: 3 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+
+              {/* Matching Scans Table */}
+              <div className="table-container">
+                <table className="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Website</th>
+                      <th>Score</th>
+                      <th>Scanned Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {matchingReports.map((r) => (
+                      <tr key={r.id}>
+                        <td style={{ fontWeight: 600, color: 'var(--color-fg-default)' }}>{r.url.replace(/^https?:\/\//, '')}</td>
+                        <td>
+                          <span className={`badge ${r.scores?.overall >= 90 ? 'badge-green' : r.scores?.overall >= 70 ? 'badge-yellow' : 'badge-red'}`}>
+                            {r.scores?.overall}/100
+                          </span>
+                        </td>
+                        <td style={{ fontSize: '12px', color: 'var(--color-fg-muted)' }}>{r.timestamp}</td>
+                        <td>
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => {
+                              setCurrentReport(r);
+                              setCurrentTab('results');
+                            }}
+                          >
+                            <span>Inspect</span>
+                            <ArrowUpRight size={11} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {matchingReports.length === 0 && (
+                      <tr>
+                        <td colSpan={4} style={{ textAlign: 'center', padding: '24px 16px', color: 'var(--color-fg-muted)' }}>
+                          No audit scans found for domains in this project.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
+            </>
+          ) : (
+            <div className="gh-box" style={{ textAlign: 'center', padding: '40px 16px', color: 'var(--color-fg-muted)' }}>
+              Select a project to inspect domain monitoring and scan runs.
             </div>
-          </div>
-        ) : (
-          <div className="card" style={{ flex: 1, textAlign: 'center', padding: '40px', color: 'var(--color-muted)' }}>
-            Select a project to inspect telemetry and domain details.
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

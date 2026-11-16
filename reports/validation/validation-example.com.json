@@ -3,31 +3,35 @@
   "version": "2.0",
   "status": "success",
   "duration": 0,
-  "createdAt": "2026-09-23T14:06:08.729Z",
+  "createdAt": "2026-11-16T14:22:29.541Z",
   "scores": {
-    "overall": 88,
+    "overall": 81,
     "performance": 100,
-    "accessibility": 96,
-    "seo": 60,
-    "bestPractices": 96,
+    "accessibility": 80,
+    "seo": 45,
+    "bestPractices": 100,
     "explanation": {
+      "overallScore": 100,
       "finalScore": 100,
       "overallPerformanceScore": 100,
-      "source": "lighthouse",
-      "method": "Google Lighthouse Performance Audit",
-      "formula": "Performance Score = (Normalized LCP Score × 25%) + (Normalized TBT Score × 30%) + (Normalized CLS Score × 25%) + (Normalized FCP Score × 10%) + (Normalized Speed Index Score × 10%)",
+      "method": "PerfLens Score (Lab Measurement)",
+      "source": "puppeteer",
+      "formula": "Performance Score = Σ(Normalized Metric Score × weight) / Σ(includedWeights)",
       "formulaDescription": "Calculated from normalized metric scores (0–100) using the configured metric weights.",
+      "totalActiveWeight": 1,
+      "includedMetricsCount": 4,
+      "excludedMetricsCount": 1,
       "breakdown": [
         {
           "name": "Largest Contentful Paint",
           "metric": "Largest Contentful Paint",
-          "raw": "0.8 s",
+          "raw": "0.27s",
           "classification": "good",
-          "score": 100,
-          "weight": 0.25,
-          "weightFormatted": "25%",
-          "normalizedWeight": 0.25,
-          "contribution": 25,
+          "score": 99,
+          "weight": 0.3,
+          "weightFormatted": "30%",
+          "normalizedWeight": 0.3,
+          "contribution": 29.7,
           "available": true,
           "isCoreVital": true,
           "category": "core-web-vital"
@@ -45,12 +49,13 @@
           "available": false,
           "isCoreVital": true,
           "category": "core-web-vital",
+          "reason": "INP requires real user input events and is not available in non-interactive lab crawl",
           "note": "CrUX Field Core Web Vital; not included in lab performance formula"
         },
         {
           "name": "Cumulative Layout Shift",
           "metric": "Cumulative Layout Shift",
-          "raw": "0",
+          "raw": "0.000",
           "classification": "good",
           "score": 100,
           "weight": 0.25,
@@ -64,7 +69,7 @@
         {
           "name": "Total Blocking Time",
           "metric": "Total Blocking Time",
-          "raw": "0 ms",
+          "raw": "0ms",
           "classification": "good",
           "score": 100,
           "weight": 0.3,
@@ -78,27 +83,13 @@
         {
           "name": "First Contentful Paint",
           "metric": "First Contentful Paint",
-          "raw": "0.8 s",
+          "raw": "0.14s",
           "classification": "good",
-          "score": 100,
-          "weight": 0.1,
-          "weightFormatted": "10%",
-          "normalizedWeight": 0.1,
-          "contribution": 10,
-          "available": true,
-          "isCoreVital": false,
-          "category": "other-performance-metric"
-        },
-        {
-          "name": "Speed Index",
-          "metric": "Speed Index",
-          "raw": "0.8 s",
-          "classification": "good",
-          "score": 100,
-          "weight": 0.1,
-          "weightFormatted": "10%",
-          "normalizedWeight": 0.1,
-          "contribution": 10,
+          "score": 99,
+          "weight": 0.15,
+          "weightFormatted": "15%",
+          "normalizedWeight": 0.15,
+          "contribution": 14.85,
           "available": true,
           "isCoreVital": false,
           "category": "other-performance-metric"
@@ -106,13 +97,13 @@
         {
           "name": "Time to First Byte",
           "metric": "Time to First Byte",
-          "raw": "1ms",
+          "raw": "0.04s",
           "classification": "good",
           "score": 100,
           "weight": 0,
           "weightFormatted": "0%",
           "normalizedWeight": 0,
-          "contribution": null,
+          "contribution": 0,
           "available": true,
           "isCoreVital": false,
           "category": "other-performance-metric",
@@ -123,72 +114,16 @@
         "lcp": {
           "name": "Largest Contentful Paint",
           "metric": "Largest Contentful Paint",
-          "raw": "0.8 s",
+          "raw": "0.27s",
           "classification": "good",
-          "score": 100,
-          "weight": 0.25,
-          "weightFormatted": "25%",
-          "normalizedWeight": 0.25,
-          "contribution": 25,
-          "available": true,
-          "isCoreVital": true,
-          "category": "core-web-vital"
-        },
-        "tbt": {
-          "name": "Total Blocking Time",
-          "metric": "Total Blocking Time",
-          "raw": "0 ms",
-          "classification": "good",
-          "score": 100,
+          "score": 99,
           "weight": 0.3,
           "weightFormatted": "30%",
           "normalizedWeight": 0.3,
-          "contribution": 30,
-          "available": true,
-          "isCoreVital": false,
-          "category": "other-performance-metric"
-        },
-        "cls": {
-          "name": "Cumulative Layout Shift",
-          "metric": "Cumulative Layout Shift",
-          "raw": "0",
-          "classification": "good",
-          "score": 100,
-          "weight": 0.25,
-          "weightFormatted": "25%",
-          "normalizedWeight": 0.25,
-          "contribution": 25,
+          "contribution": 29.7,
           "available": true,
           "isCoreVital": true,
           "category": "core-web-vital"
-        },
-        "fcp": {
-          "name": "First Contentful Paint",
-          "metric": "First Contentful Paint",
-          "raw": "0.8 s",
-          "classification": "good",
-          "score": 100,
-          "weight": 0.1,
-          "weightFormatted": "10%",
-          "normalizedWeight": 0.1,
-          "contribution": 10,
-          "available": true,
-          "isCoreVital": false,
-          "category": "other-performance-metric"
-        },
-        "speedIndex": {
-          "name": "Speed Index",
-          "metric": "Speed Index",
-          "raw": "0.8 s",
-          "classification": "good",
-          "score": 100,
-          "weight": 0.1,
-          "weightFormatted": "10%",
-          "normalizedWeight": 0.1,
-          "contribution": 10,
-          "available": true,
-          "isCoreVital": false,
-          "category": "other-performance-metric"
         },
         "inp": {
           "name": "Interaction to Next Paint",
@@ -203,18 +138,61 @@
           "available": false,
           "isCoreVital": true,
           "category": "core-web-vital",
+          "reason": "INP requires real user input events and is not available in non-interactive lab crawl",
           "note": "CrUX Field Core Web Vital; not included in lab performance formula"
+        },
+        "cls": {
+          "name": "Cumulative Layout Shift",
+          "metric": "Cumulative Layout Shift",
+          "raw": "0.000",
+          "classification": "good",
+          "score": 100,
+          "weight": 0.25,
+          "weightFormatted": "25%",
+          "normalizedWeight": 0.25,
+          "contribution": 25,
+          "available": true,
+          "isCoreVital": true,
+          "category": "core-web-vital"
+        },
+        "tbt": {
+          "name": "Total Blocking Time",
+          "metric": "Total Blocking Time",
+          "raw": "0ms",
+          "classification": "good",
+          "score": 100,
+          "weight": 0.3,
+          "weightFormatted": "30%",
+          "normalizedWeight": 0.3,
+          "contribution": 30,
+          "available": true,
+          "isCoreVital": false,
+          "category": "other-performance-metric"
+        },
+        "fcp": {
+          "name": "First Contentful Paint",
+          "metric": "First Contentful Paint",
+          "raw": "0.14s",
+          "classification": "good",
+          "score": 99,
+          "weight": 0.15,
+          "weightFormatted": "15%",
+          "normalizedWeight": 0.15,
+          "contribution": 14.85,
+          "available": true,
+          "isCoreVital": false,
+          "category": "other-performance-metric"
         },
         "ttfb": {
           "name": "Time to First Byte",
           "metric": "Time to First Byte",
-          "raw": "1ms",
+          "raw": "0.04s",
           "classification": "good",
           "score": 100,
           "weight": 0,
           "weightFormatted": "0%",
           "normalizedWeight": 0,
-          "contribution": null,
+          "contribution": 0,
           "available": true,
           "isCoreVital": false,
           "category": "other-performance-metric",
@@ -225,40 +203,41 @@
   },
   "vitals": {
     "fcp": {
-      "score": 96,
-      "value": "0.8 s",
-      "rawValue": 0.8,
-      "normalizedValueMs": 800,
+      "score": 99,
+      "value": "0.14s",
+      "rawValue": 0.14,
+      "normalizedValueMs": 140,
       "unit": "s",
       "rating": "good",
-      "source": "lighthouse",
+      "source": "puppeteer",
       "mode": "lab",
       "available": true
     },
     "lcp": {
-      "score": 97,
-      "value": "0.8 s",
-      "rawValue": 0.8,
-      "normalizedValueMs": 800,
+      "score": 99,
+      "value": "0.27s",
+      "rawValue": 0.27,
+      "normalizedValueMs": 270,
       "unit": "s",
       "rating": "good",
-      "source": "lighthouse",
+      "source": "puppeteer",
       "mode": "lab",
       "available": true,
       "elementTag": "P",
       "selector": "P",
       "elementUrl": null,
-      "renderTimeMs": 984,
-      "loadTimeMs": null
+      "renderTimeMs": 268,
+      "loadTimeMs": null,
+      "isFallback": false
     },
     "cls": {
       "score": 100,
-      "value": "0",
+      "value": "0.000",
       "rawValue": 0,
       "normalizedValueMs": null,
       "unit": "",
       "rating": "good",
-      "source": "lighthouse",
+      "source": "puppeteer",
       "mode": "lab",
       "available": true,
       "shiftCount": 0,
@@ -267,43 +246,20 @@
     },
     "tbt": {
       "score": 100,
-      "value": "0 ms",
+      "value": "0ms",
       "rawValue": 0,
       "normalizedValueMs": 0,
       "unit": "ms",
       "rating": "good",
-      "source": "lighthouse",
+      "source": "puppeteer",
       "mode": "lab",
       "available": true
     },
     "tbtDetails": {
-      "totalBlockingTimeMs": 0,
       "longTaskCount": 0,
+      "totalBlockingTimeMs": 0,
       "maxTaskDurationMs": 0,
-      "tasks": [],
-      "mainThreadWork": [
-        {
-          "group": "Other",
-          "durationMs": 27
-        },
-        {
-          "group": "Script Evaluation",
-          "durationMs": 7
-        },
-        {
-          "group": "Style & Layout",
-          "durationMs": 6
-        },
-        {
-          "group": "Parse HTML & CSS",
-          "durationMs": 1
-        },
-        {
-          "group": "Rendering",
-          "durationMs": 1
-        }
-      ],
-      "topScriptsByExecution": []
+      "tasks": []
     },
     "puppeteerTbtDetails": {
       "longTaskCount": 0,
@@ -313,21 +269,24 @@
     },
     "ttfb": {
       "score": 100,
-      "value": "1ms",
-      "rawValue": 1,
-      "normalizedValueMs": 1,
+      "value": "0.04s",
+      "rawValue": 0.037,
+      "normalizedValueMs": 37,
       "unit": "s",
       "rating": "good",
-      "source": "lighthouse",
+      "source": "puppeteer",
       "mode": "lab",
       "available": true,
-      "method": "Measured in lab (Google Lighthouse)",
+      "method": "Measured in lab (Navigation Timing API)",
       "evidence": {
-        "method": "Measured in lab (Google Lighthouse)",
-        "auditId": "server-response-time",
-        "measuredValueMs": 1,
-        "source": "Google Lighthouse lab audit",
-        "formula": "Measured in lab"
+        "method": "Navigation Timing API",
+        "formula": "Measured in lab",
+        "requestStartMs": 65.29999999888241,
+        "responseStartMs": 102.5,
+        "measuredValueMs": 37,
+        "navigationType": "navigate",
+        "fromCache": false,
+        "source": "Navigation Timing API"
       }
     },
     "inp": {
@@ -337,18 +296,18 @@
       "normalizedValueMs": null,
       "unit": "ms",
       "rating": "unrated",
-      "source": "lighthouse",
+      "source": "puppeteer",
       "mode": "lab",
       "available": false,
-      "reason": "Metric measurement not available in current execution context.",
-      "unavailableReason": "Metric measurement not available in current execution context."
+      "reason": "INP requires real user input events and is not available in non-interactive lab crawl",
+      "unavailableReason": "INP requires real user input events and is not available in non-interactive lab crawl"
     },
     "fid": {
       "score": null,
       "value": "N/A",
       "unit": "ms",
       "rating": "unrated",
-      "source": "lighthouse",
+      "source": "puppeteer",
       "mode": "lab",
       "available": false,
       "reason": "FID deprecated and replaced by INP (March 2024)",
@@ -361,8 +320,8 @@
       "count": 0
     },
     "js": {
-      "sizeKb": 0,
-      "count": 0,
+      "sizeKb": 1.9,
+      "count": 1,
       "unusedKb": 0
     },
     "css": {
@@ -379,7 +338,21 @@
       "count": 0
     }
   },
-  "bundleAnalysis": [],
+  "bundleAnalysis": [
+    {
+      "packageName": "s (chunk)",
+      "name": "s (chunk)",
+      "sizeKb": 1.9,
+      "transferSizeKb": 1.9,
+      "compression": "brotli",
+      "isDuplicate": false,
+      "duplicate": false,
+      "isUnused": false,
+      "unused": false,
+      "hasSourceMap": false,
+      "url": "https://example.com/s.js"
+    }
+  ],
   "images": [],
   "recommendations": [
     {
@@ -476,6 +449,98 @@
       "expectedValue": "A page-specific meta description (approx 120-160 chars)",
       "reason": "Search engines use the meta description as the primary snippet preview in search result cards.",
       "suggestedFixSummary": "Add a page-specific meta description using the project's existing SEO configuration.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "REC_SEO_H1",
+      "findingId": "REC_SEO_H1_001",
+      "analyzer": "seo",
+      "title": "Structure the page with a primary H1 heading",
+      "description": "A primary H1 heading communicates the main topic of the page to search crawlers and assistive screen readers.",
+      "category": "seo",
+      "severity": "high",
+      "confidence": "high",
+      "estimateType": "not_quantified",
+      "finding": {
+        "description": "No <h1> element was found in the rendered document.",
+        "metric": "SEO",
+        "value": 0,
+        "unit": "count"
+      },
+      "evidence": "0 <h1> elements found in rendered DOM",
+      "evidenceDetails": [
+        {
+          "type": "h1-heading",
+          "selector": "h1",
+          "details": {
+            "observed": "0 <h1> elements found in rendered DOM",
+            "count": 0
+          }
+        }
+      ],
+      "potentialImpact": "Semantic page outline clarity for assistive tech and search engine topical relevance.",
+      "estimatedSavings": null,
+      "measuredImprovement": null,
+      "suggestedFix": "Add one primary <h1> element containing the main headline of the page.",
+      "estimatedDifficulty": "easy",
+      "estimatedImplementationTime": "15 mins",
+      "refUrl": "https://web.dev/articles/headings-and-landmarks",
+      "standardFinding": {
+        "id": "REC_SEO_H1_001",
+        "category": "seo",
+        "rule": "h1-heading",
+        "severity": "high",
+        "status": "fail",
+        "confidence": "verified",
+        "url": "https://example.com",
+        "evidence": {
+          "url": "https://example.com",
+          "element": "h1",
+          "selector": "h1",
+          "observed": "0 <h1> elements found in rendered DOM",
+          "expected": "At least one descriptive <h1> element per page"
+        },
+        "explanation": {
+          "problem": "No <h1> element was found in the rendered document.",
+          "whyItMatters": "Search engines and screen readers use the H1 heading to identify the primary subject of the page.",
+          "observedEvidence": "Element: h1, Observed: 0 <h1> elements found in rendered DOM"
+        },
+        "impact": "Semantic page outline clarity for assistive tech and search engine topical relevance.",
+        "recommendation": "Add one primary <h1> element containing the main headline of the page.",
+        "fixStrategy": "Include a descriptive <h1> element in the page template to serve as the document headline.",
+        "validation": [
+          "Inspect the rendered page and confirm an <h1> element exists.",
+          "Verify the <h1> contains descriptive text identifying the main topic of the page."
+        ],
+        "validationSteps": [
+          "Inspect the rendered page and confirm an <h1> element exists.",
+          "Verify the <h1> contains descriptive text identifying the main topic of the page."
+        ],
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo <h1> element was found in the rendered document.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: h1, Observed: 0 <h1> elements found in rendered DOM\n\nTask:\nAdd one primary <h1> element containing the main headline of the page.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page and confirm an <h1> element exists.\n2. Verify the <h1> contains descriptive text identifying the main topic of the page.",
+        "frameworkAwareness": {
+          "detectedFramework": null,
+          "confidence": "none",
+          "evidenceSnippet": "No framework-specific signals detected"
+        }
+      },
+      "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo <h1> element was found in the rendered document.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: h1, Observed: 0 <h1> elements found in rendered DOM\n\nTask:\nAdd one primary <h1> element containing the main headline of the page.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page and confirm an <h1> element exists.\n2. Verify the <h1> contains descriptive text identifying the main topic of the page.",
+      "fixStrategy": "Include a descriptive <h1> element in the page template to serve as the document headline.",
+      "validationSteps": [
+        "Inspect the rendered page and confirm an <h1> element exists.",
+        "Verify the <h1> contains descriptive text identifying the main topic of the page."
+      ],
+      "issue": "Structure the page with a primary H1 heading",
+      "whyItMatters": "Search engines and screen readers use the H1 heading to identify the primary subject of the page.",
+      "estimatedImprovement": "Not quantified",
+      "estimatedPerformanceGain": "None (Accessibility & semantic SEO)",
+      "priority": "high",
+      "sourceAnalyzer": "seo",
+      "estimatedBandwidthSaving": 0,
+      "selector": "h1",
+      "actualValue": "0 <h1> elements found in rendered DOM",
+      "expectedValue": "At least one primary <h1> element",
+      "reason": "Semantic document outlines should anchor with a primary <h1> heading.",
+      "suggestedFixSummary": "Add one primary <h1> element containing the main headline of the page.",
       "difficulty": "easy"
     },
     {
@@ -812,22 +877,48 @@
       "name": "https://example.com/",
       "url": "https://example.com/",
       "type": "document",
-      "sizeKb": 0.5,
-      "transferSizeKb": 0.5,
+      "sizeKb": 0.6,
+      "transferSizeKb": 0.6,
       "statusCode": 200,
-      "timeMs": 941,
-      "durationMs": 941,
-      "startTimeMs": 17809465,
+      "timeMs": 100,
+      "durationMs": 100,
+      "startTimeMs": 12769711,
       "initiator": "other",
       "fromCache": false,
       "timingBreakdown": {
-        "dnsMs": 283,
-        "tcpMs": 328,
-        "tlsMs": 288,
-        "ttfbMs": 62,
+        "dnsMs": 25,
+        "tcpMs": 37,
+        "tlsMs": 37,
+        "ttfbMs": 37,
         "downloadMs": 0,
-        "startTimeMs": 17809465,
-        "durationMs": 941
+        "startTimeMs": 12769711,
+        "durationMs": 100
+      },
+      "compression": "brotli",
+      "cacheControl": "no-cache, no-store",
+      "isThirdParty": false,
+      "isCompressed": true
+    },
+    {
+      "name": "s.js",
+      "url": "https://example.com/s.js",
+      "type": "js",
+      "sizeKb": 1.9,
+      "transferSizeKb": 1.9,
+      "statusCode": 200,
+      "timeMs": 99,
+      "durationMs": 99,
+      "startTimeMs": 12769825,
+      "initiator": "parser",
+      "fromCache": false,
+      "timingBreakdown": {
+        "dnsMs": 0,
+        "tcpMs": 57,
+        "tlsMs": 57,
+        "ttfbMs": 40,
+        "downloadMs": 0,
+        "startTimeMs": 12769825,
+        "durationMs": 99
       },
       "compression": "brotli",
       "cacheControl": "no-cache, no-store",
@@ -835,25 +926,29 @@
       "isCompressed": true
     }
   ],
-  "owner": "a35cfd3c-c8cd-4ab4-a4c9-f819625a169b",
+  "owner": "46642f8c-756c-44bf-a3b8-c9935766b453",
   "scoreExplanation": {
+    "overallScore": 100,
     "finalScore": 100,
     "overallPerformanceScore": 100,
-    "source": "lighthouse",
-    "method": "Google Lighthouse Performance Audit",
-    "formula": "Performance Score = (Normalized LCP Score × 25%) + (Normalized TBT Score × 30%) + (Normalized CLS Score × 25%) + (Normalized FCP Score × 10%) + (Normalized Speed Index Score × 10%)",
+    "method": "PerfLens Score (Lab Measurement)",
+    "source": "puppeteer",
+    "formula": "Performance Score = Σ(Normalized Metric Score × weight) / Σ(includedWeights)",
     "formulaDescription": "Calculated from normalized metric scores (0–100) using the configured metric weights.",
+    "totalActiveWeight": 1,
+    "includedMetricsCount": 4,
+    "excludedMetricsCount": 1,
     "breakdown": [
       {
         "name": "Largest Contentful Paint",
         "metric": "Largest Contentful Paint",
-        "raw": "0.8 s",
+        "raw": "0.27s",
         "classification": "good",
-        "score": 100,
-        "weight": 0.25,
-        "weightFormatted": "25%",
-        "normalizedWeight": 0.25,
-        "contribution": 25,
+        "score": 99,
+        "weight": 0.3,
+        "weightFormatted": "30%",
+        "normalizedWeight": 0.3,
+        "contribution": 29.7,
         "available": true,
         "isCoreVital": true,
         "category": "core-web-vital"
@@ -871,12 +966,13 @@
         "available": false,
         "isCoreVital": true,
         "category": "core-web-vital",
+        "reason": "INP requires real user input events and is not available in non-interactive lab crawl",
         "note": "CrUX Field Core Web Vital; not included in lab performance formula"
       },
       {
         "name": "Cumulative Layout Shift",
         "metric": "Cumulative Layout Shift",
-        "raw": "0",
+        "raw": "0.000",
         "classification": "good",
         "score": 100,
         "weight": 0.25,
@@ -890,7 +986,7 @@
       {
         "name": "Total Blocking Time",
         "metric": "Total Blocking Time",
-        "raw": "0 ms",
+        "raw": "0ms",
         "classification": "good",
         "score": 100,
         "weight": 0.3,
@@ -904,27 +1000,13 @@
       {
         "name": "First Contentful Paint",
         "metric": "First Contentful Paint",
-        "raw": "0.8 s",
+        "raw": "0.14s",
         "classification": "good",
-        "score": 100,
-        "weight": 0.1,
-        "weightFormatted": "10%",
-        "normalizedWeight": 0.1,
-        "contribution": 10,
-        "available": true,
-        "isCoreVital": false,
-        "category": "other-performance-metric"
-      },
-      {
-        "name": "Speed Index",
-        "metric": "Speed Index",
-        "raw": "0.8 s",
-        "classification": "good",
-        "score": 100,
-        "weight": 0.1,
-        "weightFormatted": "10%",
-        "normalizedWeight": 0.1,
-        "contribution": 10,
+        "score": 99,
+        "weight": 0.15,
+        "weightFormatted": "15%",
+        "normalizedWeight": 0.15,
+        "contribution": 14.85,
         "available": true,
         "isCoreVital": false,
         "category": "other-performance-metric"
@@ -932,13 +1014,13 @@
       {
         "name": "Time to First Byte",
         "metric": "Time to First Byte",
-        "raw": "1ms",
+        "raw": "0.04s",
         "classification": "good",
         "score": 100,
         "weight": 0,
         "weightFormatted": "0%",
         "normalizedWeight": 0,
-        "contribution": null,
+        "contribution": 0,
         "available": true,
         "isCoreVital": false,
         "category": "other-performance-metric",
@@ -949,72 +1031,16 @@
       "lcp": {
         "name": "Largest Contentful Paint",
         "metric": "Largest Contentful Paint",
-        "raw": "0.8 s",
+        "raw": "0.27s",
         "classification": "good",
-        "score": 100,
-        "weight": 0.25,
-        "weightFormatted": "25%",
-        "normalizedWeight": 0.25,
-        "contribution": 25,
-        "available": true,
-        "isCoreVital": true,
-        "category": "core-web-vital"
-      },
-      "tbt": {
-        "name": "Total Blocking Time",
-        "metric": "Total Blocking Time",
-        "raw": "0 ms",
-        "classification": "good",
-        "score": 100,
+        "score": 99,
         "weight": 0.3,
         "weightFormatted": "30%",
         "normalizedWeight": 0.3,
-        "contribution": 30,
-        "available": true,
-        "isCoreVital": false,
-        "category": "other-performance-metric"
-      },
-      "cls": {
-        "name": "Cumulative Layout Shift",
-        "metric": "Cumulative Layout Shift",
-        "raw": "0",
-        "classification": "good",
-        "score": 100,
-        "weight": 0.25,
-        "weightFormatted": "25%",
-        "normalizedWeight": 0.25,
-        "contribution": 25,
+        "contribution": 29.7,
         "available": true,
         "isCoreVital": true,
         "category": "core-web-vital"
-      },
-      "fcp": {
-        "name": "First Contentful Paint",
-        "metric": "First Contentful Paint",
-        "raw": "0.8 s",
-        "classification": "good",
-        "score": 100,
-        "weight": 0.1,
-        "weightFormatted": "10%",
-        "normalizedWeight": 0.1,
-        "contribution": 10,
-        "available": true,
-        "isCoreVital": false,
-        "category": "other-performance-metric"
-      },
-      "speedIndex": {
-        "name": "Speed Index",
-        "metric": "Speed Index",
-        "raw": "0.8 s",
-        "classification": "good",
-        "score": 100,
-        "weight": 0.1,
-        "weightFormatted": "10%",
-        "normalizedWeight": 0.1,
-        "contribution": 10,
-        "available": true,
-        "isCoreVital": false,
-        "category": "other-performance-metric"
       },
       "inp": {
         "name": "Interaction to Next Paint",
@@ -1029,18 +1055,61 @@
         "available": false,
         "isCoreVital": true,
         "category": "core-web-vital",
+        "reason": "INP requires real user input events and is not available in non-interactive lab crawl",
         "note": "CrUX Field Core Web Vital; not included in lab performance formula"
+      },
+      "cls": {
+        "name": "Cumulative Layout Shift",
+        "metric": "Cumulative Layout Shift",
+        "raw": "0.000",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.25,
+        "weightFormatted": "25%",
+        "normalizedWeight": 0.25,
+        "contribution": 25,
+        "available": true,
+        "isCoreVital": true,
+        "category": "core-web-vital"
+      },
+      "tbt": {
+        "name": "Total Blocking Time",
+        "metric": "Total Blocking Time",
+        "raw": "0ms",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.3,
+        "weightFormatted": "30%",
+        "normalizedWeight": 0.3,
+        "contribution": 30,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
+      },
+      "fcp": {
+        "name": "First Contentful Paint",
+        "metric": "First Contentful Paint",
+        "raw": "0.14s",
+        "classification": "good",
+        "score": 99,
+        "weight": 0.15,
+        "weightFormatted": "15%",
+        "normalizedWeight": 0.15,
+        "contribution": 14.85,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
       },
       "ttfb": {
         "name": "Time to First Byte",
         "metric": "Time to First Byte",
-        "raw": "1ms",
+        "raw": "0.04s",
         "classification": "good",
         "score": 100,
         "weight": 0,
         "weightFormatted": "0%",
         "normalizedWeight": 0,
-        "contribution": null,
+        "contribution": 0,
         "available": true,
         "isCoreVital": false,
         "category": "other-performance-metric",
@@ -1049,23 +1118,27 @@
     }
   },
   "performanceScoreDetails": {
+    "overallScore": 100,
     "finalScore": 100,
     "overallPerformanceScore": 100,
-    "source": "lighthouse",
-    "method": "Google Lighthouse Performance Audit",
-    "formula": "Performance Score = (Normalized LCP Score × 25%) + (Normalized TBT Score × 30%) + (Normalized CLS Score × 25%) + (Normalized FCP Score × 10%) + (Normalized Speed Index Score × 10%)",
+    "method": "PerfLens Score (Lab Measurement)",
+    "source": "puppeteer",
+    "formula": "Performance Score = Σ(Normalized Metric Score × weight) / Σ(includedWeights)",
     "formulaDescription": "Calculated from normalized metric scores (0–100) using the configured metric weights.",
+    "totalActiveWeight": 1,
+    "includedMetricsCount": 4,
+    "excludedMetricsCount": 1,
     "breakdown": [
       {
         "name": "Largest Contentful Paint",
         "metric": "Largest Contentful Paint",
-        "raw": "0.8 s",
+        "raw": "0.27s",
         "classification": "good",
-        "score": 100,
-        "weight": 0.25,
-        "weightFormatted": "25%",
-        "normalizedWeight": 0.25,
-        "contribution": 25,
+        "score": 99,
+        "weight": 0.3,
+        "weightFormatted": "30%",
+        "normalizedWeight": 0.3,
+        "contribution": 29.7,
         "available": true,
         "isCoreVital": true,
         "category": "core-web-vital"
@@ -1083,12 +1156,13 @@
         "available": false,
         "isCoreVital": true,
         "category": "core-web-vital",
+        "reason": "INP requires real user input events and is not available in non-interactive lab crawl",
         "note": "CrUX Field Core Web Vital; not included in lab performance formula"
       },
       {
         "name": "Cumulative Layout Shift",
         "metric": "Cumulative Layout Shift",
-        "raw": "0",
+        "raw": "0.000",
         "classification": "good",
         "score": 100,
         "weight": 0.25,
@@ -1102,7 +1176,7 @@
       {
         "name": "Total Blocking Time",
         "metric": "Total Blocking Time",
-        "raw": "0 ms",
+        "raw": "0ms",
         "classification": "good",
         "score": 100,
         "weight": 0.3,
@@ -1116,27 +1190,13 @@
       {
         "name": "First Contentful Paint",
         "metric": "First Contentful Paint",
-        "raw": "0.8 s",
+        "raw": "0.14s",
         "classification": "good",
-        "score": 100,
-        "weight": 0.1,
-        "weightFormatted": "10%",
-        "normalizedWeight": 0.1,
-        "contribution": 10,
-        "available": true,
-        "isCoreVital": false,
-        "category": "other-performance-metric"
-      },
-      {
-        "name": "Speed Index",
-        "metric": "Speed Index",
-        "raw": "0.8 s",
-        "classification": "good",
-        "score": 100,
-        "weight": 0.1,
-        "weightFormatted": "10%",
-        "normalizedWeight": 0.1,
-        "contribution": 10,
+        "score": 99,
+        "weight": 0.15,
+        "weightFormatted": "15%",
+        "normalizedWeight": 0.15,
+        "contribution": 14.85,
         "available": true,
         "isCoreVital": false,
         "category": "other-performance-metric"
@@ -1144,13 +1204,13 @@
       {
         "name": "Time to First Byte",
         "metric": "Time to First Byte",
-        "raw": "1ms",
+        "raw": "0.04s",
         "classification": "good",
         "score": 100,
         "weight": 0,
         "weightFormatted": "0%",
         "normalizedWeight": 0,
-        "contribution": null,
+        "contribution": 0,
         "available": true,
         "isCoreVital": false,
         "category": "other-performance-metric",
@@ -1161,72 +1221,16 @@
       "lcp": {
         "name": "Largest Contentful Paint",
         "metric": "Largest Contentful Paint",
-        "raw": "0.8 s",
+        "raw": "0.27s",
         "classification": "good",
-        "score": 100,
-        "weight": 0.25,
-        "weightFormatted": "25%",
-        "normalizedWeight": 0.25,
-        "contribution": 25,
-        "available": true,
-        "isCoreVital": true,
-        "category": "core-web-vital"
-      },
-      "tbt": {
-        "name": "Total Blocking Time",
-        "metric": "Total Blocking Time",
-        "raw": "0 ms",
-        "classification": "good",
-        "score": 100,
+        "score": 99,
         "weight": 0.3,
         "weightFormatted": "30%",
         "normalizedWeight": 0.3,
-        "contribution": 30,
-        "available": true,
-        "isCoreVital": false,
-        "category": "other-performance-metric"
-      },
-      "cls": {
-        "name": "Cumulative Layout Shift",
-        "metric": "Cumulative Layout Shift",
-        "raw": "0",
-        "classification": "good",
-        "score": 100,
-        "weight": 0.25,
-        "weightFormatted": "25%",
-        "normalizedWeight": 0.25,
-        "contribution": 25,
+        "contribution": 29.7,
         "available": true,
         "isCoreVital": true,
         "category": "core-web-vital"
-      },
-      "fcp": {
-        "name": "First Contentful Paint",
-        "metric": "First Contentful Paint",
-        "raw": "0.8 s",
-        "classification": "good",
-        "score": 100,
-        "weight": 0.1,
-        "weightFormatted": "10%",
-        "normalizedWeight": 0.1,
-        "contribution": 10,
-        "available": true,
-        "isCoreVital": false,
-        "category": "other-performance-metric"
-      },
-      "speedIndex": {
-        "name": "Speed Index",
-        "metric": "Speed Index",
-        "raw": "0.8 s",
-        "classification": "good",
-        "score": 100,
-        "weight": 0.1,
-        "weightFormatted": "10%",
-        "normalizedWeight": 0.1,
-        "contribution": 10,
-        "available": true,
-        "isCoreVital": false,
-        "category": "other-performance-metric"
       },
       "inp": {
         "name": "Interaction to Next Paint",
@@ -1241,18 +1245,61 @@
         "available": false,
         "isCoreVital": true,
         "category": "core-web-vital",
+        "reason": "INP requires real user input events and is not available in non-interactive lab crawl",
         "note": "CrUX Field Core Web Vital; not included in lab performance formula"
+      },
+      "cls": {
+        "name": "Cumulative Layout Shift",
+        "metric": "Cumulative Layout Shift",
+        "raw": "0.000",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.25,
+        "weightFormatted": "25%",
+        "normalizedWeight": 0.25,
+        "contribution": 25,
+        "available": true,
+        "isCoreVital": true,
+        "category": "core-web-vital"
+      },
+      "tbt": {
+        "name": "Total Blocking Time",
+        "metric": "Total Blocking Time",
+        "raw": "0ms",
+        "classification": "good",
+        "score": 100,
+        "weight": 0.3,
+        "weightFormatted": "30%",
+        "normalizedWeight": 0.3,
+        "contribution": 30,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
+      },
+      "fcp": {
+        "name": "First Contentful Paint",
+        "metric": "First Contentful Paint",
+        "raw": "0.14s",
+        "classification": "good",
+        "score": 99,
+        "weight": 0.15,
+        "weightFormatted": "15%",
+        "normalizedWeight": 0.15,
+        "contribution": 14.85,
+        "available": true,
+        "isCoreVital": false,
+        "category": "other-performance-metric"
       },
       "ttfb": {
         "name": "Time to First Byte",
         "metric": "Time to First Byte",
-        "raw": "1ms",
+        "raw": "0.04s",
         "classification": "good",
         "score": 100,
         "weight": 0,
         "weightFormatted": "0%",
         "normalizedWeight": 0,
-        "contribution": null,
+        "contribution": 0,
         "available": true,
         "isCoreVital": false,
         "category": "other-performance-metric",
@@ -1260,198 +1307,46 @@
       }
     }
   },
-  "pageSpeed": {
-    "status": "SUCCESS",
-    "available": true,
-    "performance": 100,
-    "accessibility": 96,
-    "seo": 80,
-    "bestPractices": 96,
-    "metrics": {
-      "lcp": "0.8 s",
-      "fcp": "0.8 s",
-      "inp": "N/A",
-      "inpSource": "unknown",
-      "inpMode": "lab",
-      "tbt": "0 ms",
-      "cls": "0",
-      "ttfb": "1ms",
-      "speedIndex": "0.8 s"
-    },
-    "lighthouseScoreBreakdown": {
-      "first-contentful-paint": {
-        "id": "first-contentful-paint",
-        "weight": 10,
-        "score": 100,
-        "numericValue": 756,
-        "displayValue": "0.8 s"
-      },
-      "largest-contentful-paint": {
-        "id": "largest-contentful-paint",
-        "weight": 25,
-        "score": 100,
-        "numericValue": 756,
-        "displayValue": "0.8 s"
-      },
-      "total-blocking-time": {
-        "id": "total-blocking-time",
-        "weight": 30,
-        "score": 100,
-        "numericValue": 0,
-        "displayValue": "0 ms"
-      },
-      "cumulative-layout-shift": {
-        "id": "cumulative-layout-shift",
-        "weight": 25,
-        "score": 100,
-        "numericValue": 0,
-        "displayValue": "0"
-      },
-      "speed-index": {
-        "id": "speed-index",
-        "weight": 10,
-        "score": 100,
-        "numericValue": 756,
-        "displayValue": "0.8 s"
-      }
-    },
-    "tbtDetails": {
-      "totalBlockingTimeMs": 0,
-      "longTaskCount": 0,
-      "maxTaskDurationMs": 0,
-      "tasks": [],
-      "mainThreadWork": [
-        {
-          "group": "Other",
-          "durationMs": 27
-        },
-        {
-          "group": "Script Evaluation",
-          "durationMs": 7
-        },
-        {
-          "group": "Style & Layout",
-          "durationMs": 6
-        },
-        {
-          "group": "Parse HTML & CSS",
-          "durationMs": 1
-        },
-        {
-          "group": "Rendering",
-          "durationMs": 1
-        }
-      ],
-      "topScriptsByExecution": []
-    }
-  },
+  "pageSpeed": null,
   "pageSpeedTelemetry": {
-    "status": "SUCCESS",
-    "available": true,
-    "performance": 100,
-    "accessibility": 96,
-    "seo": 80,
-    "bestPractices": 96,
-    "metrics": {
-      "lcp": "0.8 s",
-      "fcp": "0.8 s",
-      "inp": "N/A",
-      "inpSource": "unknown",
-      "inpMode": "lab",
-      "tbt": "0 ms",
-      "cls": "0",
-      "ttfb": "1ms",
-      "speedIndex": "0.8 s"
-    },
-    "lighthouseScoreBreakdown": {
-      "first-contentful-paint": {
-        "id": "first-contentful-paint",
-        "weight": 10,
-        "score": 100,
-        "numericValue": 756,
-        "displayValue": "0.8 s"
-      },
-      "largest-contentful-paint": {
-        "id": "largest-contentful-paint",
-        "weight": 25,
-        "score": 100,
-        "numericValue": 756,
-        "displayValue": "0.8 s"
-      },
-      "total-blocking-time": {
-        "id": "total-blocking-time",
-        "weight": 30,
-        "score": 100,
-        "numericValue": 0,
-        "displayValue": "0 ms"
-      },
-      "cumulative-layout-shift": {
-        "id": "cumulative-layout-shift",
-        "weight": 25,
-        "score": 100,
-        "numericValue": 0,
-        "displayValue": "0"
-      },
-      "speed-index": {
-        "id": "speed-index",
-        "weight": 10,
-        "score": 100,
-        "numericValue": 756,
-        "displayValue": "0.8 s"
-      }
-    },
-    "tbtDetails": {
-      "totalBlockingTimeMs": 0,
-      "longTaskCount": 0,
-      "maxTaskDurationMs": 0,
-      "tasks": [],
-      "mainThreadWork": [
-        {
-          "group": "Other",
-          "durationMs": 27
-        },
-        {
-          "group": "Script Evaluation",
-          "durationMs": 7
-        },
-        {
-          "group": "Style & Layout",
-          "durationMs": 6
-        },
-        {
-          "group": "Parse HTML & CSS",
-          "durationMs": 1
-        },
-        {
-          "group": "Rendering",
-          "durationMs": 1
-        }
-      ],
-      "topScriptsByExecution": []
-    }
+    "status": "UNAVAILABLE",
+    "error": "PageSpeed API was skipped by user request or configuration flag.",
+    "errorCode": "FORCE_SKIP",
+    "httpStatus": null,
+    "available": false
   },
   "customAnalysis": {
     "network": {
-      "totalRequests": 1,
+      "totalRequests": 2,
       "thirdPartyRequests": 0,
       "thirdPartySizeKb": 0,
       "compressionRate": 100,
       "cacheCoverageRate": 0,
       "largestResources": [
         {
+          "name": "s.js",
+          "url": "https://example.com/s.js",
+          "sizeKb": 1.9
+        },
+        {
           "name": "https://example.com/",
           "url": "https://example.com/",
-          "sizeKb": 0.5
+          "sizeKb": 0.6
         }
       ],
       "slowestRequests": [
         {
           "name": "https://example.com/",
           "url": "https://example.com/",
-          "durationMs": 941
+          "durationMs": 100
+        },
+        {
+          "name": "s.js",
+          "url": "https://example.com/s.js",
+          "durationMs": 99
         }
       ],
-      "largestJs": "None",
+      "largestJs": "https://example.com/s.js",
       "largestCss": "None",
       "largestImage": "None"
     },
@@ -1466,8 +1361,8 @@
       "unusedKb": 0
     },
     "js": {
-      "sizeKb": 0,
-      "count": 0,
+      "sizeKb": 1.9,
+      "count": 1,
       "unusedKb": 0
     },
     "seo": {
@@ -1481,18 +1376,18 @@
   "analysisSources": {
     "perfLensEngine": true,
     "puppeteerRuntime": true,
-    "googleLighthouse": true,
-    "googleLighthouseStatus": "SUCCESS",
-    "googleLighthouseError": null
+    "googleLighthouse": false,
+    "googleLighthouseStatus": "UNAVAILABLE",
+    "googleLighthouseError": "PageSpeed API was skipped by user request or configuration flag."
   },
   "seo": {
     "summary": {
-      "seoScoreEstimate": 60,
+      "seoScoreEstimate": 45,
       "missingMetaDescription": true,
       "missingTitle": false,
       "missingCanonical": true,
       "missingViewport": false,
-      "missingH1": false,
+      "missingH1": true,
       "multipleH1": false,
       "headingHierarchyValid": true,
       "openGraphCoverage": 0,
@@ -1508,7 +1403,7 @@
       "metaDescriptionStatus": "MISSING",
       "noindexDetected": false,
       "scoreExplanation": {
-        "score": 60,
+        "score": 45,
         "maxScore": 100,
         "breakdown": [
           {
@@ -1527,10 +1422,10 @@
           },
           {
             "name": "Primary H1 Heading",
-            "score": 15,
+            "score": 0,
             "maxScore": 15,
-            "status": "PASS",
-            "explanation": "Primary <h1> element present in rendered DOM."
+            "status": "FAIL",
+            "explanation": "No <h1> heading found in rendered document outline."
           },
           {
             "name": "Mobile Viewport",
@@ -1578,46 +1473,42 @@
       "canonical": null,
       "sitemap": "Missing",
       "metaKeywords": null,
-      "charset": "UTF-8",
-      "viewport": "width=device-width, initial-scale=1",
+      "charset": "utf-8",
+      "viewport": "width=device-width,initial-scale=1",
       "canonicalUrl": null,
       "metaRobots": null,
       "openGraphTags": null,
       "twitterCardTags": null,
       "languageAttribute": "en",
       "headingStructure": {
-        "h1": [
-          "Example Domain"
-        ],
+        "h1": [],
         "h2": [],
         "h3": [],
         "h4": [],
         "h5": [],
         "h6": [],
-        "hasH1": true,
-        "h1Count": 1,
+        "hasH1": false,
+        "h1Count": 0,
         "multipleH1": false,
         "isHierarchyValid": true,
         "skippedLevels": []
       },
       "headingsHierarchy": {
-        "h1": [
-          "Example Domain"
-        ],
+        "h1": [],
         "h2": [],
         "h3": [],
         "h4": [],
         "h5": [],
         "h6": [],
-        "hasH1": true,
-        "h1Count": 1,
+        "hasH1": false,
+        "h1Count": 0,
         "multipleH1": false,
         "isHierarchyValid": true,
         "skippedLevels": []
       },
       "internalLinks": [],
       "externalLinks": [
-        "https://iana.org/domains/example"
+        "https://iana.org/help/example-domains"
       ],
       "brokenLinks": [],
       "hasRobotsTxt": false,
@@ -1806,7 +1697,7 @@
       "ogDescription": "",
       "ogImage": "",
       "seoScoreExplanation": {
-        "score": 60,
+        "score": 45,
         "maxScore": 100,
         "breakdown": [
           {
@@ -1825,10 +1716,10 @@
           },
           {
             "name": "Primary H1 Heading",
-            "score": 15,
+            "score": 0,
             "maxScore": 15,
-            "status": "PASS",
-            "explanation": "Primary <h1> element present in rendered DOM."
+            "status": "FAIL",
+            "explanation": "No <h1> heading found in rendered document outline."
           },
           {
             "name": "Mobile Viewport",
@@ -1872,7 +1763,7 @@
       "titleLength": 14,
       "descriptionLength": 0,
       "headingsCount": {
-        "h1": 1,
+        "h1": 0,
         "h2": 0,
         "h3": 0,
         "h4": 0,
@@ -1897,6 +1788,13 @@
         "url": "https://example.com/",
         "type": "seo",
         "estimatedSizeReductionKb": 0,
+        "suggestion": "Page does not contain an <h1> element. A primary H1 heading provides assistive tech and search engines with the main topic of the page. [Element: h1, Observed: \"0 <h1> elements found in rendered DOM\"]",
+        "isIssue": true
+      },
+      {
+        "url": "https://example.com/",
+        "type": "seo",
+        "estimatedSizeReductionKb": 0,
         "suggestion": "No canonical URL was found in the rendered document head. Canonical declarations tell search crawlers the preferred URL to index. [Element: link[rel=\"canonical\"], Observed: \"No <link rel=\\\"canonical\\\"> element was found in the rendered document head.\"]",
         "isIssue": true
       }
@@ -1909,6 +1807,14 @@
         "element": "meta[name=\"description\"]",
         "observed": "No <meta name=\"description\"> found in rendered <head>",
         "expected": "A page-specific meta description (approximately 120–160 characters is a useful practical guideline)"
+      },
+      {
+        "code": "SEO_NO_H1",
+        "message": "Page does not contain an <h1> element. A primary H1 heading provides assistive tech and search engines with the main topic of the page.",
+        "severity": "error",
+        "element": "h1",
+        "observed": "0 <h1> elements found in rendered DOM",
+        "expected": "At least one descriptive <h1> element per page"
       },
       {
         "code": "SEO_NO_CANONICAL",
@@ -1941,11 +1847,11 @@
         "selector": "none"
       },
       "charset": {
-        "value": "UTF-8",
-        "selector": "none"
+        "value": "utf-8",
+        "selector": "meta[charset]"
       },
       "viewport": {
-        "value": "width=device-width, initial-scale=1",
+        "value": "width=device-width,initial-scale=1",
         "selector": "meta[name=\"viewport\"]"
       },
       "robots": {
@@ -1954,16 +1860,10 @@
       },
       "og": {},
       "twitter": {},
-      "headingsList": [
-        {
-          "tag": "h1",
-          "text": "Example Domain",
-          "html": "<h1>Example Domain</h1>"
-        }
-      ],
+      "headingsList": [],
       "internalLinks": [],
       "externalLinks": [
-        "https://iana.org/domains/example"
+        "https://iana.org/help/example-domains"
       ],
       "hreflangs": [],
       "languageAttribute": "en",
@@ -2038,7 +1938,7 @@
         {
           "hasLabel": true,
           "selector": "a",
-          "html": "<a href=\"https://iana.org/domains/example\">Learn more</a>"
+          "html": "<a href=\"https://iana.org/help/example-domains\">Learn more</a>"
         }
       ],
       "landmarks": {
@@ -2053,16 +1953,16 @@
   },
   "recommendation": {
     "summary": {
-      "overallHealthScore": 83,
-      "overallPerformanceGrade": "B",
-      "totalIssues": 4,
+      "overallHealthScore": 73,
+      "overallPerformanceGrade": "C",
+      "totalIssues": 5,
       "criticalIssues": 0,
-      "highIssues": 1,
+      "highIssues": 2,
       "mediumIssues": 1,
       "lowIssues": 2,
       "potentialPerformanceImprovement": "No major transfer savings estimated",
       "potentialBandwidthReduction": 0,
-      "estimatedTimeToFixEverything": "1.0 hours"
+      "estimatedTimeToFixEverything": "1.3 hours"
     },
     "recommendations": [
       {
@@ -2159,6 +2059,98 @@
         "expectedValue": "A page-specific meta description (approx 120-160 chars)",
         "reason": "Search engines use the meta description as the primary snippet preview in search result cards.",
         "suggestedFixSummary": "Add a page-specific meta description using the project's existing SEO configuration.",
+        "difficulty": "easy"
+      },
+      {
+        "id": "REC_SEO_H1",
+        "findingId": "REC_SEO_H1_001",
+        "analyzer": "seo",
+        "title": "Structure the page with a primary H1 heading",
+        "description": "A primary H1 heading communicates the main topic of the page to search crawlers and assistive screen readers.",
+        "category": "seo",
+        "severity": "high",
+        "confidence": "high",
+        "estimateType": "not_quantified",
+        "finding": {
+          "description": "No <h1> element was found in the rendered document.",
+          "metric": "SEO",
+          "value": 0,
+          "unit": "count"
+        },
+        "evidence": "0 <h1> elements found in rendered DOM",
+        "evidenceDetails": [
+          {
+            "type": "h1-heading",
+            "selector": "h1",
+            "details": {
+              "observed": "0 <h1> elements found in rendered DOM",
+              "count": 0
+            }
+          }
+        ],
+        "potentialImpact": "Semantic page outline clarity for assistive tech and search engine topical relevance.",
+        "estimatedSavings": null,
+        "measuredImprovement": null,
+        "suggestedFix": "Add one primary <h1> element containing the main headline of the page.",
+        "estimatedDifficulty": "easy",
+        "estimatedImplementationTime": "15 mins",
+        "refUrl": "https://web.dev/articles/headings-and-landmarks",
+        "standardFinding": {
+          "id": "REC_SEO_H1_001",
+          "category": "seo",
+          "rule": "h1-heading",
+          "severity": "high",
+          "status": "fail",
+          "confidence": "verified",
+          "url": "https://example.com",
+          "evidence": {
+            "url": "https://example.com",
+            "element": "h1",
+            "selector": "h1",
+            "observed": "0 <h1> elements found in rendered DOM",
+            "expected": "At least one descriptive <h1> element per page"
+          },
+          "explanation": {
+            "problem": "No <h1> element was found in the rendered document.",
+            "whyItMatters": "Search engines and screen readers use the H1 heading to identify the primary subject of the page.",
+            "observedEvidence": "Element: h1, Observed: 0 <h1> elements found in rendered DOM"
+          },
+          "impact": "Semantic page outline clarity for assistive tech and search engine topical relevance.",
+          "recommendation": "Add one primary <h1> element containing the main headline of the page.",
+          "fixStrategy": "Include a descriptive <h1> element in the page template to serve as the document headline.",
+          "validation": [
+            "Inspect the rendered page and confirm an <h1> element exists.",
+            "Verify the <h1> contains descriptive text identifying the main topic of the page."
+          ],
+          "validationSteps": [
+            "Inspect the rendered page and confirm an <h1> element exists.",
+            "Verify the <h1> contains descriptive text identifying the main topic of the page."
+          ],
+          "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo <h1> element was found in the rendered document.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: h1, Observed: 0 <h1> elements found in rendered DOM\n\nTask:\nAdd one primary <h1> element containing the main headline of the page.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page and confirm an <h1> element exists.\n2. Verify the <h1> contains descriptive text identifying the main topic of the page.",
+          "frameworkAwareness": {
+            "detectedFramework": null,
+            "confidence": "none",
+            "evidenceSnippet": "No framework-specific signals detected"
+          }
+        },
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo <h1> element was found in the rendered document.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: h1, Observed: 0 <h1> elements found in rendered DOM\n\nTask:\nAdd one primary <h1> element containing the main headline of the page.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page and confirm an <h1> element exists.\n2. Verify the <h1> contains descriptive text identifying the main topic of the page.",
+        "fixStrategy": "Include a descriptive <h1> element in the page template to serve as the document headline.",
+        "validationSteps": [
+          "Inspect the rendered page and confirm an <h1> element exists.",
+          "Verify the <h1> contains descriptive text identifying the main topic of the page."
+        ],
+        "issue": "Structure the page with a primary H1 heading",
+        "whyItMatters": "Search engines and screen readers use the H1 heading to identify the primary subject of the page.",
+        "estimatedImprovement": "Not quantified",
+        "estimatedPerformanceGain": "None (Accessibility & semantic SEO)",
+        "priority": "high",
+        "sourceAnalyzer": "seo",
+        "estimatedBandwidthSaving": 0,
+        "selector": "h1",
+        "actualValue": "0 <h1> elements found in rendered DOM",
+        "expectedValue": "At least one primary <h1> element",
+        "reason": "Semantic document outlines should anchor with a primary <h1> heading.",
+        "suggestedFixSummary": "Add one primary <h1> element containing the main headline of the page.",
         "difficulty": "easy"
       },
       {
@@ -2586,6 +2578,96 @@
         "reason": "Search engines use the meta description as the primary snippet preview in search result cards."
       },
       {
+        "id": "REC_SEO_H1",
+        "findingId": "REC_SEO_H1_001",
+        "analyzer": "seo",
+        "title": "Structure the page with a primary H1 heading",
+        "description": "A primary H1 heading communicates the main topic of the page to search crawlers and assistive screen readers.",
+        "category": "seo",
+        "severity": "high",
+        "confidence": "high",
+        "estimateType": "not_quantified",
+        "finding": {
+          "description": "No <h1> element was found in the rendered document.",
+          "metric": "SEO",
+          "value": 0,
+          "unit": "count"
+        },
+        "evidence": "0 <h1> elements found in rendered DOM",
+        "evidenceDetails": [
+          {
+            "type": "h1-heading",
+            "selector": "h1",
+            "details": {
+              "observed": "0 <h1> elements found in rendered DOM",
+              "count": 0
+            }
+          }
+        ],
+        "potentialImpact": "Semantic page outline clarity for assistive tech and search engine topical relevance.",
+        "estimatedSavings": null,
+        "measuredImprovement": null,
+        "suggestedFix": "Add one primary <h1> element containing the main headline of the page.",
+        "estimatedDifficulty": "easy",
+        "estimatedImplementationTime": "15 mins",
+        "refUrl": "https://web.dev/articles/headings-and-landmarks",
+        "standardFinding": {
+          "id": "REC_SEO_H1_001",
+          "category": "seo",
+          "rule": "h1-heading",
+          "severity": "high",
+          "status": "fail",
+          "confidence": "verified",
+          "url": "https://example.com",
+          "evidence": {
+            "url": "https://example.com",
+            "element": "h1",
+            "selector": "h1",
+            "observed": "0 <h1> elements found in rendered DOM",
+            "expected": "At least one descriptive <h1> element per page"
+          },
+          "explanation": {
+            "problem": "No <h1> element was found in the rendered document.",
+            "whyItMatters": "Search engines and screen readers use the H1 heading to identify the primary subject of the page.",
+            "observedEvidence": "Element: h1, Observed: 0 <h1> elements found in rendered DOM"
+          },
+          "impact": "Semantic page outline clarity for assistive tech and search engine topical relevance.",
+          "recommendation": "Add one primary <h1> element containing the main headline of the page.",
+          "fixStrategy": "Include a descriptive <h1> element in the page template to serve as the document headline.",
+          "validation": [
+            "Inspect the rendered page and confirm an <h1> element exists.",
+            "Verify the <h1> contains descriptive text identifying the main topic of the page."
+          ],
+          "validationSteps": [
+            "Inspect the rendered page and confirm an <h1> element exists.",
+            "Verify the <h1> contains descriptive text identifying the main topic of the page."
+          ],
+          "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo <h1> element was found in the rendered document.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: h1, Observed: 0 <h1> elements found in rendered DOM\n\nTask:\nAdd one primary <h1> element containing the main headline of the page.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page and confirm an <h1> element exists.\n2. Verify the <h1> contains descriptive text identifying the main topic of the page.",
+          "frameworkAwareness": {
+            "detectedFramework": null,
+            "confidence": "none",
+            "evidenceSnippet": "No framework-specific signals detected"
+          }
+        },
+        "aiFixPrompt": "Fix the verified SEO issue below.\n\nProblem:\nNo <h1> element was found in the rendered document.\n\nAffected Target:\nhttps://example.com\n\nEvidence:\nElement: h1, Observed: 0 <h1> elements found in rendered DOM\n\nTask:\nAdd one primary <h1> element containing the main headline of the page.\n\nImplementation Guidance:\nInspect the existing architecture and apply the fix there.\n\nConstraints:\n- Do not redesign the UI.\n- Do not introduce a new dependency unless required by your existing architecture.\n- Do not create duplicate tags or metadata declarations.\n- Do not modify unrelated functionality.\n- Reuse the existing project architecture.\n- Prefer the smallest, cleanest correct fix.\n\nValidation:\n1. Inspect the rendered page and confirm an <h1> element exists.\n2. Verify the <h1> contains descriptive text identifying the main topic of the page.",
+        "fixStrategy": "Include a descriptive <h1> element in the page template to serve as the document headline.",
+        "validationSteps": [
+          "Inspect the rendered page and confirm an <h1> element exists.",
+          "Verify the <h1> contains descriptive text identifying the main topic of the page."
+        ],
+        "issue": "Structure the page with a primary H1 heading",
+        "whyItMatters": "Search engines and screen readers use the H1 heading to identify the primary subject of the page.",
+        "estimatedImprovement": "Not quantified",
+        "estimatedPerformanceGain": "None (Accessibility & semantic SEO)",
+        "priority": "high",
+        "sourceAnalyzer": "seo",
+        "estimatedBandwidthSaving": 0,
+        "selector": "h1",
+        "actualValue": "0 <h1> elements found in rendered DOM",
+        "expectedValue": "At least one primary <h1> element",
+        "reason": "Semantic document outlines should anchor with a primary <h1> heading."
+      },
+      {
         "id": "REC_SEO_CANONICAL",
         "findingId": "REC_SEO_CANONICAL_001",
         "analyzer": "seo",
@@ -2914,31 +2996,32 @@
     ],
     "roadmap": [
       "Step 1 [SEO]: Provide a meta description for search engine result snippets (EASY | Est Time: 15 mins) - Add a page-specific meta description using the project's existing SEO configuration.",
-      "Step 2 [SEO]: Provide a valid canonical URL link tag (EASY | Est Time: 15 mins) - Add the page's intended canonical URL using the project's existing SEO configuration. Verify the authoritative URL before deployment.",
-      "Step 3 [SEO]: Provide essential Open Graph metadata for social sharing (EASY | Est Time: 15 mins) - Add the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.",
-      "Step 4 [SEO]: Provide Twitter Card metadata for X / Twitter link previews (EASY | Est Time: 15 mins) - Add <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>."
+      "Step 2 [SEO]: Structure the page with a primary H1 heading (EASY | Est Time: 15 mins) - Add one primary <h1> element containing the main headline of the page.",
+      "Step 3 [SEO]: Provide a valid canonical URL link tag (EASY | Est Time: 15 mins) - Add the page's intended canonical URL using the project's existing SEO configuration. Verify the authoritative URL before deployment.",
+      "Step 4 [SEO]: Provide essential Open Graph metadata for social sharing (EASY | Est Time: 15 mins) - Add the missing Open Graph tags (og:title, og:description, og:image, og:url, og:type) to your document <head>.",
+      "Step 5 [SEO]: Provide Twitter Card metadata for X / Twitter link previews (EASY | Est Time: 15 mins) - Add <meta name=\"twitter:card\" content=\"summary_large_image\"> along with twitter:title and twitter:image to the document <head>."
     ]
   },
   "summary": {
-    "overallHealthScore": 83,
-    "overallPerformanceGrade": "B",
-    "totalIssues": 4,
+    "overallHealthScore": 73,
+    "overallPerformanceGrade": "C",
+    "totalIssues": 5,
     "criticalIssues": 0,
-    "highIssues": 1,
+    "highIssues": 2,
     "mediumIssues": 1,
     "lowIssues": 2,
     "potentialPerformanceImprovement": "No major transfer savings estimated",
     "potentialBandwidthReduction": 0,
-    "estimatedTimeToFixEverything": "1.0 hours"
+    "estimatedTimeToFixEverything": "1.3 hours"
   },
-  "overallHealthScore": 83,
-  "overallPerformanceGrade": "B",
+  "overallHealthScore": 73,
+  "overallPerformanceGrade": "C",
   "validationData": {
     "browserVersion": "Chrome/148.0.7778.97",
     "debugLogs": {
       "imageAnalyzer": {
-        "started": "2026-09-23T14:06:00.689Z",
-        "finished": "2026-09-23T14:06:00.692Z",
+        "started": "2026-11-16T14:22:29.112Z",
+        "finished": "2026-11-16T14:22:29.115Z",
         "executionTimeMs": 3,
         "errors": [
           "No images found on page."
@@ -2948,9 +3031,9 @@
         "confidence": "Low"
       },
       "cssAnalyzer": {
-        "started": "2026-09-23T14:06:00.692Z",
-        "finished": "2026-09-23T14:06:00.692Z",
-        "executionTimeMs": 0,
+        "started": "2026-11-16T14:22:29.115Z",
+        "finished": "2026-11-16T14:22:29.116Z",
+        "executionTimeMs": 1,
         "errors": [
           "Stylesheet elements detected in DOM but network resource timing was unavailable."
         ],
@@ -2959,31 +3042,30 @@
         "confidence": "High"
       },
       "jsAnalyzer": {
-        "started": "2026-09-23T14:06:00.692Z",
-        "finished": "2026-09-23T14:06:00.693Z",
-        "executionTimeMs": 1,
-        "errors": [
-          "No JavaScript resources found."
-        ],
+        "started": "2026-11-16T14:22:29.116Z",
+        "finished": "2026-11-16T14:22:29.131Z",
+        "executionTimeMs": 15,
+        "errors": [],
         "warnings": [],
         "fallbackUsed": "NO",
-        "confidence": "Medium"
+        "confidence": "High"
       },
       "seoAnalyzer": {
-        "started": "2026-09-23T14:06:00.693Z",
-        "finished": "2026-09-23T14:06:00.822Z",
-        "executionTimeMs": 129,
+        "started": "2026-11-16T14:22:29.131Z",
+        "finished": "2026-11-16T14:22:29.219Z",
+        "executionTimeMs": 88,
         "errors": [],
         "warnings": [
           "No meta description was found in the rendered document head. Your page does not currently provide a description specifically written for search-result snippets.",
+          "Page does not contain an <h1> element. A primary H1 heading provides assistive tech and search engines with the main topic of the page.",
           "No canonical URL was found in the rendered document head. Canonical declarations tell search crawlers the preferred URL to index."
         ],
         "fallbackUsed": "NO",
         "confidence": "High"
       },
       "accessibilityAnalyzer": {
-        "started": "2026-09-23T14:06:00.822Z",
-        "finished": "2026-09-23T14:06:00.825Z",
+        "started": "2026-11-16T14:22:29.219Z",
+        "finished": "2026-11-16T14:22:29.222Z",
         "executionTimeMs": 3,
         "errors": [],
         "warnings": [
@@ -2994,32 +3076,56 @@
       }
     },
     "screenshots": {
-      "fullPagePath": "C:\\Users\\itsak\\OneDrive\\Desktop\\Projects\\Perflens\\server\\temp\\screenshot_full_1790172360596.png",
-      "viewportPath": "C:\\Users\\itsak\\OneDrive\\Desktop\\Projects\\Perflens\\server\\temp\\screenshot_viewport_1790172360596.png"
+      "fullPagePath": "C:\\Users\\itsak\\OneDrive\\Desktop\\Projects\\Perflens\\server\\temp\\screenshot_full_1794838948979.png",
+      "viewportPath": "C:\\Users\\itsak\\OneDrive\\Desktop\\Projects\\Perflens\\server\\temp\\screenshot_viewport_1794838948979.png"
     },
     "resources": [
       {
         "url": "https://example.com/",
         "type": "document",
-        "sizeKb": 0.5,
+        "sizeKb": 0.6,
         "statusCode": 200,
-        "contentType": "text/html",
-        "transferSizeKb": 0.5,
+        "contentType": "text/html; charset=utf-8",
+        "transferSizeKb": 0.6,
         "cacheControl": "no-cache, no-store",
-        "durationMs": 941,
+        "durationMs": 100,
         "compression": "brotli",
         "httpVersion": "HTTP/1.1",
         "fromCache": false,
         "initiator": "other",
-        "startTimeMs": 17809465,
+        "startTimeMs": 12769711,
         "timingBreakdown": {
-          "dnsMs": 283,
-          "tcpMs": 328,
-          "tlsMs": 288,
-          "ttfbMs": 62,
+          "dnsMs": 25,
+          "tcpMs": 37,
+          "tlsMs": 37,
+          "ttfbMs": 37,
           "downloadMs": 0,
-          "startTimeMs": 17809465,
-          "durationMs": 941
+          "startTimeMs": 12769711,
+          "durationMs": 100
+        }
+      },
+      {
+        "url": "https://example.com/s.js",
+        "type": "js",
+        "sizeKb": 1.9,
+        "statusCode": 200,
+        "contentType": "text/javascript; charset=utf-8",
+        "transferSizeKb": 1.9,
+        "cacheControl": "no-cache, no-store",
+        "durationMs": 99,
+        "compression": "brotli",
+        "httpVersion": "HTTP/1.1",
+        "fromCache": false,
+        "initiator": "parser",
+        "startTimeMs": 12769825,
+        "timingBreakdown": {
+          "dnsMs": 0,
+          "tcpMs": 57,
+          "tlsMs": 57,
+          "ttfbMs": 40,
+          "downloadMs": 0,
+          "startTimeMs": 12769825,
+          "durationMs": 99
         }
       }
     ],
@@ -3088,53 +3194,110 @@
       ]
     },
     "jsAnalysis": {
-      "status": "NO_JS_FOUND",
+      "status": "SUCCESS",
       "summary": {
-        "measurementStatus": "NO_JS_FOUND",
-        "totalJSFiles": 0,
-        "largestJSFile": null,
-        "totalJSWeight": 0,
+        "measurementStatus": "SUCCESS",
+        "totalJSFiles": 1,
+        "largestJSFile": {
+          "url": "https://example.com/s.js",
+          "sizeKb": 1.9
+        },
+        "totalJSWeight": 1.9,
         "thirdPartyScripts": 0,
         "duplicateScripts": 0,
         "renderBlockingScripts": 0,
         "estimatedUnusedJS": 0,
-        "hasCoverageData": false,
+        "hasCoverageData": true,
         "largestLibrary": null
       },
-      "scripts": [],
+      "scripts": [
+        {
+          "url": "https://example.com/s.js",
+          "filename": "s.js",
+          "fileSizeKb": 1.9,
+          "transferSizeKb": 1.9,
+          "statusCode": 200,
+          "mimeType": "text/javascript; charset=utf-8",
+          "compression": "brotli",
+          "cacheControl": "no-cache, no-store",
+          "isDuplicate": false,
+          "isMinified": true,
+          "isAsync": false,
+          "isDefer": false,
+          "isModuleScript": false,
+          "isThirdParty": false,
+          "estimatedUnusedJsKb": 0,
+          "estimatedParseCostMs": 0.4,
+          "estimatedExecutionCostMs": 0.9,
+          "estimatedMainThreadBlockingMs": 0,
+          "detectedLibrary": null,
+          "hasDynamicImports": null,
+          "isRenderBlocking": false,
+          "documentPosition": "<body>",
+          "parserBlockingStatus": false
+        }
+      ],
       "statistics": {
         "countByMinified": {
-          "minified": 0,
+          "minified": 1,
           "unminified": 0
         },
         "sizeByMinifiedKb": {
-          "minified": 0,
+          "minified": 1.9,
           "unminified": 0
         },
         "countByCompression": {
-          "brotli": 0,
+          "brotli": 1,
           "gzip": 0,
           "none": 0
         },
         "thirdPartyCount": 0,
         "thirdPartySizeKb": 0,
         "detectedLibraries": {},
-        "averageSizeKb": 0
+        "averageSizeKb": 1.9
       },
       "optimizationCandidates": [],
       "warnings": [],
-      "errors": [
-        "No JavaScript resources found."
+      "errors": [],
+      "packages": [
+        {
+          "packageName": "s (chunk)",
+          "name": "s (chunk)",
+          "sizeKb": 1.9,
+          "transferSizeKb": 1.9,
+          "compression": "brotli",
+          "isDuplicate": false,
+          "duplicate": false,
+          "isUnused": false,
+          "unused": false,
+          "hasSourceMap": false,
+          "url": "https://example.com/s.js"
+        }
+      ],
+      "bundleAnalysis": [
+        {
+          "packageName": "s (chunk)",
+          "name": "s (chunk)",
+          "sizeKb": 1.9,
+          "transferSizeKb": 1.9,
+          "compression": "brotli",
+          "isDuplicate": false,
+          "duplicate": false,
+          "isUnused": false,
+          "unused": false,
+          "hasSourceMap": false,
+          "url": "https://example.com/s.js"
+        }
       ]
     },
     "seoAnalysis": {
       "summary": {
-        "seoScoreEstimate": 60,
+        "seoScoreEstimate": 45,
         "missingMetaDescription": true,
         "missingTitle": false,
         "missingCanonical": true,
         "missingViewport": false,
-        "missingH1": false,
+        "missingH1": true,
         "multipleH1": false,
         "headingHierarchyValid": true,
         "openGraphCoverage": 0,
@@ -3150,7 +3313,7 @@
         "metaDescriptionStatus": "MISSING",
         "noindexDetected": false,
         "scoreExplanation": {
-          "score": 60,
+          "score": 45,
           "maxScore": 100,
           "breakdown": [
             {
@@ -3169,10 +3332,10 @@
             },
             {
               "name": "Primary H1 Heading",
-              "score": 15,
+              "score": 0,
               "maxScore": 15,
-              "status": "PASS",
-              "explanation": "Primary <h1> element present in rendered DOM."
+              "status": "FAIL",
+              "explanation": "No <h1> heading found in rendered document outline."
             },
             {
               "name": "Mobile Viewport",
@@ -3220,46 +3383,42 @@
         "canonical": null,
         "sitemap": "Missing",
         "metaKeywords": null,
-        "charset": "UTF-8",
-        "viewport": "width=device-width, initial-scale=1",
+        "charset": "utf-8",
+        "viewport": "width=device-width,initial-scale=1",
         "canonicalUrl": null,
         "metaRobots": null,
         "openGraphTags": null,
         "twitterCardTags": null,
         "languageAttribute": "en",
         "headingStructure": {
-          "h1": [
-            "Example Domain"
-          ],
+          "h1": [],
           "h2": [],
           "h3": [],
           "h4": [],
           "h5": [],
           "h6": [],
-          "hasH1": true,
-          "h1Count": 1,
+          "hasH1": false,
+          "h1Count": 0,
           "multipleH1": false,
           "isHierarchyValid": true,
           "skippedLevels": []
         },
         "headingsHierarchy": {
-          "h1": [
-            "Example Domain"
-          ],
+          "h1": [],
           "h2": [],
           "h3": [],
           "h4": [],
           "h5": [],
           "h6": [],
-          "hasH1": true,
-          "h1Count": 1,
+          "hasH1": false,
+          "h1Count": 0,
           "multipleH1": false,
           "isHierarchyValid": true,
           "skippedLevels": []
         },
         "internalLinks": [],
         "externalLinks": [
-          "https://iana.org/domains/example"
+          "https://iana.org/help/example-domains"
         ],
         "brokenLinks": [],
         "hasRobotsTxt": false,
@@ -3448,7 +3607,7 @@
         "ogDescription": "",
         "ogImage": "",
         "seoScoreExplanation": {
-          "score": 60,
+          "score": 45,
           "maxScore": 100,
           "breakdown": [
             {
@@ -3467,10 +3626,10 @@
             },
             {
               "name": "Primary H1 Heading",
-              "score": 15,
+              "score": 0,
               "maxScore": 15,
-              "status": "PASS",
-              "explanation": "Primary <h1> element present in rendered DOM."
+              "status": "FAIL",
+              "explanation": "No <h1> heading found in rendered document outline."
             },
             {
               "name": "Mobile Viewport",
@@ -3514,7 +3673,7 @@
         "titleLength": 14,
         "descriptionLength": 0,
         "headingsCount": {
-          "h1": 1,
+          "h1": 0,
           "h2": 0,
           "h3": 0,
           "h4": 0,
@@ -3539,6 +3698,13 @@
           "url": "https://example.com/",
           "type": "seo",
           "estimatedSizeReductionKb": 0,
+          "suggestion": "Page does not contain an <h1> element. A primary H1 heading provides assistive tech and search engines with the main topic of the page. [Element: h1, Observed: \"0 <h1> elements found in rendered DOM\"]",
+          "isIssue": true
+        },
+        {
+          "url": "https://example.com/",
+          "type": "seo",
+          "estimatedSizeReductionKb": 0,
           "suggestion": "No canonical URL was found in the rendered document head. Canonical declarations tell search crawlers the preferred URL to index. [Element: link[rel=\"canonical\"], Observed: \"No <link rel=\\\"canonical\\\"> element was found in the rendered document head.\"]",
           "isIssue": true
         }
@@ -3551,6 +3717,14 @@
           "element": "meta[name=\"description\"]",
           "observed": "No <meta name=\"description\"> found in rendered <head>",
           "expected": "A page-specific meta description (approximately 120–160 characters is a useful practical guideline)"
+        },
+        {
+          "code": "SEO_NO_H1",
+          "message": "Page does not contain an <h1> element. A primary H1 heading provides assistive tech and search engines with the main topic of the page.",
+          "severity": "error",
+          "element": "h1",
+          "observed": "0 <h1> elements found in rendered DOM",
+          "expected": "At least one descriptive <h1> element per page"
         },
         {
           "code": "SEO_NO_CANONICAL",
@@ -3583,11 +3757,11 @@
           "selector": "none"
         },
         "charset": {
-          "value": "UTF-8",
-          "selector": "none"
+          "value": "utf-8",
+          "selector": "meta[charset]"
         },
         "viewport": {
-          "value": "width=device-width, initial-scale=1",
+          "value": "width=device-width,initial-scale=1",
           "selector": "meta[name=\"viewport\"]"
         },
         "robots": {
@@ -3596,16 +3770,10 @@
         },
         "og": {},
         "twitter": {},
-        "headingsList": [
-          {
-            "tag": "h1",
-            "text": "Example Domain",
-            "html": "<h1>Example Domain</h1>"
-          }
-        ],
+        "headingsList": [],
         "internalLinks": [],
         "externalLinks": [
-          "https://iana.org/domains/example"
+          "https://iana.org/help/example-domains"
         ],
         "hreflangs": [],
         "languageAttribute": "en",
@@ -3680,7 +3848,7 @@
           {
             "hasLabel": true,
             "selector": "a",
-            "html": "<a href=\"https://iana.org/domains/example\">Learn more</a>"
+            "html": "<a href=\"https://iana.org/help/example-domains\">Learn more</a>"
           }
         ],
         "landmarks": {
@@ -3694,89 +3862,11 @@
       }
     },
     "pageSpeedTelemetry": {
-      "status": "SUCCESS",
-      "available": true,
-      "performance": 100,
-      "accessibility": 96,
-      "seo": 80,
-      "bestPractices": 96,
-      "metrics": {
-        "lcp": "0.8 s",
-        "fcp": "0.8 s",
-        "inp": "N/A",
-        "inpSource": "unknown",
-        "inpMode": "lab",
-        "tbt": "0 ms",
-        "cls": "0",
-        "ttfb": "1ms",
-        "speedIndex": "0.8 s"
-      },
-      "lighthouseScoreBreakdown": {
-        "first-contentful-paint": {
-          "id": "first-contentful-paint",
-          "weight": 10,
-          "score": 100,
-          "numericValue": 756,
-          "displayValue": "0.8 s"
-        },
-        "largest-contentful-paint": {
-          "id": "largest-contentful-paint",
-          "weight": 25,
-          "score": 100,
-          "numericValue": 756,
-          "displayValue": "0.8 s"
-        },
-        "total-blocking-time": {
-          "id": "total-blocking-time",
-          "weight": 30,
-          "score": 100,
-          "numericValue": 0,
-          "displayValue": "0 ms"
-        },
-        "cumulative-layout-shift": {
-          "id": "cumulative-layout-shift",
-          "weight": 25,
-          "score": 100,
-          "numericValue": 0,
-          "displayValue": "0"
-        },
-        "speed-index": {
-          "id": "speed-index",
-          "weight": 10,
-          "score": 100,
-          "numericValue": 756,
-          "displayValue": "0.8 s"
-        }
-      },
-      "tbtDetails": {
-        "totalBlockingTimeMs": 0,
-        "longTaskCount": 0,
-        "maxTaskDurationMs": 0,
-        "tasks": [],
-        "mainThreadWork": [
-          {
-            "group": "Other",
-            "durationMs": 27
-          },
-          {
-            "group": "Script Evaluation",
-            "durationMs": 7
-          },
-          {
-            "group": "Style & Layout",
-            "durationMs": 6
-          },
-          {
-            "group": "Parse HTML & CSS",
-            "durationMs": 1
-          },
-          {
-            "group": "Rendering",
-            "durationMs": 1
-          }
-        ],
-        "topScriptsByExecution": []
-      }
+      "status": "UNAVAILABLE",
+      "error": "PageSpeed API was skipped by user request or configuration flag.",
+      "errorCode": "FORCE_SKIP",
+      "httpStatus": null,
+      "available": false
     },
     "networkAnalysis": {
       "resourcesList": [
@@ -3784,22 +3874,48 @@
           "name": "https://example.com/",
           "url": "https://example.com/",
           "type": "document",
-          "sizeKb": 0.5,
-          "transferSizeKb": 0.5,
+          "sizeKb": 0.6,
+          "transferSizeKb": 0.6,
           "statusCode": 200,
-          "timeMs": 941,
-          "durationMs": 941,
-          "startTimeMs": 17809465,
+          "timeMs": 100,
+          "durationMs": 100,
+          "startTimeMs": 12769711,
           "initiator": "other",
           "fromCache": false,
           "timingBreakdown": {
-            "dnsMs": 283,
-            "tcpMs": 328,
-            "tlsMs": 288,
-            "ttfbMs": 62,
+            "dnsMs": 25,
+            "tcpMs": 37,
+            "tlsMs": 37,
+            "ttfbMs": 37,
             "downloadMs": 0,
-            "startTimeMs": 17809465,
-            "durationMs": 941
+            "startTimeMs": 12769711,
+            "durationMs": 100
+          },
+          "compression": "brotli",
+          "cacheControl": "no-cache, no-store",
+          "isThirdParty": false,
+          "isCompressed": true
+        },
+        {
+          "name": "s.js",
+          "url": "https://example.com/s.js",
+          "type": "js",
+          "sizeKb": 1.9,
+          "transferSizeKb": 1.9,
+          "statusCode": 200,
+          "timeMs": 99,
+          "durationMs": 99,
+          "startTimeMs": 12769825,
+          "initiator": "parser",
+          "fromCache": false,
+          "timingBreakdown": {
+            "dnsMs": 0,
+            "tcpMs": 57,
+            "tlsMs": 57,
+            "ttfbMs": 40,
+            "downloadMs": 0,
+            "startTimeMs": 12769825,
+            "durationMs": 99
           },
           "compression": "brotli",
           "cacheControl": "no-cache, no-store",
@@ -3808,9 +3924,9 @@
         }
       ],
       "stats": {
-        "totalRequests": 1,
-        "totalSizeKb": 0.5,
-        "totalTransferSizeKb": 0.5,
+        "totalRequests": 2,
+        "totalSizeKb": 2.5,
+        "totalTransferSizeKb": 2.5,
         "thirdPartyCount": 0,
         "thirdPartySizeKb": 0,
         "compressionRate": 100,

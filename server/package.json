@@ -4,6 +4,9 @@
   "description": "Backend API for PerfLens Frontend Performance Inspector",
   "main": "server.js",
   "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "start": "tsx server.ts",
     "dev": "node --import tsx server.ts",
@@ -16,7 +19,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
-    "@types/node": "^20.11.0",
+    "@types/node": "^24.13.2",
     "@types/pdfkit": "^0.17.6",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",

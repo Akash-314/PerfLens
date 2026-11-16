@@ -362,31 +362,36 @@ export const LandingPage: React.FC = () => {
 
       {/* CTA Preview Block */}
       <section
+        className="gh-box"
         style={{
-          background: 'linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-secondary) 100%)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius-xl)',
-          padding: '48px 24px',
-          textAlign: 'center'
+          padding: '40px 24px',
+          textAlign: 'center',
+          backgroundColor: 'var(--color-surface)',
+          border: '1px solid var(--color-border-default)',
+          borderRadius: 'var(--radius-md)'
         }}
       >
-        <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '10px' }}>Ready to check your website?</h2>
-        <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', marginBottom: '24px', maxWidth: '500px', margin: '0 auto 24px auto' }}>
-          Paste your URL and get actionable recommendations in seconds.
+        <h2 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--color-fg-default)', marginBottom: '8px' }}>
+          Ready to check your website?
+        </h2>
+        <p style={{ fontSize: '13.5px', color: 'var(--color-fg-muted)', marginBottom: '20px', maxWidth: '500px', margin: '0 auto 20px auto' }}>
+          Paste your website URL and get actionable developer fixes in seconds.
         </p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
           <button 
             className="btn btn-primary" 
             onClick={() => setCurrentTab(isAuthenticated ? 'analyze' : 'register')}
+            style={{ height: '32px', fontSize: '13px' }}
           >
-            <span>{isAuthenticated ? 'Check a Website' : 'Get Started for Free'}</span>
-            <ArrowRight size={14} />
+            <span>{isAuthenticated ? 'Check a website' : 'Get started for free'}</span>
+            <ArrowRight size={13} />
           </button>
           <button 
             className="btn btn-secondary" 
             onClick={() => setCurrentTab(isAuthenticated ? 'dashboard' : 'login')}
+            style={{ height: '32px', fontSize: '13px' }}
           >
-            <span>{isAuthenticated ? 'Go to Overview' : 'Log In'}</span>
+            <span>{isAuthenticated ? 'Go to Overview' : 'Sign in'}</span>
           </button>
         </div>
       </section>

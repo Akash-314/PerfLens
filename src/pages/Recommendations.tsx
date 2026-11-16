@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp, type Recommendation } from '../context/AppContext';
-import { Search, Sparkles, Filter } from 'lucide-react';
+import { Search, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { HumanizedRecommendationCard } from '../components/HumanizedRecommendationCard';
 
 export const Recommendations: React.FC = () => {
@@ -11,17 +11,15 @@ export const Recommendations: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedRecs, setExpandedRecs] = useState<Record<string, boolean>>({});
 
-  // Scoped reports based on user selector
   const targetReports = selectedScanFilter === 'all'
     ? reports
     : reports.filter((r) => r.id === selectedScanFilter);
 
-  // Compile recommendations with deterministic scan and host ownership
   const scopedRecommendations: Recommendation[] = [];
   const seenKeys = new Set<string>();
 
   targetReports.forEach((report) => {
-    report.recommendations.forEach((rec) => {
+    report.recommendations?.forEach((rec) => {
       const uniqueKey = `${report.id || report.url}-${rec.id}`;
       if (!seenKeys.has(uniqueKey)) {
         seenKeys.add(uniqueKey);
@@ -53,33 +51,34 @@ export const Recommendations: React.FC = () => {
   });
 
   const selectedReport = reports.find((r) => r.id === selectedScanFilter);
-  const pageTitle = selectedReport
-    ? `Fixes for ${selectedReport.url.replace(/^https?:\/\//, '')}`
-    : 'Fixes for your website';
-  const pageSubtitle = selectedReport
-    ? `We've grouped the problems by impact so you can start with the changes that matter most.`
-    : `We've grouped the problems across all ${reports.length} websites by impact so you can start with the changes that matter most.`;
 
   return (
     <div className="workspace-container fade-in">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h1 style={{ fontSize: '26px', fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--color-text-primary)' }}>
-            {pageTitle}
+          <h1 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-fg-default)', letterSpacing: '-0.02em' }}>
+            Fixes
           </h1>
-          <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
-            {pageSubtitle}
+          <p style={{ fontSize: '14px', color: 'var(--color-fg-muted)', marginTop: '4px' }}>
+            {selectedReport
+              ? `Recommended speed, accessibility, and SEO improvements for ${selectedReport.url.replace(/^https?:\/\//, '')}.`
+              : `Found ${scopedRecommendations.length} potential improvements across ${reports.length} monitored websites.`}
           </p>
         </div>
+
+        <button className="btn btn-primary" onClick={() => setCurrentTab('analyze')}>
+          Check another website
+        </button>
       </div>
 
       {reports.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '60px 24px', color: 'var(--color-text-secondary)' }}>
-          <Sparkles size={36} style={{ color: 'var(--color-accent-cyan)', margin: '0 auto 16px' }} />
-          <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '8px' }}>
+        <div className="gh-box" style={{ textAlign: 'center', padding: '60px 24px' }}>
+          <AlertCircle size={32} style={{ color: 'var(--color-fg-subtle)', margin: '0 auto 12px auto' }} />
+          <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-fg-default)', marginBottom: '6px' }}>
             No fixes found yet
           </h2>
-          <p style={{ fontSize: '14px', maxWidth: '440px', margin: '0 auto 24px auto', lineHeight: '1.6' }}>
+          <p style={{ fontSize: '13px', color: 'var(--color-fg-muted)', maxWidth: '440px', margin: '0 auto 20px auto' }}>
             Check a website first so PerfLens can find the highest-impact improvements for you.
           </p>
           <button className="btn btn-primary" onClick={() => setCurrentTab('analyze')}>
@@ -88,191 +87,173 @@ export const Recommendations: React.FC = () => {
         </div>
       ) : (
         <>
-          {/* Friendly Filter Toolbar */}
-          <div
-            className="card"
-            style={{
-              display: 'flex',
-              gap: '14px',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              padding: '14px 18px',
-              marginBottom: '24px',
-              borderRadius: 'var(--radius-xl)'
-            }}
-          >
-            {/* Website Selector */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '12.5px', color: 'var(--color-text-secondary)', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                Website:
-              </span>
+          {/* GitHub Issues-Style Filter Bar */}
+          <div className="gh-box" style={{ padding: '12px 16px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+              {/* Website Selector */}
               <select
                 className="form-input"
                 value={selectedScanFilter}
                 onChange={(e) => setSelectedScanFilter(e.target.value)}
-                style={{
-                  fontSize: '12.5px',
-                  padding: '5px 10px',
-                  height: '34px',
-                  backgroundColor: 'var(--color-surface-secondary)',
-                  color: 'var(--color-text-primary)',
-                  borderRadius: 'var(--radius-md)',
-                  maxWidth: '240px'
-                }}
+                style={{ height: '32px', fontSize: '12.5px', maxWidth: '220px' }}
               >
-                <option value="all">All Sites ({reports.length} scans)</option>
+                <option value="all">All websites ({reports.length})</option>
                 {reports.map((r) => (
                   <option key={r.id} value={r.id}>
-                    {r.url.replace(/^https?:\/\//, '')} ({r.timestamp.split(',')[0]})
+                    {r.url.replace(/^https?:\/\//, '')}
                   </option>
                 ))}
               </select>
-            </div>
 
-            {/* Search input */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, minWidth: '180px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '5px 12px', backgroundColor: 'var(--color-surface-secondary)', height: '34px' }}>
-              <Search size={14} style={{ color: 'var(--color-muted)' }} />
-              <input
-                type="text"
-                placeholder="Search fixes..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ border: 'none', outline: 'none', background: 'transparent', width: '100%', fontSize: '13px', color: 'var(--color-text-primary)' }}
-              />
-            </div>
+              {/* Search input (GitHub issues filter input) */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  flex: 1,
+                  minWidth: '200px',
+                  backgroundColor: 'var(--color-canvas-default)',
+                  border: '1px solid var(--color-border-default)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '0 10px',
+                  height: '32px'
+                }}
+              >
+                <Search size={13} style={{ color: 'var(--color-fg-muted)' }} />
+                <input
+                  type="text"
+                  placeholder="Filter fixes by keyword or title..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    border: 'none',
+                    outline: 'none',
+                    background: 'transparent',
+                    width: '100%',
+                    fontSize: '13px',
+                    color: 'var(--color-fg-default)',
+                    fontFamily: 'var(--font-sans)'
+                  }}
+                />
+              </div>
 
-            {/* Friendly Impact Filter */}
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-              <button
-                onClick={() => setPriorityFilter('all')}
-                className="btn btn-secondary btn-sm"
-                style={{
-                  backgroundColor: priorityFilter === 'all' ? 'var(--color-surface-secondary)' : 'transparent',
-                  borderColor: priorityFilter === 'all' ? 'var(--color-accent)' : 'var(--color-border)',
-                  fontSize: '11.5px',
-                  height: '32px'
-                }}
-              >
-                All impact
-              </button>
-              <button
-                onClick={() => setPriorityFilter('high')}
-                className="btn btn-secondary btn-sm"
-                style={{
-                  backgroundColor: priorityFilter === 'high' ? 'rgba(239, 68, 68, 0.15)' : 'transparent',
-                  borderColor: priorityFilter === 'high' ? 'var(--color-danger)' : 'var(--color-border)',
-                  color: priorityFilter === 'high' ? '#fca5a5' : 'inherit',
-                  fontSize: '11.5px',
-                  height: '32px'
-                }}
-              >
-                High impact
-              </button>
-              <button
-                onClick={() => setPriorityFilter('medium')}
-                className="btn btn-secondary btn-sm"
-                style={{
-                  backgroundColor: priorityFilter === 'medium' ? 'rgba(245, 158, 11, 0.15)' : 'transparent',
-                  borderColor: priorityFilter === 'medium' ? 'var(--color-warning)' : 'var(--color-border)',
-                  color: priorityFilter === 'medium' ? '#fcd34d' : 'inherit',
-                  fontSize: '11.5px',
-                  height: '32px'
-                }}
-              >
-                Worth fixing
-              </button>
-              <button
-                onClick={() => setPriorityFilter('low')}
-                className="btn btn-secondary btn-sm"
-                style={{
-                  backgroundColor: priorityFilter === 'low' ? 'rgba(34, 197, 94, 0.15)' : 'transparent',
-                  borderColor: priorityFilter === 'low' ? 'var(--color-success)' : 'var(--color-border)',
-                  color: priorityFilter === 'low' ? '#86efac' : 'inherit',
-                  fontSize: '11.5px',
-                  height: '32px'
-                }}
-              >
-                Nice improvement
-              </button>
-            </div>
+              {/* Severity / Impact Buttons */}
+              <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                <button
+                  onClick={() => setPriorityFilter('all')}
+                  className={`btn btn-sm ${priorityFilter === 'all' ? 'btn-secondary' : 'btn-ghost'}`}
+                  style={{ borderColor: priorityFilter === 'all' ? 'var(--color-border-strong)' : 'transparent' }}
+                >
+                  All impact
+                </button>
+                <button
+                  onClick={() => setPriorityFilter('high')}
+                  className={`btn btn-sm ${priorityFilter === 'high' ? 'btn-secondary' : 'btn-ghost'}`}
+                  style={{
+                    color: priorityFilter === 'high' ? 'var(--color-danger-fg)' : 'inherit',
+                    borderColor: priorityFilter === 'high' ? 'var(--color-danger-fg)' : 'transparent'
+                  }}
+                >
+                  High impact
+                </button>
+                <button
+                  onClick={() => setPriorityFilter('medium')}
+                  className={`btn btn-sm ${priorityFilter === 'medium' ? 'btn-secondary' : 'btn-ghost'}`}
+                  style={{
+                    color: priorityFilter === 'medium' ? 'var(--color-attention-fg)' : 'inherit',
+                    borderColor: priorityFilter === 'medium' ? 'var(--color-attention-fg)' : 'transparent'
+                  }}
+                >
+                  Medium
+                </button>
+                <button
+                  onClick={() => setPriorityFilter('low')}
+                  className={`btn btn-sm ${priorityFilter === 'low' ? 'btn-secondary' : 'btn-ghost'}`}
+                  style={{
+                    color: priorityFilter === 'low' ? 'var(--color-success-fg)' : 'inherit',
+                    borderColor: priorityFilter === 'low' ? 'var(--color-success-fg)' : 'transparent'
+                  }}
+                >
+                  Low
+                </button>
+              </div>
 
-            {/* Category Filter */}
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-              <button
-                onClick={() => setCategoryFilter('all')}
-                className="btn btn-secondary btn-sm"
-                style={{
-                  backgroundColor: categoryFilter === 'all' ? 'var(--color-surface-secondary)' : 'transparent',
-                  borderColor: categoryFilter === 'all' ? 'var(--color-accent-cyan)' : 'var(--color-border)',
-                  fontSize: '11.5px',
-                  height: '32px'
-                }}
-              >
-                All categories
-              </button>
-              <button
-                onClick={() => setCategoryFilter('performance')}
-                className="btn btn-secondary btn-sm"
-                style={{
-                  backgroundColor: categoryFilter === 'performance' ? 'var(--color-surface-secondary)' : 'transparent',
-                  borderColor: categoryFilter === 'performance' ? 'var(--color-accent-cyan)' : 'var(--color-border)',
-                  fontSize: '11.5px',
-                  height: '32px'
-                }}
-              >
-                Speed
-              </button>
-              <button
-                onClick={() => setCategoryFilter('accessibility')}
-                className="btn btn-secondary btn-sm"
-                style={{
-                  backgroundColor: categoryFilter === 'accessibility' ? 'var(--color-surface-secondary)' : 'transparent',
-                  borderColor: categoryFilter === 'accessibility' ? 'var(--color-accent-cyan)' : 'var(--color-border)',
-                  fontSize: '11.5px',
-                  height: '32px'
-                }}
-              >
-                Accessibility
-              </button>
-              <button
-                onClick={() => setCategoryFilter('seo')}
-                className="btn btn-secondary btn-sm"
-                style={{
-                  backgroundColor: categoryFilter === 'seo' ? 'var(--color-surface-secondary)' : 'transparent',
-                  borderColor: categoryFilter === 'seo' ? 'var(--color-accent-cyan)' : 'var(--color-border)',
-                  fontSize: '11.5px',
-                  height: '32px'
-                }}
-              >
-                Search & Sharing
-              </button>
+              {/* Category Filter */}
+              <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                <button
+                  onClick={() => setCategoryFilter('all')}
+                  className={`btn btn-sm ${categoryFilter === 'all' ? 'btn-secondary' : 'btn-ghost'}`}
+                  style={{ borderColor: categoryFilter === 'all' ? 'var(--color-border-strong)' : 'transparent' }}
+                >
+                  All categories
+                </button>
+                <button
+                  onClick={() => setCategoryFilter('performance')}
+                  className={`btn btn-sm ${categoryFilter === 'performance' ? 'btn-secondary' : 'btn-ghost'}`}
+                  style={{ borderColor: categoryFilter === 'performance' ? 'var(--color-accent-fg)' : 'transparent' }}
+                >
+                  Speed
+                </button>
+                <button
+                  onClick={() => setCategoryFilter('accessibility')}
+                  className={`btn btn-sm ${categoryFilter === 'accessibility' ? 'btn-secondary' : 'btn-ghost'}`}
+                  style={{ borderColor: categoryFilter === 'accessibility' ? 'var(--color-accent-fg)' : 'transparent' }}
+                >
+                  Accessibility
+                </button>
+                <button
+                  onClick={() => setCategoryFilter('seo')}
+                  className={`btn btn-sm ${categoryFilter === 'seo' ? 'btn-secondary' : 'btn-ghost'}`}
+                  style={{ borderColor: categoryFilter === 'seo' ? 'var(--color-accent-fg)' : 'transparent' }}
+                >
+                  SEO
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Recommendations List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {filteredRecs.length === 0 ? (
-              <div className="card" style={{ textAlign: 'center', padding: '48px', color: 'var(--color-text-secondary)', borderRadius: 'var(--radius-xl)' }}>
-                <Filter size={28} style={{ color: 'var(--color-muted)', margin: '0 auto 12px' }} />
-                <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-text-primary)' }}>No matching fixes</p>
-                <p style={{ fontSize: '13px', color: 'var(--color-muted)', marginTop: '4px' }}>
-                  Try changing your search term or selecting "All impact".
-                </p>
+          {/* GitHub Issues Container */}
+          <div className="gh-box" style={{ padding: 0 }}>
+            {/* GitHub Issues Box Header */}
+            <div className="gh-box-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <AlertCircle size={15} style={{ color: 'var(--color-attention-fg)' }} />
+                <span style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--color-fg-default)' }}>
+                  {filteredRecs.length} Open issues & fixes
+                </span>
               </div>
-            ) : (
-              filteredRecs.map((rec) => (
+              <span style={{ fontSize: '12px', color: 'var(--color-fg-muted)' }}>
+                Sorted by highest impact
+              </span>
+            </div>
+
+            {/* Issue Rows */}
+            <div>
+              {filteredRecs.map((rec) => (
                 <HumanizedRecommendationCard
                   key={rec.id}
                   rec={rec}
-                  expanded={Boolean(expandedRecs[rec.id])}
+                  expanded={expandedRecs[rec.id]}
                   onToggle={() => toggleRec(rec.id)}
                 />
-              ))
-            )}
+              ))}
+
+              {filteredRecs.length === 0 && (
+                <div style={{ padding: '40px 16px', textAlign: 'center', color: 'var(--color-fg-muted)' }}>
+                  <CheckCircle2 size={24} style={{ color: 'var(--color-success-fg)', margin: '0 auto 8px auto' }} />
+                  <p style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-fg-default)' }}>
+                    No matching fixes found
+                  </p>
+                  <p style={{ fontSize: '12.5px', color: 'var(--color-fg-muted)', marginTop: '2px' }}>
+                    Try clearing or adjusting your search filters.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}
     </div>
   );
 };
-

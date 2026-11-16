@@ -1,156 +1,365 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { Search, User, Play } from 'lucide-react';
-import { getUserNameFromEmail } from '../services/auth/auth.helpers';
+import {
+  Search,
+  Menu,
+  Sparkles,
+  GitCompare,
+  AlertCircle,
+  Bell,
+  Settings,
+  HelpCircle,
+  LogOut,
+  Globe,
+  FolderGit,
+  Sliders
+} from 'lucide-react';
+import { getUserInitials, getUserNameFromEmail } from '../services/auth/auth.helpers';
 
 export const TopNav: React.FC = () => {
-  const { setGlobalSearchOpen, startAnalysis, currentTab, user, logout, setCurrentTab, setProfileTab } = useApp();
-  const [quickUrl, setQuickUrl] = useState('');
-  const [showProfile, setShowProfile] = useState(false);
+  const {
+    setGlobalSearchOpen,
+    currentTab,
+    setCurrentTab,
+    user,
+    logout,
+    setProfileTab,
+    sidebarCollapsed,
+    setSidebarCollapsed
+  } = useApp();
 
-  const handleQuickAnalyze = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (quickUrl.trim()) {
-      startAnalysis(quickUrl.trim());
-      setQuickUrl('');
+  const [showProfile, setShowProfile] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowProfile(false);
+      }
+    };
+    if (showProfile) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showProfile]);
+
+  const userName = user?.name || getUserNameFromEmail(user?.email || 'Akash-314');
+  const userHandle = user?.email ? user.email.split('@')[0] : 'Akash-314';
+
+  const getBreadcrumb = () => {
+    switch (currentTab) {
+      case 'dashboard':
+        return 'Dashboard';
+      case 'analyze':
+        return 'Check a website';
+      case 'results':
+        return 'Scan results';
+      case 'recommendations':
+        return 'Fixes';
+      case 'comparisons':
+        return 'Compare websites';
+      case 'reports':
+      case 'history':
+        return 'Recent scans';
+      case 'projects':
+        return 'Projects';
+      case 'settings':
+        return 'Settings';
+      case 'support':
+        return 'Help';
+      default:
+        return 'Dashboard';
     }
   };
 
   return (
     <header className="top-nav">
+      {/* Left: Hamburger menu, Logo & Breadcrumb */}
       <div className="top-nav-left">
-        {currentTab !== 'analyze' && (
-          <form
-            onSubmit={handleQuickAnalyze}
-            style={{ display: 'flex', gap: '8px', flex: 1, maxWidth: '420px' }}
-          >
-            <input
-              type="text"
-              placeholder="Paste your website URL..."
-              value={quickUrl}
-              onChange={(e) => setQuickUrl(e.target.value)}
-              className="form-input"
-              style={{
-                height: '34px',
-                padding: '0 12px',
-                fontSize: '13px',
-                flex: 1,
-                backgroundColor: 'var(--color-bg)',
-                borderRadius: 'var(--radius-md)'
-              }}
-            />
-            <button
-              type="submit"
-              className="btn btn-primary"
-              style={{ height: '34px', padding: '0 14px', fontSize: '12px', whiteSpace: 'nowrap' }}
-            >
-              <Play size={11} fill="currentColor" />
-              <span>Check Website</span>
-            </button>
-          </form>
-        )}
-
         <button
-          className="search-trigger"
-          onClick={() => setGlobalSearchOpen(true)}
-          style={{ maxWidth: '180px', height: '34px', opacity: 0.85 }}
-          title="Search or jump to page (⌘K)"
+          className="gh-icon-btn"
+          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          title="Toggle Navigation"
+          aria-label="Toggle Navigation"
         >
-          <Search size={13} />
-          <span>Search or ⌘K</span>
+          <Menu size={16} />
         </button>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <img
+            src="/favicon.svg"
+            alt="PerfLens"
+            style={{ width: '22px', height: '22px', objectFit: 'contain' }}
+            onClick={() => setCurrentTab('dashboard')}
+          />
+          <span
+            style={{
+              fontSize: '14px',
+              fontWeight: 600,
+              color: 'var(--color-fg-default)',
+              cursor: 'pointer'
+            }}
+            onClick={() => setCurrentTab('dashboard')}
+          >
+            PerfLens
+          </span>
+          <span style={{ color: 'var(--color-border-strong)', fontSize: '14px' }}>/</span>
+          <span style={{ fontSize: '14px', color: 'var(--color-fg-muted)', fontWeight: 400 }}>
+            {getBreadcrumb()}
+          </span>
+        </div>
       </div>
 
+      {/* Center/Right: GitHub-style search, action icons, user dropdown */}
       <div className="top-nav-right">
-        {/* Profile Dropdown */}
-        <div style={{ position: 'relative' }}>
-          <button
-            className="sidebar-toggle-btn"
-            onClick={() => setShowProfile(!showProfile)}
-            aria-label="User profile"
-          >
-            <User size={16} />
-          </button>
+        {/* GitHub search trigger */}
+        <div
+          className="gh-search-input"
+          onClick={() => setGlobalSearchOpen(true)}
+          title="Search or jump to... (/) or (⌘K)"
+        >
+          <Search size={14} style={{ color: 'var(--color-fg-muted)' }} />
+          <span>Type <span style={{ color: 'var(--color-fg-default)', fontWeight: 500 }}>/</span> to search</span>
+          <span className="gh-kbd-shortcut">/</span>
+        </div>
 
+        {/* Action icons like GitHub Dashboard */}
+        <button
+          className="gh-icon-btn"
+          onClick={() => setCurrentTab('recommendations')}
+          title="Fixes & Issues"
+          aria-label="Fixes & Issues"
+        >
+          <AlertCircle size={15} />
+        </button>
+
+        <button
+          className="gh-icon-btn"
+          onClick={() => setCurrentTab('comparisons')}
+          title="Compare Websites"
+          aria-label="Compare Websites"
+        >
+          <GitCompare size={15} />
+        </button>
+
+        <button
+          className="gh-icon-btn"
+          onClick={() => {
+            setProfileTab('ai');
+            setCurrentTab('settings');
+          }}
+          title="AI Assistant & Explainer"
+          aria-label="AI Assistant"
+        >
+          <Sparkles size={15} style={{ color: 'var(--color-purple-fg)' }} />
+        </button>
+
+        <button
+          className="gh-icon-btn"
+          onClick={() => setCurrentTab('reports')}
+          title="Recent Activity & Notifications"
+          aria-label="Notifications"
+          style={{ position: 'relative' }}
+        >
+          <Bell size={15} />
+          <span
+            style={{
+              position: 'absolute',
+              top: '6px',
+              right: '6px',
+              width: '6px',
+              height: '6px',
+              backgroundColor: 'var(--color-accent-fg)',
+              borderRadius: '50%'
+            }}
+          />
+        </button>
+
+        {/* User profile avatar & dropdown */}
+        <div style={{ position: 'relative' }} ref={dropdownRef}>
+          <div
+            onClick={() => setShowProfile(!showProfile)}
+            style={{
+              width: '30px',
+              height: '30px',
+              borderRadius: '50%',
+              backgroundColor: 'var(--color-surface-secondary)',
+              border: '1px solid var(--color-border-default)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '11px',
+              fontWeight: 600,
+              color: 'var(--color-accent-fg)',
+              cursor: 'pointer',
+              userSelect: 'none'
+            }}
+            title={`${userName} (${user?.email || 'Signed in'})`}
+          >
+            {getUserInitials(userName)}
+          </div>
+
+          {/* GitHub-style dropdown */}
           {showProfile && (
-            <div
-              style={{
-                position: 'absolute',
-                top: '40px',
-                right: 0,
-                width: '180px',
-                backgroundColor: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '6px',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                zIndex: 100
-              }}
-            >
-              <div
-                style={{
-                  padding: '8px',
-                  borderBottom: '1px solid var(--color-border)',
-                  marginBottom: '4px'
-                }}
-              >
-                <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-primary)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {user?.name || getUserNameFromEmail(user?.email || '')}
-                </p>
-                <span style={{ fontSize: '10px', color: 'var(--color-muted)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '2px' }}>
-                  {user?.email}
-                </span>
+            <div className="gh-dropdown" style={{ width: '250px' }}>
+              {/* Profile Header */}
+              <div className="gh-dropdown-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      backgroundColor: 'var(--color-surface-secondary)',
+                      border: '1px solid var(--color-border-default)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      color: 'var(--color-accent-fg)'
+                    }}
+                  >
+                    {getUserInitials(userName)}
+                  </div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--color-fg-default)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {userHandle}
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'var(--color-fg-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {userName}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status pill (like GitHub Focusing pill) */}
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '3px 8px',
+                    borderRadius: '2em',
+                    backgroundColor: 'var(--color-surface-secondary)',
+                    border: '1px solid var(--color-border-default)',
+                    fontSize: '11px',
+                    color: 'var(--color-fg-muted)',
+                    marginTop: '10px'
+                  }}
+                >
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--color-success-fg)' }} />
+                  <span>Ready to inspect</span>
+                </div>
               </div>
+
+              <div className="gh-dropdown-divider" />
+
+              {/* Navigation items */}
               <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '2px'
+                className="gh-dropdown-item"
+                onClick={() => {
+                  setProfileTab('account');
+                  setCurrentTab('settings');
+                  setShowProfile(false);
                 }}
               >
-                <div
-                  className="command-item"
-                  style={{ padding: '6px 8px', fontSize: '12px', cursor: 'pointer' }}
-                  onClick={() => {
-                    setProfileTab('account');
-                    setCurrentTab('settings');
-                    setShowProfile(false);
-                  }}
-                >
-                  Account Profile
-                </div>
-                <div
-                  className="command-item"
-                  style={{ padding: '6px 8px', fontSize: '12px', cursor: 'pointer', color: '#a855f7' }}
-                  onClick={() => {
-                    setProfileTab('ai');
-                    setCurrentTab('settings');
-                    setShowProfile(false);
-                  }}
-                >
-                  ✦ AI Configuration
-                </div>
-                <div
-                  className="command-item"
-                  style={{ padding: '6px 8px', fontSize: '12px', cursor: 'pointer' }}
-                  onClick={() => {
-                    setProfileTab('scanning');
-                    setCurrentTab('settings');
-                    setShowProfile(false);
-                  }}
-                >
-                  Scanning Specifications
-                </div>
-                <div
-                  className="command-item"
-                  style={{ padding: '6px 8px', fontSize: '12px', color: 'var(--color-danger)', cursor: 'pointer' }}
-                  onClick={() => {
-                    logout();
-                    setShowProfile(false);
-                  }}
-                >
-                  Sign Out
-                </div>
+                <Sliders size={14} style={{ color: 'var(--color-fg-muted)' }} />
+                <span>Your profile</span>
+              </div>
+
+              <div
+                className="gh-dropdown-item"
+                onClick={() => {
+                  setCurrentTab('reports');
+                  setShowProfile(false);
+                }}
+              >
+                <Globe size={14} style={{ color: 'var(--color-fg-muted)' }} />
+                <span>Your websites</span>
+              </div>
+
+              <div
+                className="gh-dropdown-item"
+                onClick={() => {
+                  setCurrentTab('recommendations');
+                  setShowProfile(false);
+                }}
+              >
+                <AlertCircle size={14} style={{ color: 'var(--color-fg-muted)' }} />
+                <span>Fixes & Issues</span>
+              </div>
+
+              <div
+                className="gh-dropdown-item"
+                onClick={() => {
+                  setCurrentTab('comparisons');
+                  setShowProfile(false);
+                }}
+              >
+                <GitCompare size={14} style={{ color: 'var(--color-fg-muted)' }} />
+                <span>Compare websites</span>
+              </div>
+
+              <div
+                className="gh-dropdown-item"
+                onClick={() => {
+                  setCurrentTab('projects');
+                  setShowProfile(false);
+                }}
+              >
+                <FolderGit size={14} style={{ color: 'var(--color-fg-muted)' }} />
+                <span>Your projects</span>
+              </div>
+
+              <div className="gh-dropdown-divider" />
+
+              <div
+                className="gh-dropdown-item"
+                onClick={() => {
+                  setCurrentTab('settings');
+                  setShowProfile(false);
+                }}
+              >
+                <Settings size={14} style={{ color: 'var(--color-fg-muted)' }} />
+                <span>Settings</span>
+              </div>
+
+              <div
+                className="gh-dropdown-item"
+                onClick={() => {
+                  setProfileTab('ai');
+                  setCurrentTab('settings');
+                  setShowProfile(false);
+                }}
+              >
+                <Sparkles size={14} style={{ color: 'var(--color-purple-fg)' }} />
+                <span style={{ flex: 1 }}>AI Explainer</span>
+                <span className="badge badge-purple" style={{ fontSize: '10px', padding: '1px 5px' }}>Copilot</span>
+              </div>
+
+              <div
+                className="gh-dropdown-item"
+                onClick={() => {
+                  setCurrentTab('support');
+                  setShowProfile(false);
+                }}
+              >
+                <HelpCircle size={14} style={{ color: 'var(--color-fg-muted)' }} />
+                <span>Help & Documentation</span>
+              </div>
+
+              <div className="gh-dropdown-divider" />
+
+              <div
+                className="gh-dropdown-item danger"
+                onClick={() => {
+                  logout();
+                  setShowProfile(false);
+                }}
+              >
+                <LogOut size={14} />
+                <span>Sign out</span>
               </div>
             </div>
           )}

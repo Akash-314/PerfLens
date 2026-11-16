@@ -15,7 +15,8 @@ import {
   Loader2,
   Wrench,
   HelpCircle,
-  Code
+  Code,
+  AlertCircle
 } from 'lucide-react';
 import { humanizeFinding, humanizeSeverity, humanizeCategory } from '../utils/developerCoach';
 
@@ -48,7 +49,6 @@ export const HumanizedRecommendationCard: React.FC<Props> = ({
         : 'Target element state observed in rendered DOM'
   );
 
-  // Friendly Coach translations
   const coach = humanizeFinding(rec.issue, rec.category);
   const impact = humanizeSeverity(rec.priority || rec.severity);
 
@@ -124,175 +124,152 @@ export const HumanizedRecommendationCard: React.FC<Props> = ({
   };
 
   const isVerified = std?.confidence === 'verified' || rec.confidence === 'high';
+  const isHigh = rec.priority === 'high' || rec.severity === 'high';
+  const isMed = rec.priority === 'medium' || rec.severity === 'medium';
+  const iconColor = isHigh ? 'var(--color-danger-fg)' : isMed ? 'var(--color-attention-fg)' : 'var(--color-success-fg)';
 
   return (
     <div
-      className="card"
       style={{
-        padding: 0,
-        borderRadius: 'var(--radius-xl)',
-        overflow: 'hidden',
-        border: '1px solid var(--color-border)',
-        backgroundColor: 'var(--color-surface)'
+        borderBottom: '1px solid var(--color-border-muted)',
+        backgroundColor: expanded ? 'var(--color-canvas-subtle)' : 'transparent',
+        transition: 'background-color var(--transition-fast)'
       }}
     >
-      {/* Top Header / Collapsed view */}
+      {/* GitHub Issue Row (Header) */}
       <div
         onClick={onToggle}
         style={{
-          padding: '18px 22px',
+          padding: '12px 16px',
           cursor: 'pointer',
           display: 'flex',
-          flexDirection: 'column',
-          gap: '10px',
+          alignItems: 'flex-start',
+          gap: '12px',
           userSelect: 'none'
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+        {/* Issue Icon */}
+        <div style={{ marginTop: '2px', flexShrink: 0 }}>
+          <AlertCircle size={16} style={{ color: iconColor }} />
+        </div>
+
+        {/* Content */}
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <span
+              style={{
+                fontSize: '14px',
+                fontWeight: 600,
+                color: 'var(--color-fg-default)',
+                lineHeight: '1.4'
+              }}
+            >
+              {coach.headline}
+            </span>
+
+            {/* GitHub-style labels */}
             <span className={impact.badgeClass}>
               {impact.label}
             </span>
-            <span style={{ fontSize: '12px', color: 'var(--color-accent-cyan)', fontWeight: 600 }}>
+            <span className="badge badge-neutral">
               {humanizeCategory(rec.category)}
             </span>
             {isVerified && (
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  fontSize: '11px',
-                  color: 'var(--color-success)',
-                  backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                  border: '1px solid rgba(34, 197, 94, 0.25)',
-                  borderRadius: '12px',
-                  padding: '1px 8px',
-                  fontWeight: 600
-                }}
-              >
-                <ShieldCheck size={12} />
+              <span className="badge badge-green" style={{ fontSize: '11px' }}>
+                <ShieldCheck size={11} />
                 Verified
               </span>
             )}
             {rec.sourceUrl && (
-              <span
-                style={{
-                  fontSize: '11px',
-                  color: 'var(--color-text-secondary)',
-                  backgroundColor: 'var(--color-surface-secondary)',
-                  borderRadius: '6px',
-                  padding: '2px 8px',
-                  fontFamily: 'var(--font-mono)'
-                }}
-              >
+              <span className="badge badge-neutral" style={{ fontFamily: 'var(--font-mono)', fontSize: '11px' }}>
                 {rec.sourceUrl.replace(/^https?:\/\//, '')}
               </span>
             )}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!expanded && onToggle) onToggle();
-                handleExplain(e);
-              }}
-              disabled={aiLoading}
-              className="btn btn-secondary btn-sm"
-              style={{
-                gap: '6px',
-                borderColor: 'rgba(168, 85, 247, 0.35)',
-                color: '#c084fc',
-                backgroundColor: showAi ? 'rgba(168, 85, 247, 0.12)' : 'transparent'
-              }}
-            >
-              {aiLoading ? (
-                <Loader2 size={12} className="spin" />
-              ) : (
-                <Sparkles size={12} style={{ color: '#c084fc' }} />
-              )}
-              <span>{aiLoading ? 'Explaining...' : 'Explain simply'}</span>
-            </button>
-
-            <ChevronDown
-              size={18}
-              style={{
-                transform: expanded ? 'rotate(180deg)' : 'none',
-                transition: 'transform 0.2s ease',
-                color: 'var(--color-text-secondary)'
-              }}
-            />
-          </div>
-        </div>
-
-        <div>
-          <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '3px' }}>
-            {coach.headline}
-          </h3>
-          <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', margin: 0, lineHeight: '1.4' }}>
+          <p style={{ fontSize: '12.5px', color: 'var(--color-fg-muted)', margin: '4px 0 0 0', lineHeight: '1.4' }}>
             {coach.summary}
           </p>
         </div>
+
+        {/* Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!expanded && onToggle) onToggle();
+              handleExplain(e);
+            }}
+            disabled={aiLoading}
+            className="btn btn-secondary btn-sm"
+            style={{
+              gap: '6px',
+              color: 'var(--color-purple-fg)',
+              borderColor: 'rgba(163, 113, 247, 0.3)'
+            }}
+          >
+            {aiLoading ? (
+              <Loader2 size={12} className="spin" />
+            ) : (
+              <Sparkles size={12} style={{ color: 'var(--color-purple-fg)' }} />
+            )}
+            <span>{aiLoading ? 'Explaining...' : 'Explain with AI'}</span>
+          </button>
+
+          <ChevronDown
+            size={16}
+            style={{
+              transform: expanded ? 'rotate(180deg)' : 'none',
+              transition: 'transform var(--transition-fast)',
+              color: 'var(--color-fg-muted)'
+            }}
+          />
+        </div>
       </div>
 
-      {/* Expanded Coaching Body */}
+      {/* Expanded Details Body */}
       {expanded && (
         <div
           style={{
-            padding: '22px',
-            backgroundColor: 'var(--color-bg)',
-            borderTop: '1px solid var(--color-border)',
+            padding: '16px 20px 20px 44px',
+            borderTop: '1px solid var(--color-border-default)',
+            backgroundColor: 'var(--color-canvas-default)',
             display: 'flex',
             flexDirection: 'column',
-            gap: '18px'
+            gap: '16px'
           }}
         >
-          {/* Level 1 & 2: Why It Matters & What To Do */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-            {/* Why It Matters */}
-            <div
-              className="coach-box"
-              style={{
-                borderColor: 'rgba(245, 158, 11, 0.25)',
-                backgroundColor: 'rgba(245, 158, 11, 0.03)'
-              }}
-            >
+          {/* Why it matters & What to do */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+            <div className="gh-box" style={{ padding: '12px 14px', backgroundColor: 'var(--color-canvas-subtle)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                <HelpCircle size={14} style={{ color: 'var(--color-warning)' }} />
-                <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-warning)' }}>
+                <HelpCircle size={13} style={{ color: 'var(--color-attention-fg)' }} />
+                <span style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', color: 'var(--color-attention-fg)', letterSpacing: '0.04em' }}>
                   Why it matters
                 </span>
               </div>
-              <p style={{ fontSize: '13.5px', color: 'var(--color-text-primary)', margin: 0, lineHeight: '1.5' }}>
+              <p style={{ fontSize: '13px', color: 'var(--color-fg-default)', margin: 0, lineHeight: '1.5' }}>
                 {coach.whyItMatters}
               </p>
             </div>
 
-            {/* What To Do */}
-            <div
-              className="coach-box"
-              style={{
-                borderColor: 'rgba(34, 197, 94, 0.25)',
-                backgroundColor: 'rgba(34, 197, 94, 0.03)'
-              }}
-            >
+            <div className="gh-box" style={{ padding: '12px 14px', backgroundColor: 'var(--color-canvas-subtle)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                <Wrench size={14} style={{ color: 'var(--color-success)' }} />
-                <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-success)' }}>
+                <Wrench size={13} style={{ color: 'var(--color-success-fg)' }} />
+                <span style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', color: 'var(--color-success-fg)', letterSpacing: '0.04em' }}>
                   What to do
                 </span>
               </div>
-              <p style={{ fontSize: '13.5px', color: 'var(--color-text-primary)', margin: 0, lineHeight: '1.5' }}>
+              <p style={{ fontSize: '13px', color: 'var(--color-fg-default)', margin: 0, lineHeight: '1.5' }}>
                 {coach.whatToDo}
               </p>
             </div>
           </div>
 
-          {/* AI Explanation Section */}
+          {/* AI Explanation Result */}
           {showAi && (
-            <div>
+            <div style={{ marginTop: '4px' }}>
               {aiLoading && <AIExplanationSkeleton />}
               {aiError && (
                 <AIExplanationError
@@ -311,72 +288,65 @@ export const HumanizedRecommendationCard: React.FC<Props> = ({
             </div>
           )}
 
-          {/* Level 3 & 4: Progressive Disclosure Collapsible Technical Details */}
-          <div
-            style={{
-              borderRadius: 'var(--radius-lg)',
-              border: '1px solid var(--color-border)',
-              backgroundColor: 'var(--color-surface)',
-              overflow: 'hidden'
-            }}
-          >
+          {/* Technical Details & Evidence Drawer */}
+          <div className="gh-box" style={{ padding: 0 }}>
             <button
               type="button"
               onClick={() => setShowTechnicalDetails(!showTechnicalDetails)}
               style={{
                 width: '100%',
-                padding: '12px 16px',
+                padding: '10px 14px',
                 background: 'transparent',
                 border: 'none',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 cursor: 'pointer',
-                color: 'var(--color-text-secondary)',
+                color: 'var(--color-fg-muted)',
                 fontSize: '12.5px',
                 fontWeight: 600
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Code size={14} style={{ color: 'var(--color-accent)' }} />
-                <span>Technical details & evidence</span>
+                <Code size={13} style={{ color: 'var(--color-accent-fg)' }} />
+                <span>Technical details & verified evidence</span>
               </div>
-              {showTechnicalDetails ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              {showTechnicalDetails ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             </button>
 
             {showTechnicalDetails && (
               <div
                 style={{
-                  padding: '16px',
-                  borderTop: '1px solid var(--color-border)',
-                  backgroundColor: 'var(--color-surface-secondary)',
+                  padding: '14px',
+                  borderTop: '1px solid var(--color-border-default)',
+                  backgroundColor: 'var(--color-canvas-subtle)',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '14px'
+                  gap: '12px'
                 }}
               >
                 <div>
-                  <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-muted)', textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-fg-subtle)', textTransform: 'uppercase' }}>
                     Engine Finding
                   </span>
-                  <p style={{ fontSize: '13px', color: 'var(--color-text-primary)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
+                  <p style={{ fontSize: '12.5px', color: 'var(--color-fg-default)', marginTop: '2px', fontFamily: 'var(--font-mono)' }}>
                     {rec.issue}
                   </p>
                 </div>
 
                 <div>
-                  <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-muted)', textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-fg-subtle)', textTransform: 'uppercase' }}>
                     Observed Evidence
                   </span>
                   <div
                     style={{
-                      padding: '10px 12px',
-                      backgroundColor: 'var(--color-bg)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: 'var(--radius-md)',
-                      fontSize: '12px',
+                      padding: '8px 10px',
+                      backgroundColor: 'var(--color-canvas-default)',
+                      border: '1px solid var(--color-border-default)',
+                      borderRadius: 'var(--radius-sm)',
+                      fontSize: '11.5px',
                       fontFamily: 'var(--font-mono)',
-                      color: 'var(--color-text-primary)',
+                      color: 'var(--color-fg-default)',
                       wordBreak: 'break-word',
                       marginTop: '4px',
                       lineHeight: '1.5'
@@ -387,22 +357,22 @@ export const HumanizedRecommendationCard: React.FC<Props> = ({
                 </div>
 
                 <div>
-                  <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-muted)', textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-fg-subtle)', textTransform: 'uppercase' }}>
                     Recommended Fix Strategy
                   </span>
-                  <p style={{ fontSize: '12.5px', color: 'var(--color-text-secondary)', marginTop: '2px', lineHeight: '1.5' }}>
+                  <p style={{ fontSize: '12px', color: 'var(--color-fg-muted)', marginTop: '2px', lineHeight: '1.5' }}>
                     {fixStrategy}
                   </p>
                 </div>
 
                 {validationSteps && validationSteps.length > 0 && (
                   <div>
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-muted)', textTransform: 'uppercase' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-fg-subtle)', textTransform: 'uppercase' }}>
                       Validation Steps
                     </span>
-                    <ul style={{ margin: '4px 0 0 0', paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                    <ul style={{ margin: '4px 0 0 0', paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
                       {validationSteps.map((step, sIdx) => (
-                        <li key={sIdx} style={{ fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>
+                        <li key={sIdx} style={{ fontSize: '11.5px', color: 'var(--color-fg-muted)', lineHeight: '1.4' }}>
                           {step}
                         </li>
                       ))}
@@ -410,41 +380,41 @@ export const HumanizedRecommendationCard: React.FC<Props> = ({
                   </div>
                 )}
 
-                {/* AI Code-Editor Fix Prompt */}
+                {/* AI Fix Prompt for code editor */}
                 {aiPrompt && (
                   <div
                     style={{
-                      borderRadius: 'var(--radius-md)',
-                      border: '1px solid rgba(168, 85, 247, 0.3)',
-                      backgroundColor: 'rgba(168, 85, 247, 0.05)',
-                      padding: '12px',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid rgba(163, 113, 247, 0.3)',
+                      backgroundColor: 'rgba(163, 113, 247, 0.05)',
+                      padding: '10px 12px',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: '8px'
+                      gap: '6px'
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-                        AI Fix Prompt for your editor (Cursor / VSCode / Claude)
+                      <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--color-fg-default)' }}>
+                        AI Fix Prompt for Cursor / VSCode / Claude
                       </span>
                       <button
                         type="button"
                         onClick={handleCopyPrompt}
                         className="btn btn-secondary btn-sm"
-                        style={{ gap: '4px', padding: '3px 8px', fontSize: '11px' }}
+                        style={{ gap: '4px', padding: '2px 8px', fontSize: '11px' }}
                       >
-                        {copied ? <Check size={12} /> : <Copy size={12} />}
+                        {copied ? <Check size={11} /> : <Copy size={11} />}
                         <span>{copied ? 'Copied' : 'Copy'}</span>
                       </button>
                     </div>
                     <pre
                       style={{
                         margin: 0,
-                        padding: '8px 10px',
-                        backgroundColor: 'var(--color-bg)',
+                        padding: '6px 8px',
+                        backgroundColor: 'var(--color-canvas-default)',
                         borderRadius: '4px',
                         fontSize: '11px',
-                        color: 'var(--color-text-secondary)',
+                        color: 'var(--color-fg-muted)',
                         overflowX: 'auto',
                         whiteSpace: 'pre-wrap'
                       }}
@@ -462,23 +432,23 @@ export const HumanizedRecommendationCard: React.FC<Props> = ({
             style={{
               display: 'flex',
               flexWrap: 'wrap',
-              gap: '16px',
+              gap: '14px',
               alignItems: 'center',
-              fontSize: '12px',
-              color: 'var(--color-text-secondary)',
-              borderTop: '1px solid var(--color-border)',
-              paddingTop: '12px'
+              fontSize: '11.5px',
+              color: 'var(--color-fg-muted)',
+              borderTop: '1px solid var(--color-border-default)',
+              paddingTop: '10px'
             }}
           >
             <span>
-              Difficulty: <strong style={{ textTransform: 'capitalize', color: 'var(--color-text-primary)' }}>{rec.estimatedDifficulty || rec.difficulty || 'medium'}</strong>
+              Difficulty: <strong style={{ textTransform: 'capitalize', color: 'var(--color-fg-default)' }}>{rec.estimatedDifficulty || rec.difficulty || 'medium'}</strong>
             </span>
             <span>
-              Estimated time: <strong style={{ color: 'var(--color-text-primary)' }}>{rec.estimatedImplementationTime || '15 mins'}</strong>
+              Estimated time: <strong style={{ color: 'var(--color-fg-default)' }}>{rec.estimatedImplementationTime || '15 mins'}</strong>
             </span>
             {rec.estimatedSavings && rec.estimatedSavings.displayString && (
               <span>
-                Estimated savings: <strong style={{ color: 'var(--color-success)' }}>{rec.estimatedSavings.displayString}</strong>
+                Estimated savings: <strong style={{ color: 'var(--color-success-fg)' }}>{rec.estimatedSavings.displayString}</strong>
               </span>
             )}
             {rec.refUrl && (
@@ -491,13 +461,12 @@ export const HumanizedRecommendationCard: React.FC<Props> = ({
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '4px',
-                  color: 'var(--color-accent-cyan)',
-                  textDecoration: 'none',
+                  color: 'var(--color-accent-fg)',
                   fontWeight: 500
                 }}
               >
                 <span>Documentation</span>
-                <ExternalLink size={12} />
+                <ExternalLink size={11} />
               </a>
             )}
           </div>
@@ -506,4 +475,3 @@ export const HumanizedRecommendationCard: React.FC<Props> = ({
     </div>
   );
 };
-

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { Lock, Mail, User as UserIcon, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 export const Register: React.FC = () => {
   const { register, setCurrentTab } = useApp();
@@ -85,70 +85,48 @@ export const Register: React.FC = () => {
     <div
       style={{
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '100vh',
-        backgroundColor: 'var(--color-bg)',
-        padding: '24px',
-        color: 'var(--color-text-primary)'
+        backgroundColor: 'var(--color-canvas-default)',
+        padding: '32px 16px',
+        color: 'var(--color-fg-default)'
       }}
     >
-      <div
-        className="card card-hover"
-        style={{
-          width: '100%',
-          maxWidth: '400px',
-          padding: '32px',
-          backgroundColor: 'var(--color-surface)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '24px'
-        }}
-      >
-        {/* Brand header */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', textAlign: 'center' }}>
-          <div
-            onClick={() => setCurrentTab('landing')}
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '10px',
-              backgroundColor: 'rgba(59, 130, 246, 0.1)',
-              border: '1px solid var(--color-accent)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--color-accent)',
-              cursor: 'pointer'
-            }}
-            title="Go to landing page"
-          >
-            <img
-              src="/favicon.svg"
-              alt="PerfLens"
-              style={{ width: '22px', height: '22px', objectFit: 'contain' }}
-            />
-          </div>
-          <h2 style={{ fontSize: '20px', fontWeight: 700, letterSpacing: '-0.02em', marginTop: '8px' }}>
-            Create your PerfLens Account
-          </h2>
-          <p style={{ fontSize: '13px', color: 'var(--color-muted)' }}>
-            Start analyzing script execution timings and bundle sizes.
-          </p>
+      {/* Brand header */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+        <div
+          onClick={() => setCurrentTab('landing')}
+          style={{
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+          title="Go to landing page"
+        >
+          <img
+            src="/favicon.svg"
+            alt="PerfLens"
+            style={{ width: '48px', height: '48px', objectFit: 'contain' }}
+          />
         </div>
+        <h1 style={{ fontSize: '24px', fontWeight: 300, color: 'var(--color-fg-default)', letterSpacing: '-0.02em', margin: 0 }}>
+          Create your PerfLens account
+        </h1>
+      </div>
 
+      <div style={{ width: '100%', maxWidth: '360px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {error && (
           <div
             style={{
-              padding: '10px 12px',
-              borderRadius: 'var(--radius-sm)',
-              backgroundColor: 'rgba(239, 68, 68, 0.08)',
-              border: '1px solid var(--color-danger)',
-              color: 'var(--color-danger)',
-              fontSize: '12.5px',
+              padding: '12px 16px',
+              borderRadius: 'var(--radius-md)',
+              backgroundColor: 'var(--color-danger-subtle)',
+              border: '1px solid rgba(248, 81, 73, 0.4)',
+              color: 'var(--color-danger-fg)',
+              fontSize: '13px',
               lineHeight: '1.4'
             }}
           >
@@ -156,72 +134,42 @@ export const Register: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          {/* Full Name input field */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label htmlFor="name" style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-              Full name
-            </label>
-            <div style={{ position: 'relative' }}>
-              <span
-                style={{
-                  position: 'absolute',
-                  left: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'var(--color-muted)',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                <UserIcon size={14} />
-              </span>
+        {/* Main form panel */}
+        <div
+          className="gh-box"
+          style={{
+            padding: '20px',
+            backgroundColor: 'var(--color-surface)',
+            border: '1px solid var(--color-border-default)',
+            borderRadius: 'var(--radius-md)'
+          }}
+        >
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {/* Full Name */}
+            <div className="form-group">
+              <label htmlFor="name" className="form-label" style={{ fontSize: '14px', fontWeight: 400 }}>
+                Full name
+              </label>
               <input
                 id="name"
                 name="name"
                 type="text"
                 autoComplete="name"
                 ref={nameRef}
-                placeholder="John Doe"
+                placeholder="Akash Kumar"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={loading}
-                style={{
-                  width: '100%',
-                  height: '36px',
-                  paddingLeft: '36px',
-                  paddingRight: '12px',
-                  fontSize: '13px',
-                  backgroundColor: 'var(--color-bg)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius-sm)',
-                  color: 'var(--color-text-primary)',
-                  transition: 'border-color 0.2s'
-                }}
                 className="form-input"
+                style={{ width: '100%' }}
               />
             </div>
-          </div>
 
-          {/* Email input field */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label htmlFor="email" style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-              Email address
-            </label>
-            <div style={{ position: 'relative' }}>
-              <span
-                style={{
-                  position: 'absolute',
-                  left: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'var(--color-muted)',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                <Mail size={14} />
-              </span>
+            {/* Email */}
+            <div className="form-group">
+              <label htmlFor="email" className="form-label" style={{ fontSize: '14px', fontWeight: 400 }}>
+                Email address
+              </label>
               <input
                 id="email"
                 name="email"
@@ -231,42 +179,16 @@ export const Register: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
-                style={{
-                  width: '100%',
-                  height: '36px',
-                  paddingLeft: '36px',
-                  paddingRight: '12px',
-                  fontSize: '13px',
-                  backgroundColor: 'var(--color-bg)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius-sm)',
-                  color: 'var(--color-text-primary)',
-                  transition: 'border-color 0.2s'
-                }}
                 className="form-input"
+                style={{ width: '100%' }}
               />
             </div>
-          </div>
 
-          {/* Password input field */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label htmlFor="password" style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-              Password
-            </label>
-            <div style={{ position: 'relative' }}>
-              <span
-                style={{
-                  position: 'absolute',
-                  left: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'var(--color-muted)',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                <Lock size={14} />
-              </span>
+            {/* Password */}
+            <div className="form-group">
+              <label htmlFor="password" className="form-label" style={{ fontSize: '14px', fontWeight: 400 }}>
+                Password
+              </label>
               <input
                 id="password"
                 name="password"
@@ -276,61 +198,35 @@ export const Register: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
-                style={{
-                  width: '100%',
-                  height: '36px',
-                  paddingLeft: '36px',
-                  paddingRight: '12px',
-                  fontSize: '13px',
-                  backgroundColor: 'var(--color-bg)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius-sm)',
-                  color: 'var(--color-text-primary)',
-                  transition: 'border-color 0.2s'
-                }}
                 className="form-input"
+                style={{ width: '100%' }}
               />
+
+              {/* Password strength meter */}
+              {password && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--color-fg-muted)' }}>
+                    <span>Strength: {pwStrength.label}</span>
+                  </div>
+                  <div style={{ width: '100%', height: '3px', backgroundColor: 'var(--color-border-default)', borderRadius: '2px', overflow: 'hidden' }}>
+                    <div
+                      style={{
+                        width: `${pwStrength.percent}%`,
+                        height: '100%',
+                        backgroundColor: pwStrength.color,
+                        transition: 'width 0.3s, background-color 0.3s'
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Password strength meter */}
-            {password && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--color-muted)' }}>
-                  <span>Strength: {pwStrength.label}</span>
-                </div>
-                <div style={{ width: '100%', height: '4px', backgroundColor: 'var(--color-border)', borderRadius: '2px', overflow: 'hidden' }}>
-                  <div
-                    style={{
-                      width: `${pwStrength.percent}%`,
-                      height: '100%',
-                      backgroundColor: pwStrength.color,
-                      transition: 'width 0.3s, background-color 0.3s'
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Confirm Password input field */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label htmlFor="confirmPassword" style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-              Confirm password
-            </label>
-            <div style={{ position: 'relative' }}>
-              <span
-                style={{
-                  position: 'absolute',
-                  left: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'var(--color-muted)',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
-                <Lock size={14} />
-              </span>
+            {/* Confirm Password */}
+            <div className="form-group">
+              <label htmlFor="confirmPassword" className="form-label" style={{ fontSize: '14px', fontWeight: 400 }}>
+                Confirm password
+              </label>
               <input
                 id="confirmPassword"
                 name="confirmPassword"
@@ -340,85 +236,97 @@ export const Register: React.FC = () => {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={loading}
-                style={{
-                  width: '100%',
-                  height: '36px',
-                  paddingLeft: '36px',
-                  paddingRight: '12px',
-                  fontSize: '13px',
-                  backgroundColor: 'var(--color-bg)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius-sm)',
-                  color: 'var(--color-text-primary)',
-                  transition: 'border-color 0.2s'
-                }}
                 className="form-input"
+                style={{ width: '100%' }}
               />
             </div>
-          </div>
 
-          {/* Terms & Conditions */}
-          <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer', userSelect: 'none', fontSize: '11.5px', marginTop: '6px' }}>
-            <input
-              type="checkbox"
-              checked={acceptTerms}
-              onChange={(e) => setAcceptTerms(e.target.checked)}
+            {/* Terms & Conditions */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '12px', marginTop: '2px' }}>
+              <input
+                type="checkbox"
+                id="acceptTerms"
+                checked={acceptTerms}
+                onChange={(e) => setAcceptTerms(e.target.checked)}
+                disabled={loading}
+                style={{
+                  width: '14px',
+                  height: '14px',
+                  accentColor: 'var(--color-accent-fg)',
+                  cursor: 'pointer',
+                  marginTop: '2px'
+                }}
+              />
+              <label htmlFor="acceptTerms" style={{ color: 'var(--color-fg-muted)', lineHeight: '1.4', cursor: 'pointer' }}>
+                I agree to the <span style={{ color: 'var(--color-accent-fg)' }}>Terms of Service</span> and <span style={{ color: 'var(--color-accent-fg)' }}>Privacy Policy</span>.
+              </label>
+            </div>
+
+            {/* Submit button */}
+            <button
+              type="submit"
+              className="btn btn-primary"
               disabled={loading}
               style={{
-                width: '14px',
-                height: '14px',
-                accentColor: 'var(--color-accent)',
-                marginTop: '1px'
+                width: '100%',
+                marginTop: '6px',
+                height: '32px',
+                fontWeight: 600,
+                fontSize: '13.5px'
               }}
-            />
-            <span style={{ color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>
-              I agree to the{' '}
-              <span style={{ color: 'var(--color-accent)', fontWeight: 500 }}>Terms of Service</span> and{' '}
-              <span style={{ color: 'var(--color-accent)', fontWeight: 500 }}>Privacy Policy</span>.
-            </span>
-          </label>
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={14} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
+                  <span>Creating account...</span>
+                </>
+              ) : (
+                <span>Create account</span>
+              )}
+            </button>
+          </form>
+        </div>
 
-          {/* Submit button */}
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={loading}
-            style={{
-              width: '100%',
-              height: '36px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              fontSize: '13px',
-              fontWeight: 600,
-              marginTop: '6px'
-            }}
-          >
-            {loading ? (
-              <>
-                <Loader2 size={14} className="spin" style={{ animation: 'spin 1s linear infinite' }} />
-                <span>Creating account...</span>
-              </>
-            ) : (
-              <span>Register</span>
-            )}
-          </button>
-        </form>
-
-        {/* Login link */}
-        <div style={{ textAlign: 'center', fontSize: '13px', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
+        {/* Sign in Box */}
+        <div
+          className="gh-box"
+          style={{
+            padding: '16px',
+            textAlign: 'center',
+            fontSize: '13px',
+            color: 'var(--color-fg-default)',
+            borderRadius: 'var(--radius-md)'
+          }}
+        >
           Already have an account?{' '}
           <span
             onClick={() => setCurrentTab('login')}
             style={{
-              color: 'var(--color-accent)',
+              color: 'var(--color-accent-fg)',
               cursor: 'pointer',
               fontWeight: 500
             }}
           >
             Sign in
           </span>
+          .
+        </div>
+
+        {/* Footer links */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '16px',
+            fontSize: '12px',
+            color: 'var(--color-fg-subtle)',
+            marginTop: '16px'
+          }}
+        >
+          <span style={{ cursor: 'pointer' }} onClick={() => setCurrentTab('landing')}>Terms</span>
+          <span style={{ cursor: 'pointer' }} onClick={() => setCurrentTab('landing')}>Privacy</span>
+          <span style={{ cursor: 'pointer' }} onClick={() => setCurrentTab('support')}>Docs</span>
+          <span style={{ cursor: 'pointer' }} onClick={() => setCurrentTab('support')}>Contact PerfLens</span>
         </div>
       </div>
     </div>

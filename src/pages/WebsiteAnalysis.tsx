@@ -1,9 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { Globe, ArrowRight, CheckCircle2, Loader2, Info, ChevronDown, ChevronUp, Activity } from 'lucide-react';
+import {
+  Globe,
+  CheckCircle2,
+  Loader2,
+  ChevronDown,
+  ChevronUp,
+  Sliders,
+  Terminal,
+  Play
+} from 'lucide-react';
 
 const STEP_MICROCOPY: Record<number, string> = {
-  1: 'Connecting to your server and checking initial response...',
+  1: 'Connecting to server and checking initial response...',
   2: 'Looking at page structure, headings, and images...',
   3: 'Checking how quickly the page becomes usable...',
   4: 'Testing readability, color contrast, and navigation structure...',
@@ -15,6 +24,8 @@ export const WebsiteAnalysis: React.FC = () => {
   const { startAnalysis, scanningUrl, scanProgress, scanLogs } = useApp();
   const [urlInput, setUrlInput] = useState('');
   const [includeLighthouse, setIncludeLighthouse] = useState(true);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [deviceEmulation, setDeviceEmulation] = useState<'desktop' | 'mobile'>('desktop');
   const [showTechnicalLogs, setShowTechnicalLogs] = useState(false);
   const logEndRef = useRef<HTMLDivElement>(null);
 
@@ -25,7 +36,6 @@ export const WebsiteAnalysis: React.FC = () => {
     }
   };
 
-  // Autoscroll logs box when scanning is running
   useEffect(() => {
     if (showTechnicalLogs) {
       logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -34,116 +44,197 @@ export const WebsiteAnalysis: React.FC = () => {
 
   const isScanning = scanningUrl.length > 0;
   const activeStep = scanProgress.find((s) => s.status === 'scanning');
+  const completedCount = scanProgress.filter((s) => s.status === 'done').length;
+  const progressPercent = Math.round((completedCount / Math.max(1, scanProgress.length)) * 100);
 
   return (
-    <div className="workspace-container fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 120px)', padding: '24px' }}>
+    <div className="workspace-container fade-in" style={{ maxWidth: '780px' }}>
       {!isScanning ? (
-        <div style={{ maxWidth: '580px', width: '100%', textAlign: 'center' }}>
-          <div
-            style={{
-              width: '56px',
-              height: '56px',
-              borderRadius: 'var(--radius-xl)',
-              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.18), rgba(6, 182, 212, 0.12))',
-              border: '1px solid rgba(99, 102, 241, 0.25)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--color-accent-cyan)',
-              margin: '0 auto 20px auto'
-            }}
-          >
-            <Globe size={28} />
-          </div>
-
-          <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '10px', letterSpacing: '-0.03em', color: 'var(--color-text-primary)' }}>
-            Let's check your website
-          </h1>
-          <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', marginBottom: '32px', lineHeight: '1.6' }}>
-            Paste your URL and we'll look for speed, accessibility, SEO, and technical problems.
-          </p>
-
-          <form
-            onSubmit={handleSubmit}
-            style={{
-              display: 'flex',
-              gap: '8px',
-              backgroundColor: 'var(--color-surface)',
-              border: '1px solid var(--color-border)',
-              padding: '8px',
-              borderRadius: 'var(--radius-xl)',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
-              marginBottom: '20px'
-            }}
-          >
-            <input
-              type="text"
-              placeholder="e.g. mywebsite.com"
-              value={urlInput}
-              onChange={(e) => setUrlInput(e.target.value)}
-              style={{
-                flex: 1,
-                background: 'transparent',
-                border: 'none',
-                outline: 'none',
-                fontSize: '15px',
-                color: 'var(--color-text-primary)',
-                paddingLeft: '14px',
-                fontFamily: 'var(--font-sans)'
-              }}
-            />
-            <button type="submit" className="btn btn-primary" style={{ padding: '10px 22px', fontSize: '14px', fontWeight: 600 }}>
-              <span>Check my website</span>
-              <ArrowRight size={15} />
-            </button>
-          </form>
-
-          {/* Secondary lighthouse option with tooltip */}
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-            <input 
-              type="checkbox" 
-              id="includeLighthouse" 
-              checked={includeLighthouse} 
-              onChange={(e) => setIncludeLighthouse(e.target.checked)}
-              style={{ accentColor: 'var(--color-accent)', cursor: 'pointer', width: '16px', height: '16px' }}
-            />
-            <label htmlFor="includeLighthouse" style={{ cursor: 'pointer', userSelect: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span>Include detailed Lighthouse checks</span>
-              <span title="Adds Google's Lighthouse performance signals to the scan." style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--color-muted)' }}>
-                <Info size={14} />
-              </span>
-            </label>
-          </div>
-        </div>
-      ) : (
-        <div style={{ maxWidth: '640px', width: '100%', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div>
           {/* Header */}
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(99, 102, 241, 0.12)', border: '1px solid rgba(99, 102, 241, 0.25)', padding: '6px 14px', borderRadius: '20px', marginBottom: '12px' }}>
-              <span className="spin" style={{ display: 'inline-flex', color: 'var(--color-accent-cyan)' }}>
-                <Loader2 size={14} />
-              </span>
-              <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-accent-cyan)' }}>
-                Checking your website
-              </span>
-            </div>
-            <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '6px', color: 'var(--color-text-primary)' }}>
-              {scanningUrl.replace(/^https?:\/\//, '')}
-            </h2>
-            <p style={{ fontSize: '13.5px', color: 'var(--color-text-secondary)' }}>
-              {activeStep ? STEP_MICROCOPY[activeStep.step] || 'Inspecting page signals...' : 'Analyzing scan signals...'}
+          <div style={{ marginBottom: '24px' }}>
+            <h1 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--color-fg-default)', letterSpacing: '-0.02em' }}>
+              Check a website
+            </h1>
+            <p style={{ fontSize: '14px', color: 'var(--color-fg-muted)', marginTop: '4px' }}>
+              Enter a website address to find speed, accessibility, and SEO improvements.
             </p>
           </div>
 
-          {/* Stepper Status Indicators */}
-          <div
-            className="card"
-            style={{
-              padding: '24px',
-              borderRadius: 'var(--radius-xl)'
-            }}
-          >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          {/* GitHub-style Main Form Box */}
+          <div className="gh-box">
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="form-group">
+                <label className="form-label" htmlFor="site-url">
+                  Website URL
+                </label>
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <Globe
+                    size={15}
+                    style={{
+                      position: 'absolute',
+                      left: '12px',
+                      color: 'var(--color-fg-muted)',
+                      pointerEvents: 'none'
+                    }}
+                  />
+                  <input
+                    id="site-url"
+                    type="text"
+                    placeholder="https://example.com or yourdomain.com"
+                    value={urlInput}
+                    onChange={(e) => setUrlInput(e.target.value)}
+                    className="form-input"
+                    style={{
+                      paddingLeft: '34px',
+                      height: '36px',
+                      fontSize: '14px',
+                      width: '100%'
+                    }}
+                    autoFocus
+                  />
+                </div>
+                <span style={{ fontSize: '12px', color: 'var(--color-fg-subtle)' }}>
+                  PerfLens connects via headless browser to inspect Core Web Vitals, resources, and accessibility.
+                </span>
+              </div>
+
+              {/* Scan Options */}
+              <div style={{ borderTop: '1px solid var(--color-border-default)', paddingTop: '14px' }}>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '10px',
+                    fontSize: '13px',
+                    color: 'var(--color-fg-default)',
+                    cursor: 'pointer',
+                    userSelect: 'none'
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={includeLighthouse}
+                    onChange={(e) => setIncludeLighthouse(e.target.checked)}
+                    style={{ accentColor: 'var(--color-accent-fg)', marginTop: '3px' }}
+                  />
+                  <div>
+                    <div style={{ fontWeight: 500 }}>Include Google PageSpeed & Lighthouse telemetry</div>
+                    <div style={{ fontSize: '12px', color: 'var(--color-fg-muted)' }}>
+                      Gathers field data and standardized performance score comparisons.
+                    </div>
+                  </div>
+                </label>
+              </div>
+
+              {/* Advanced Settings Collapsible */}
+              <div style={{ borderTop: '1px solid var(--color-border-default)', paddingTop: '12px' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '12.5px',
+                    color: 'var(--color-accent-fg)',
+                    cursor: 'pointer',
+                    padding: 0
+                  }}
+                >
+                  <Sliders size={13} />
+                  <span>Advanced scan settings</span>
+                  {showAdvanced ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                </button>
+
+                {showAdvanced && (
+                  <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '12px', padding: '12px', backgroundColor: 'var(--color-canvas-subtle)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)' }}>
+                    <div className="form-group">
+                      <label className="form-label">Emulated device</label>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          type="button"
+                          className={`btn btn-sm ${deviceEmulation === 'desktop' ? 'btn-primary' : 'btn-secondary'}`}
+                          onClick={() => setDeviceEmulation('desktop')}
+                        >
+                          Desktop (1920x1080)
+                        </button>
+                        <button
+                          type="button"
+                          className={`btn btn-sm ${deviceEmulation === 'mobile' ? 'btn-primary' : 'btn-secondary'}`}
+                          onClick={() => setDeviceEmulation('mobile')}
+                        >
+                          Mobile (Moto G4 4G)
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Submit Button */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid var(--color-border-default)', paddingTop: '14px' }}>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={!urlInput.trim()}
+                  style={{ minWidth: '140px' }}
+                >
+                  <Play size={13} fill="currentColor" />
+                  <span>Check website</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : (
+        /* GitHub-style Scan Progress Experience */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Progress Box */}
+          <div className="gh-box" style={{ padding: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Loader2 size={16} className="spin" style={{ color: 'var(--color-accent-fg)' }} />
+                  <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-fg-default)' }}>
+                    Checking {scanningUrl.replace(/^https?:\/\//, '')}
+                  </span>
+                </div>
+                <p style={{ fontSize: '13px', color: 'var(--color-fg-muted)', marginTop: '4px' }}>
+                  {activeStep ? STEP_MICROCOPY[activeStep.step] || 'Analyzing website signals...' : 'Processing audit...'}
+                </p>
+              </div>
+
+              <span className="badge badge-info" style={{ fontSize: '12px', padding: '2px 8px' }}>
+                {progressPercent}% completed
+              </span>
+            </div>
+
+            {/* Subtle GitHub Blue Progress Bar */}
+            <div
+              style={{
+                width: '100%',
+                height: '6px',
+                backgroundColor: 'var(--color-surface-secondary)',
+                borderRadius: '3px',
+                overflow: 'hidden',
+                marginBottom: '20px'
+              }}
+            >
+              <div
+                style={{
+                  height: '100%',
+                  width: `${progressPercent}%`,
+                  backgroundColor: 'var(--color-accent-fg)',
+                  transition: 'width 0.3s ease'
+                }}
+              />
+            </div>
+
+            {/* Step List */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {scanProgress.map((step) => {
                 const isCurrent = step.status === 'scanning';
                 const isDone = step.status === 'done';
@@ -152,64 +243,49 @@ export const WebsiteAnalysis: React.FC = () => {
                     key={step.step}
                     style={{
                       display: 'flex',
-                      flexDirection: 'column',
-                      gap: '4px',
+                      alignItems: 'center',
+                      gap: '12px',
                       padding: '8px 12px',
                       borderRadius: 'var(--radius-md)',
                       backgroundColor: isCurrent ? 'var(--color-surface-secondary)' : 'transparent',
-                      transition: 'background-color 0.2s ease'
+                      border: isCurrent ? '1px solid var(--color-border-default)' : '1px solid transparent'
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      {isDone ? (
-                        <CheckCircle2 size={18} style={{ color: 'var(--color-success)', flexShrink: 0 }} />
-                      ) : isCurrent ? (
-                        <Loader2 size={18} className="spin" style={{ color: 'var(--color-accent-cyan)', flexShrink: 0 }} />
-                      ) : (
-                        <div
-                          style={{
-                            width: '18px',
-                            height: '18px',
-                            borderRadius: '50%',
-                            border: '1.5px solid var(--color-border)',
-                            backgroundColor: 'var(--color-surface-secondary)',
-                            flexShrink: 0
-                          }}
-                        />
-                      )}
-                      <span
+                    {isDone ? (
+                      <CheckCircle2 size={16} style={{ color: 'var(--color-success-fg)', flexShrink: 0 }} />
+                    ) : isCurrent ? (
+                      <Loader2 size={16} className="spin" style={{ color: 'var(--color-accent-fg)', flexShrink: 0 }} />
+                    ) : (
+                      <div
                         style={{
-                          fontSize: '14px',
-                          fontWeight: isCurrent ? 700 : isDone ? 500 : 400,
-                          color: isCurrent
-                            ? 'var(--color-text-primary)'
-                            : isDone
-                            ? 'var(--color-text-primary)'
-                            : 'var(--color-muted)'
+                          width: '14px',
+                          height: '14px',
+                          borderRadius: '50%',
+                          border: '1.5px solid var(--color-border-strong)',
+                          backgroundColor: 'transparent',
+                          flexShrink: 0
                         }}
-                      >
-                        {step.title}
-                      </span>
-                      {isCurrent && (
-                        <span
-                          style={{
-                            marginLeft: 'auto',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            color: 'var(--color-accent-cyan)',
-                            backgroundColor: 'rgba(6, 182, 212, 0.12)',
-                            padding: '2px 8px',
-                            borderRadius: '10px'
-                          }}
-                        >
-                          Checking now
-                        </span>
-                      )}
-                    </div>
+                      />
+                    )}
+
+                    <span
+                      style={{
+                        fontSize: '13px',
+                        fontWeight: isCurrent ? 600 : 400,
+                        color: isCurrent
+                          ? 'var(--color-fg-default)'
+                          : isDone
+                          ? 'var(--color-fg-default)'
+                          : 'var(--color-fg-subtle)'
+                      }}
+                    >
+                      {step.title}
+                    </span>
+
                     {isCurrent && (
-                      <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginLeft: '30px', marginTop: '2px' }}>
-                        {STEP_MICROCOPY[step.step]}
-                      </p>
+                      <span className="badge badge-info" style={{ marginLeft: 'auto', fontSize: '11px', padding: '0 6px' }}>
+                        Running
+                      </span>
                     )}
                   </div>
                 );
@@ -217,8 +293,8 @@ export const WebsiteAnalysis: React.FC = () => {
             </div>
           </div>
 
-          {/* Progressive Technical Details Drawer */}
-          <div className="card" style={{ padding: '14px 18px', borderRadius: 'var(--radius-lg)' }}>
+          {/* Collapsible Terminal Logs */}
+          <div className="gh-box">
             <button
               type="button"
               onClick={() => setShowTechnicalLogs(!showTechnicalLogs)}
@@ -230,25 +306,25 @@ export const WebsiteAnalysis: React.FC = () => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 cursor: 'pointer',
-                color: 'var(--color-text-secondary)',
-                fontSize: '12.5px',
-                fontWeight: 600,
+                color: 'var(--color-fg-muted)',
+                fontSize: '13px',
+                fontWeight: 500,
                 padding: 0
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Activity size={14} style={{ color: 'var(--color-accent-cyan)' }} />
-                <span>Live scan activity ({scanLogs.length} events)</span>
+                <Terminal size={14} style={{ color: 'var(--color-fg-muted)' }} />
+                <span>Live audit telemetry ({scanLogs.length} events)</span>
               </div>
-              {showTechnicalLogs ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              {showTechnicalLogs ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             </button>
 
             {showTechnicalLogs && (
-              <div style={{ marginTop: '14px' }}>
-                <div className="scan-log-box" style={{ maxHeight: '180px' }}>
+              <div style={{ marginTop: '12px' }}>
+                <div className="scan-log-box" style={{ maxHeight: '180px', backgroundColor: 'var(--color-canvas-subtle)' }}>
                   {scanLogs.length === 0 ? (
-                    <div style={{ color: 'var(--color-muted)', padding: '8px 0', fontSize: '12px' }}>
-                      Establishing connection to scanner node...
+                    <div style={{ color: 'var(--color-fg-subtle)', padding: '6px 0', fontSize: '12px' }}>
+                      Initializing Puppeteer headless scanner session...
                     </div>
                   ) : (
                     scanLogs.map((log, idx) => (
@@ -268,4 +344,3 @@ export const WebsiteAnalysis: React.FC = () => {
     </div>
   );
 };
-

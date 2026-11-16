@@ -16,22 +16,23 @@ import {
   Layers,
   Sparkles,
   ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  RotateCw
 } from 'lucide-react';
 import { HumanizedRecommendationCard } from '../components/HumanizedRecommendationCard';
 import { CWV_METRICS, getScoreCoaching } from '../utils/developerCoach';
 
 // SVG circular Gauge component
 const CircularGauge: React.FC<{ score: number; label: string }> = ({ score, label }) => {
-  const size = 90;
-  const strokeWidth = 6;
+  const size = 80;
+  const strokeWidth = 5;
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const strokeDashoffset = circumference - (score / 100) * circumference;
-  const color = score >= 90 ? 'var(--color-success)' : score >= 70 ? 'var(--color-warning)' : 'var(--color-danger)';
+  const color = score >= 90 ? 'var(--color-success-fg)' : score >= 70 ? 'var(--color-attention-fg)' : 'var(--color-danger-fg)';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
       <div style={{ position: 'relative', width: size, height: size }}>
         <svg style={{ transform: 'rotate(-90deg)', width: size, height: size }}>
           <circle
@@ -39,7 +40,7 @@ const CircularGauge: React.FC<{ score: number; label: string }> = ({ score, labe
             cy={size / 2}
             r={radius}
             fill="transparent"
-            stroke="var(--color-border)"
+            stroke="var(--color-border-default)"
             strokeWidth={strokeWidth}
           />
           <circle
@@ -65,16 +66,16 @@ const CircularGauge: React.FC<{ score: number; label: string }> = ({ score, labe
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontFamily: 'var(--font-sans)',
-            fontSize: '20px',
-            fontWeight: 800,
-            color: 'var(--color-text-primary)'
+            fontFamily: 'var(--font-mono)',
+            fontSize: '18px',
+            fontWeight: 700,
+            color: 'var(--color-fg-default)'
           }}
         >
           {score}
         </div>
       </div>
-      <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', textAlign: 'center' }}>
+      <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-fg-muted)', textAlign: 'center' }}>
         {label}
       </span>
     </div>
@@ -82,7 +83,7 @@ const CircularGauge: React.FC<{ score: number; label: string }> = ({ score, labe
 };
 
 export const ResultsPage: React.FC = () => {
-  const { currentReport, setCurrentTab, addToast } = useApp();
+  const { currentReport, setCurrentTab, addToast, startAnalysis } = useApp();
   const [activeSubTab, setActiveSubTab] = useState('overview');
   const [expandedRecs, setExpandedRecs] = useState<Record<string, boolean>>({});
 
@@ -105,11 +106,11 @@ export const ResultsPage: React.FC = () => {
   };
   // Pie chart helper for breakdown
   const pieData = [
-    { name: 'Images', value: currentReport.breakdown.images.sizeKb, color: '#22C55E' },
-    { name: 'JavaScript', value: currentReport.breakdown.js.sizeKb, color: '#F59E0B' },
-    { name: 'CSS', value: currentReport.breakdown.css.sizeKb, color: '#A855F7' },
-    { name: 'Fonts', value: currentReport.breakdown.fonts.sizeKb, color: '#EC4899' },
-    { name: 'Third Party', value: currentReport.breakdown.thirdParty.sizeKb, color: '#EF4444' }
+    { name: 'Images', value: currentReport.breakdown.images.sizeKb, color: '#3FB950' },
+    { name: 'JavaScript', value: currentReport.breakdown.js.sizeKb, color: '#D29922' },
+    { name: 'CSS', value: currentReport.breakdown.css.sizeKb, color: '#A371F7' },
+    { name: 'Fonts', value: currentReport.breakdown.fonts.sizeKb, color: '#2F81F7' },
+    { name: 'Third Party', value: currentReport.breakdown.thirdParty.sizeKb, color: '#F85149' }
   ];
 
   const handleCopyLink = () => {
@@ -173,161 +174,119 @@ export const ResultsPage: React.FC = () => {
 
   return (
     <div className="workspace-container fade-in" style={{ padding: '24px' }}>
-      {/* Top Header Summary */}
+      {/* Top Header Summary - GitHub Repo Pattern */}
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          borderBottom: '1px solid var(--color-border)',
-          paddingBottom: '22px',
-          marginBottom: '28px',
-          flexWrap: 'wrap',
-          gap: '16px'
+          borderBottom: '1px solid var(--color-border-default)',
+          paddingBottom: '16px',
+          marginBottom: '16px'
         }}
       >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                fontSize: '11px',
-                backgroundColor: 'rgba(34, 197, 94, 0.12)',
-                border: '1px solid rgba(34, 197, 94, 0.25)',
-                padding: '3px 10px',
-                borderRadius: '12px',
-                color: 'var(--color-success)',
-                fontWeight: 600
-              }}
-            >
-              <CheckCircle2 size={12} />
-              Scan complete
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <Globe size={18} style={{ color: 'var(--color-fg-muted)' }} />
+            <span style={{ color: 'var(--color-accent-fg)', fontSize: '18px', fontWeight: 600 }}>Websites</span>
+            <span style={{ color: 'var(--color-fg-muted)' }}>/</span>
+            <span style={{ color: 'var(--color-fg-default)', fontSize: '18px', fontWeight: 700 }}>
+              {currentReport.url.replace(/^https?:\/\//, '')}
             </span>
-            <span className={`metric-pill ${scoreCoach.badgeClass}`}>
-              {scoreCoach.pillText}
+            <span className="badge" style={{ marginLeft: '4px' }}>Public</span>
+            <span
+              className={`badge ${
+                currentReport.scores.overall >= 90
+                  ? 'badge-success'
+                  : currentReport.scores.overall >= 70
+                  ? 'badge-attention'
+                  : 'badge-danger'
+              }`}
+            >
+              Health {currentReport.scores.overall}/100
             </span>
           </div>
-          <h1 style={{ fontSize: '28px', fontWeight: 800, marginTop: '10px', letterSpacing: '-0.03em', color: 'var(--color-text-primary)' }}>
-            {currentReport.url}
-          </h1>
-          <p style={{ fontSize: '13.5px', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
-            {scoreCoach.summary} Scanned on {currentReport.timestamp}.
-          </p>
+
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <button
+              className="btn btn-secondary"
+              onClick={() => {
+                addToast(`Re-checking ${currentReport.url}...`, 'info');
+                startAnalysis(currentReport.url);
+              }}
+            >
+              <RotateCw size={13} />
+              <span>Re-check</span>
+            </button>
+            <button className="btn btn-secondary" onClick={handleCopyLink}>
+              <Share2 size={13} />
+              <span>Share</span>
+            </button>
+            <button className="btn btn-secondary" onClick={handleExportPdf}>
+              <Download size={13} />
+              <span>Export PDF</span>
+            </button>
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <button
-            className="btn btn-secondary"
-            onClick={() => setActiveSubTab('recommendations')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: activeSubTab === 'recommendations' ? 'rgba(168, 85, 247, 0.2)' : 'rgba(168, 85, 247, 0.1)',
-              color: '#c084fc',
-              border: '1px solid rgba(168, 85, 247, 0.35)',
-              fontWeight: 600
-            }}
-          >
-            <Sparkles size={14} style={{ color: '#c084fc' }} />
-            <span>Fixes ({currentReport.recommendations?.length || 0})</span>
-          </button>
-          <button className="btn btn-secondary" onClick={handleCopyLink}>
-            <Share2 size={13} />
-            <span>Share</span>
-          </button>
-          <button className="btn btn-secondary" onClick={handleExportPdf}>
-            <Download size={13} />
-            <span>Export PDF</span>
-          </button>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '10px', fontSize: '12px', color: 'var(--color-fg-muted)', flexWrap: 'wrap' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--color-success-fg)', fontWeight: 600 }}>
+            <CheckCircle2 size={13} /> Scan complete
+          </span>
+          <span>•</span>
+          <span>{scoreCoach.summary}</span>
+          <span>•</span>
+          <span>Audited on {currentReport.timestamp}</span>
         </div>
       </div>
 
-      {/* Main Results grid */}
-      <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
-        {/* Left Sub-Tab Switcher (Sticky Layout) */}
-        <div
-          style={{
-            width: '200px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '4px',
-            position: 'sticky',
-            top: '80px',
-            flexShrink: 0
-          }}
-        >
-          {[
-            { id: 'overview', label: 'Overview', icon: Zap },
-            { id: 'recommendations', label: 'Fixes', icon: Sparkles, badge: currentReport.recommendations?.length },
-            { id: 'bundles', label: 'Bundle Analyzer', icon: Code2 },
-            { id: 'images', label: 'Images', icon: ImageIcon },
-            { id: 'css-js', label: 'Styles & Scripts', icon: Code2 },
-            { id: 'network', label: 'Network Requests', icon: Network },
-            { id: 'accessibility', label: 'Accessibility', icon: HelpCircle },
-            { id: 'seo', label: 'Search & Sharing', icon: Globe }
-          ].map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveSubTab(tab.id)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  padding: '8px 12px',
-                  borderRadius: 'var(--radius-md)',
-                  border: 'none',
-                  background: activeSubTab === tab.id ? 'var(--color-surface-secondary)' : 'transparent',
-                  color: activeSubTab === tab.id ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-                  cursor: 'pointer',
-                  fontWeight: activeSubTab === tab.id ? 600 : 400,
-                  textAlign: 'left',
-                  fontSize: '13px'
-                }}
-              >
-                <Icon size={14} style={{ color: activeSubTab === tab.id ? 'var(--color-accent)' : 'inherit' }} />
-                <span>{tab.label}</span>
-                {tab.badge !== undefined && tab.badge > 0 && (
-                  <span
-                    style={{
-                      marginLeft: 'auto',
-                      fontSize: '10px',
-                      padding: '1px 6px',
-                      borderRadius: '10px',
-                      backgroundColor: activeSubTab === tab.id ? '#a855f7' : 'rgba(168, 85, 247, 0.15)',
-                      color: activeSubTab === tab.id ? '#ffffff' : '#c084fc',
-                      fontWeight: 700
-                    }}
-                  >
-                    {tab.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
+      {/* GitHub Repository Horizontal Subnavigation Tabs */}
+      <div className="gh-tabs-nav">
+        {[
+          { id: 'overview', label: 'Overview', icon: Zap },
+          { id: 'recommendations', label: 'Fixes', icon: Sparkles, count: currentReport.recommendations?.length },
+          { id: 'bundles', label: 'Bundle Analyzer', icon: Code2 },
+          { id: 'images', label: 'Images', icon: ImageIcon, count: currentReport.images?.length },
+          { id: 'css-js', label: 'Styles & Scripts', icon: Layers },
+          { id: 'network', label: 'Network Requests', icon: Network },
+          { id: 'accessibility', label: 'Accessibility', icon: HelpCircle },
+          { id: 'seo', label: 'Search & Sharing', icon: Globe }
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeSubTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveSubTab(tab.id)}
+              className={`gh-tab-nav-item ${isActive ? 'active' : ''}`}
+            >
+              <Icon size={14} style={{ color: isActive ? 'var(--color-fg-default)' : 'inherit' }} />
+              <span>{tab.label}</span>
+              {tab.count !== undefined && tab.count > 0 && (
+                <span className="gh-tab-nav-counter">{tab.count}</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
 
-        {/* Right subpage view */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          {/* TAB 1: OVERVIEW */}
-          {activeSubTab === 'overview' && (
-            <div className="flex-col">
-              {/* circular gauges panel */}
-              <div
-                className="card"
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-around',
-                  padding: '24px 12px',
-                  backgroundColor: 'var(--color-surface)'
-                }}
-              >
-                <CircularGauge score={currentReport.scores.overall} label="Website Health" />
-                <CircularGauge score={currentReport.scores.performance} label="Speed" />
-                <CircularGauge score={currentReport.scores.accessibility} label="Accessibility" />
+      {/* Main Results Content (Full Width) */}
+      <div style={{ width: '100%' }}>
+        {/* TAB 1: OVERVIEW */}
+        {activeSubTab === 'overview' && (
+          <div className="flex-col">
+            {/* circular gauges panel */}
+            <div
+              className="gh-box"
+              style={{
+                display: 'flex',
+                justifyContent: 'space-around',
+                padding: '20px 12px',
+                flexWrap: 'wrap',
+                gap: '16px',
+                backgroundColor: 'var(--color-surface)'
+              }}
+            >
+              <CircularGauge score={currentReport.scores.overall} label="Website Health" />
+              <CircularGauge score={currentReport.scores.performance} label="Speed" />
+              <CircularGauge score={currentReport.scores.accessibility} label="Accessibility" />
                 <CircularGauge score={currentReport.scores.seo} label="Search & Sharing" />
                 <CircularGauge score={currentReport.scores.bestPractices} label="Standards" />
               </div>
@@ -1784,7 +1743,6 @@ export const ResultsPage: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
     </div>
   );
 };
